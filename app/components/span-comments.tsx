@@ -44,7 +44,7 @@ export function SpanComments({ findings, selectedId, onSelect, comments, canComm
       <div className="comment-index" aria-label="Choose a commented span">
         {findings.map((finding) => <button className={`comment-index-item ${selected.id === finding.id ? "active" : ""}`} type="button" key={finding.id} aria-pressed={selected.id === finding.id} onClick={() => onSelect(finding.id)}><span className={`status-dot ${finding.severity}`} />{finding.category}<span>{comments.filter((comment) => comment.findingId === finding.id).length}</span></button>)}
       </div>
-      <div className="selected-span"><span>Original audited span · Version 2</span><strong>{selected.excerpt}</strong><small>Characters {selected.span.start}–{selected.span.end} · {selected.evidenceStatus}</small></div>
+       <div className="selected-span"><span>Original audited span · Versioned content</span><strong>{selected.excerpt}</strong><small>Characters {selected.span.start}–{selected.span.end} · {selected.evidenceStatus}</small></div>
       <div className="comment-thread">
         {thread.length === 0 ? <p className="empty-comment">No comments yet. Add the first note for this span.</p> : thread.map((comment) => <article className="comment-item" key={comment.id}><div className="comment-avatar" aria-hidden="true">{comment.author.split(" ").map((name) => name[0]).join("")}</div><div><div className="comment-meta"><strong>{comment.author}</strong><span>{roleLabels[comment.role]}</span><time>{comment.time}</time><span>{comment.contentVersion}</span></div><p>{comment.text}</p></div></article>)}
       </div>

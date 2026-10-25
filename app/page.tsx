@@ -456,13 +456,12 @@ export default function Home() {
   const canRescan = openFindings.length === 0 && auditState === "needs-changes" && permissions.canApplySuggestion;
   const canSubmit = auditState === "ready" && permissions.canSubmit;
   const canApprove = auditState === "submitted" && permissions.canApprove;
-  const selectedReview = reviewItems.find((item) => item.id === selectedReviewId) ?? reviewItems[0];
-  const selectedIsInteractive = selectedReview.id === "novabook-launch";
-  const selectedQueueStatus = selectedIsInteractive ? queueStatusForAudit[auditState] : selectedReview.status;
-  const selectedStatusLabel = selectedIsInteractive ? auditStateLabels[auditState] : selectedReview.statusLabel;
-  const selectedFinding = findings.find((finding) => finding.id === selectedSpanId) ?? findings[0];
+  const roleScopedReviewItems = useMemo(
+    () => currentRole === "agency" ? reviewItems.filter((item) => item.id === "novabook-launch") : reviewItems,
+    [currentRole],
+  );
   const filteredQueueItems = useMemo(() => {
-    const items = reviewItems.filter((item) => {
+    const items = roleScopedReviewItems.filter((item) => {
       const status = item.id === "novabook-launch" ? queueStatusForAudit[auditState] : item.status;
       const matchesRisk = queueRiskFilter === "all" || item.risk === queueRiskFilter;
       const matchesStatus = queueStatusFilter === "all" || status === queueStatusFilter;
@@ -470,7 +469,12 @@ export default function Home() {
     });
 
     return [...items].sort((left, right) => queueSort === "risk" ? right.riskScore - left.riskScore : right.submittedOrder - left.submittedOrder);
-  }, [auditState, queueRiskFilter, queueSort, queueStatusFilter]);
+  }, [auditState, queueRiskFilter, queueSort, queueStatusFilter, roleScopedReviewItems]);
+  const selectedReview = filteredQueueItems.find((item) => item.id === selectedReviewId) ?? filteredQueueItems[0] ?? roleScopedReviewItems[0] ?? reviewItems[0];
+  const selectedIsInteractive = selectedReview.id === "novabook-launch";
+  const selectedQueueStatus = selectedIsInteractive ? queueStatusForAudit[auditState] : selectedReview.status;
+  const selectedStatusLabel = selectedIsInteractive ? auditStateLabels[auditState] : selectedReview.statusLabel;
+  const selectedFinding = findings.find((finding) => finding.id === selectedSpanId) ?? findings[0];
 
   function notify(message: string) {
     setToast(message);
@@ -677,7 +681,7 @@ export default function Home() {
           <Link className="nav-item" href="/submit"><span aria-hidden="true">＋</span>Submit content</Link>
           <Link className="nav-item" href="/impact"><span aria-hidden="true">!</span>Impact radar</Link>
           {navViews.map((view) => (
-            <button className={`nav-item ${activeView === view ? "active" : ""}`} key={view} type="button" onClick={() => navigate(view)}>
+              <button className={`nav-item ${activeView === view ? "active" : ""}`} key={view} type="button" aria-current={activeView === view ? "page" : undefined} onClick={() => navigate(view)}>
               <span aria-hidden="true">{view === "overview" ? "◈" : view === "reviews" ? "◇" : view === "registry" ? "▦" : view === "insights" ? "⌁" : "≋"}</span>
               {pageTitles[view]}
               {view === "reviews" ? <b>{openReviewCount}</b> : null}
@@ -794,7 +798,7 @@ export default function Home() {
             </section>
           ) : null}
 
-          {activeView === "registry" ? <section className="view-panel" aria-labelledby="registry-heading"><div className="page-heading compact-heading"><div><p className="eyebrow">Brand truth registry</p><h1 id="registry-heading">The sources behind every decision.</h1><p className="lede">Current approved facts and rules are versioned, scoped, and visible to reviewers.</p></div>{permissions.canManageRegistry ? <button className="primary-button" type="button" onClick={() => setIsSourceModalOpen(true)}><span>＋</span> Add source</button> : <span className="permission-note heading-permission">Read-only registry view</span>}</div><div className="registry-grid">{registryRecords.map((record) => <article className="registry-card" key={record.title}><div className="registry-card-top"><span className="registry-type">{record.type}</span><span className="registry-status"><span className="health-dot" /> Active</span></div><h3>{record.title}</h3><p className="registry-value">{record.value}</p><div className="registry-meta"><span><strong>Source</strong> {record.source}</span><span><strong>Owner</strong> {record.owner}</span><span>{record.version}</span></div></article>)}</div><div className="registry-footer"><span className="health-dot" /><strong>All 18 active records have an owner and source.</strong><span>Last reviewed October 24, 2026</span></div></section> : null}
+          {activeView === "registry" ? <section className="view-panel" aria-labelledby="registry-heading"><div className="page-heading compact-heading"><div><p className="eyebrow">Brand truth registry</p><h1 id="registry-heading">The sources behind every decision.</h1><p className="lede">Current approved facts and rules are versioned, scoped, and visible to reviewers.</p></div>{permissions.canManageRegistry ? <button className="primary-button" type="button" onClick={() => setIsSourceModalOpen(true)}><span>＋</span> Add source</button> : <span className="permission-note heading-permission">Read-only registry view</span>}</div><div className="registry-grid">{registryRecords.filter((record) => currentRole !== "agency" || record.title === "NovaBook S1 · Battery life").map((record) => <article className="registry-card" key={record.title}><div className="registry-card-top"><span className="registry-type">{record.type}</span><span className="registry-status"><span className="health-dot" /> Active</span></div><h3>{record.title}</h3><p className="registry-value">{record.value}</p><div className="registry-meta"><span><strong>Source</strong> {record.source}</span><span><strong>Owner</strong> {record.owner}</span><span>{record.version}</span></div>{permissions.canManageRegistry && record.title === "NovaBook S1 · Battery life" ? <button className="small-button" type="button" onClick={() => notify("Battery fact is already approved in this synthetic registry.")}>Approve</button> : null}</article>)}</div><div className="registry-footer"><span className="health-dot" /><strong>All 18 active records have an owner and source.</strong><span>Last reviewed October 24, 2026</span></div></section> : null}
 
           {activeView === "insights" ? <section className="view-panel" aria-labelledby="insights-heading"><div className="page-heading compact-heading"><div><p className="eyebrow">Governance insights</p><h1 id="insights-heading">See where your guidelines need help.</h1><p className="lede">Patterns come from saved findings and reviewer decisions, not model confidence scores.</p></div><div className="heading-actions"><span className="review-summary-chip"><span className="status-dot blue" /> Last 30 days</span><Link className="ghost-button pl-link-button" href="/insights">Open insights dashboard</Link></div></div><div className="insights-grid"><section className="panel insight-chart-card"><div className="panel-heading"><div><p className="eyebrow">Issue mix</p><h2>What keeps surfacing</h2></div></div><div className="bar-chart">{issueMix.map((item) => <div className="bar-row" key={item.label}><label>{item.label}</label><div className="bar-track"><span className={item.tone} style={{ width: `${item.value}%` }} /></div><strong>{item.count}</strong></div>)}</div></section><section className="panel insight-list-card"><div className="panel-heading"><div><p className="eyebrow">Guideline health</p><h2>Clarity opportunities</h2></div></div><div className="clarity-list">{clarityOpportunities.map(([title, copy]) => <div className="clarity-item" key={title}><span className="clarity-marker" /><div><strong>{title}</strong><p>{copy}</p></div></div>)}</div></section></div><div className="privacy-note"><span>◌</span><p><strong>Human review stays in the loop.</strong> Insights suggest where a rule may need clarification; only an authorised brand owner can update the registry.</p></div></section> : null}
 

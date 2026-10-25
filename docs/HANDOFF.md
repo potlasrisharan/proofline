@@ -57,3 +57,23 @@
   checks. Review the final diff before any deployment. If deploying, obtain project-
   dedicated hosting credentials and environment values through the owner; never commit or
   paste secrets.
+
+## 2026-10-26 — Phase 3 continuation after interrupted swarm
+
+- **Completed locally:** preserved the existing Phase 2 workflow implementation, added the
+  Phase 3 plan/contract status, fixed local queue role scoping for agency previews, added a
+  brand-owner registry approval control for the seeded fact, improved highlighted-span
+  accessible naming, corrected the audit-log filter label, and repaired the first-revision
+  diff empty state. Backend finding diffs now include span offsets, and same-version
+  resubmission is rejected rather than bypassing immutable revision/recheck expectations.
+- **Verified:** `python3 -m pytest -q backend/tests` — 130 passed; browser smoke — 2 passed;
+  collaboration — 5 passed; API workflow — 4 passed; `npm run typecheck` and `npm run build`
+  passed. `python3 -m app.eval` ran and reported 27 honest legacy evaluator failures.
+- **Broken/not verified:** `npm run lint` and the `npm test` wrapper stop before project
+  checks because ESLint 9.39.5 cannot load the installed `resolve/lib/async.js` path under
+  Node v25.9.0, reporting `ETIMEDOUT`. No lint pass is claimed. The browser flow remains
+  local seeded state and the API remains in-memory.
+- **Next chat must know:** if green `npm test` is required, repair or replace the local
+  Node/ESLint toolchain using the project's supported Node version and then rerun all checks.
+  Do not treat the 52-case evaluator output as a passing reliability result; it contains
+  visible Phase 2 failures that need separate investigation.

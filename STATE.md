@@ -62,6 +62,29 @@ proposes.
   reliability, deployment, and documentation updates are being developed from this
   baseline. No deployment or external service connection is verified yet.
 
+## Phase 3 workflow and review verification
+
+- **Verified:** 2026-10-26 IST. The local workflow API and seeded browser review experience
+  now cover content states, role-scoped queue visibility, high-risk approval boundaries,
+  revision history, span comments, evidence-linked findings, correction actions, audit-chain
+  display/verification, and synthetic VoltEdge trust disclosures.
+- **Backend checks:** `python3 -m pytest -q backend/tests` passed with **130 passed** and
+  three Starlette deprecation warnings. The focused workflow suite passed **18 tests**.
+- **Browser checks:** smoke **2 passed**, collaboration **5 passed**, and API workflow
+  **4 passed** using the local Playwright configurations. These are local/in-memory demo
+  checks, not production authentication or durable persistence tests.
+- **Frontend checks:** `npm run typecheck` passed and `npm run build` passed. `npm run lint`
+  and `npm test` remain blocked by the installed ESLint dependency load failure under Node
+  `v25.9.0` (`ETIMEDOUT` while loading `node_modules/resolve/lib/async.js`); no lint
+  diagnostics were produced. This is an environment/toolchain blocker, not reported as a
+  passing check.
+- **Evaluation:** `python3 -m app.eval` ran the 52-case legacy evaluator and reported 27
+  honest failures. The output identifies missing Phase 2 API/evidence-ledger coverage; it
+  is not a passing accuracy claim and remains open for the next verification-engine pass.
+- **Remaining gaps:** the browser demo is not wired to the FastAPI API; durable Supabase,
+  live Auth, external AI/OCR, hosted deployment, and production persistence remain
+  **STUB**, **PLANNED**, or **MISSING** as documented.
+
 ## Phase 4 verified local work
 
 - **Fact-Change Impact Radar: IMPLEMENTED (local).** The in-memory adapter versions

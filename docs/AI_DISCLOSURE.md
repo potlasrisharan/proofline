@@ -2,7 +2,7 @@
 
 **Document status:** Current local implementation disclosure; external integrations
 remain explicitly unverified. This document records what is present in the repository
-on **October 25, 2026**, not what the PRD proposes.
+on **October 26, 2026**, not what the PRD proposes.
 **Example tenant:** VoltEdge (fictional)
 
 Proofline is designed as an evidence-backed review assistant. It is not a generic
@@ -19,6 +19,7 @@ publisher. Any future model output would be a candidate for validation and human
 | Local content-audit API | **IMPLEMENTED (local, dependency-gated)** | `/contents` accepts bounded text/base64 files, runs local ingestion and deterministic checks, validates findings/claim links, and stores audit results in memory. Missing providers or incomplete extraction become `review_required`/`failed` states. |
 | Authentication boundary | **IMPLEMENTED (local boundary)** | Opt-in development headers and HS256 JWT verification are available when configured; there is no live Supabase Auth membership lookup. |
 | Browser API client | **IMPLEMENTED (unused boundary)** | `app/lib/proofline-api.ts` defines typed vault calls, but the seeded UI does not invoke it. |
+| Browser-local deterministic checker | **IMPLEMENTED (local demo)** | `/submit` and `/findings` retain synthetic VoltEdge content in the browser tab, run bounded deterministic checks, show evidence gaps, and keep explicit correction/dismissal actions in local session state. No model call occurs. |
 | Local ingestion, deterministic audit, and validation | **IMPLEMENTED (local, dependency-gated)** | Bounded text/PDF/DOCX/image ingestion, lexical claim extraction, deterministic evidence-or-abstain rules, schema/span/evidence validation, risk metadata, and explicit failed/review-required states exist in `backend/app/`. Optional parser/OCR packages are discovered lazily. |
 | External AI/OCR provider | **STUB / MISSING externally** | The Gemini adapter is fail-soft and disabled unless `GEMINI_API_KEY` and `GEMINI_MODEL` are configured; no external model call was observed. Hosted OCR is not configured. |
 | Durable storage | **STUB / PLANNED** | Supabase migration/RLS/seed artifacts exist; no live Supabase project or durable adapter is connected. |
@@ -99,7 +100,7 @@ repository. The following table is deliberately explicit about what remains unkn
 | Service or decision | Current status | Disclosure boundary |
 |---|---|---|
 | AI provider/model/version | **STUB / not configured** | A Gemini adapter exists behind environment-only configuration, but no provider/model call was observed. The UI/API health path reports `ai_provider: "not_configured"`. |
-| PDF/DOCX/local OCR extraction | **IMPLEMENTED (local, optional dependencies)** | The ingestion module validates bytes/limits, extracts text where an installed parser is available, and reports `complete`, `partial`, `failed`, or `unsupported`. Hosted OCR is not configured. |
+| PDF/DOCX/local OCR extraction | **IMPLEMENTED (local, optional dependencies)** | The ingestion module validates bytes/limits, extracts text where installed `PyMuPDF`/`pdfplumber`, `python-docx`, `Pillow`, and `pytesseract` adapters are available, and reports `complete`, `partial`, `failed`, or `unsupported`. Hosted OCR is not configured. |
 | Hosted OCR extraction provider | **MISSING / not configured** | No external OCR service is connected; the UI document path remains explicitly unavailable. |
 | Supabase database/storage | **STUB / PLANNED** | SQL migration, RLS design, and VoltEdge seed are present; no live project, Storage bucket, or durable adapter is connected. |
 | Supabase Auth/membership lookup | **PLANNED** | Local JWT verification is configuration-gated; it does not prove a live Auth integration. |
@@ -160,7 +161,7 @@ people or tools only from the team's actual records; do not infer contributions.
 ```text
 Development tool/provider: Coding assistant in this app
 Model/version: gpt-6.1-sol
-Dates and contributors: 2026-10-25; coding-assistant documentation task T5
+Dates and contributors: 2026-10-25 to 2026-10-26; coding-assistant Phase 3 continuation and verification
 Work assisted (planning/code/docs/design/tests): Repository documentation and disclosure update; the project record also contains earlier Phase 1 audit, contract, FastAPI foundation, test, SQL seed review, and handoff work
 Human review performed: Not recorded for this documentation update; project-owner review pending
 Agent checks performed: Repository rules, PRD, implementation files, documentation diffs, local checks, and command output inspected

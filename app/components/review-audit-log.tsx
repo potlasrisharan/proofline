@@ -29,8 +29,8 @@ export function ReviewAuditLog<Kind extends string>({ events, chainState, chainE
       <div className="privacy-note audit-scope-note"><span aria-hidden="true">⌁</span><p><strong>Local integrity check, not durable proof.</strong> The chain is computed and re-checked in this browser. It can detect changes to the recorded event payloads, but it does not authenticate an actor or replace a server-side audit trail.</p></div>
       {chainError ? <div className="preview-state" role="alert"><strong>Verification failed</strong><p>{chainError}</p></div> : null}
       <div className="audit-toolbar">
-        <div><p className="eyebrow">Audit events</p><h2>Recorded actions</h2></div>
-        <label>Event type<select className="filter-select" value={filter} onChange={(event) => setFilter(event.target.value as "all" | Kind)}><option value="all">All events</option>{(Object.keys(kindLabels) as Kind[]).map((kind) => <option value={kind} key={kind}>{kindLabels[kind]}</option>)}</select></label>
+         <div><p className="eyebrow">Audit events</p><h2>Recorded actions</h2></div>
+         <label>Filter<select aria-label="Filter" className="filter-select" value={filter} onChange={(event) => setFilter(event.target.value as "all" | Kind)}><option value="all">All events</option>{(Object.keys(kindLabels) as Kind[]).map((kind) => <option value={kind} key={kind}>{kindLabels[kind]}</option>)}</select></label>
       </div>
       <div className="audit-log-list">
         {visibleEvents.length === 0 ? <div className="queue-empty"><strong>{chainState === "verifying" ? "Verifying the event chain…" : "No events match this filter."}</strong><p>{chainState === "verifying" ? "The recorded links will appear after they have been checked." : "Choose another event type to inspect the recorded actions."}</p></div> : visibleEvents.map((event) => (

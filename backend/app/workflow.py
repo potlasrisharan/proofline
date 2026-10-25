@@ -688,6 +688,8 @@ class InMemoryWorkflowStore:
     @staticmethod
     def _finding_fingerprint(finding: Finding | FindingInput) -> tuple[str, ...]:
         return (
+            str(finding.span.start),
+            str(finding.span.end),
             finding.span.text,
             finding.category.value,
             finding.verdict.value,
@@ -759,9 +761,7 @@ class InMemoryWorkflowStore:
                 else:
                     if current is not ContentWorkflowStatus.CHANGES_REQUESTED:
                         raise WorkflowStateError("only changes_requested content can be resubmitted")
-                    if version.submitted_at is not None:
-                        raise WorkflowStateError("a fresh revision and completed recheck are required before resubmission")
-                    target = ContentWorkflowStatus.RESUBMITTED
+                    raise WorkflowStateError("create a fresh revision and completed recheck before resubmission")
             elif action is ReviewAction.REQUEST_CHANGES:
                 if principal.role not in REVIEW_ROLES:
                     raise WorkflowPermissionError("only an authorised reviewer may request changes")

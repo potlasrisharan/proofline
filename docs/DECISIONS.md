@@ -29,3 +29,12 @@ and must not present demo state as production data.
 All new fixtures, seeds, schema examples, and documentation examples use the fictional
 VoltEdge laptop brand. Existing Northstar Labs strings in the pre-existing UI are
 preserved as historical seeded demo content rather than silently rewritten.
+
+## 2026-10-26 — Keep Phase 3 review state local but explicit
+
+The Phase 3 browser workflow remains a seeded local demo, so role preview, queue filtering,
+registry approval affordances, comments, revisions, and audit-chain display are explicit
+client state rather than claims of authenticated persistence. The local FastAPI workflow
+continues to enforce the stronger server-side boundaries for API tests. We corrected only
+verified UI and workflow issues needed for the real-user demo and documented the remaining
+Node/ESLint and legacy evaluator blockers instead of weakening checks.

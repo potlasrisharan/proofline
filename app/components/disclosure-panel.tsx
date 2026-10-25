@@ -36,6 +36,14 @@ const runtimeServices: DisclosureEntry[] = [
     note: "Verified local foundation only. It is not durable storage and must not be used for confidential production records.",
   },
   {
+    name: "Browser-local deterministic checker",
+    scope: "Submit/findings demo · browser",
+    status: "IMPLEMENTED",
+    data: "Synthetic VoltEdge drafts, publication context, and bounded local rules used for highlighted spans, evidence gaps, risk triage, and explicit correction actions.",
+    retention: "The current review is kept in this browser tab's sessionStorage when available, with an in-memory fallback. No model or external service receives the draft.",
+    note: "This is a deterministic demo checker, not a calibrated truth score or a live AI provider.",
+  },
+  {
     name: "Google Gemini adapter",
     scope: "Backend adapter · not called by the UI",
     status: "STUB",

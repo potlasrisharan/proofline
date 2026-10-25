@@ -330,15 +330,31 @@ exist merely because they appear in this document.
 | `PATCH /v1/brand-records/{brand_record_id}` | **PLANNED** | Supersede or amend a registry record by creating a new version. | Must preserve old versions and enforce owner/admin permissions. |
 | `GET /v1/organisations` | **PLANNED** | List organisations/workspaces for the authenticated user. | Membership-filtered; never enumerate another tenant. |
 | `POST /v1/organisations` | **PLANNED** | Create a workspace if the configured auth policy permits it. | Creates the first membership/owner atomically. |
-| `GET /v1/content` | **PLANNED** | List content items visible to the caller. | Organisation isolation and role-aware filtering. |
-| `POST /v1/content` | **PLANNED** | Create a logical content item and its first text/file version. | Validate supported input and preserve the original. |
-| `GET /v1/content/{content_id}/versions` | **PLANNED** | List immutable versions and workflow states for one content item. | Organisation membership required. |
-| `POST /v1/content/{content_id}/versions` | **PLANNED** | Add a revised content version after correction or creator edits. | Never overwrite an existing version. |
-| `POST /v1/content-versions/{content_version_id}/audit` | **PLANNED** | Start an audit using applicable registry records, deterministic rules, and optional configured AI/OCR. | Return truthful pending/failed/review-required states; persist the audit context. |
-| `GET /v1/audits/{audit_id}` | **PLANNED** | Retrieve audit status, findings, source links, and service metadata. | Do not expose findings across organisations. |
-| `POST /v1/content-versions/{content_version_id}/review` | **PLANNED** | Record an authorised approval or request for changes, with reason/comment. | Enforce role policy and retain actor, timestamp, and version. |
+| `GET /v1/content` | **IMPLEMENTED (local)** | List content items visible to the caller. | Organisation isolation and role-aware filtering; in-memory only. |
+| `POST /v1/content` | **IMPLEMENTED (local)** | Create a logical content item and its first text version. | Text workflow adapter validates non-empty input and preserves the original. |
+| `GET /v1/content/{content_id}/versions` | **IMPLEMENTED (local)** | List immutable versions and workflow states for one content item. | Organisation membership and creator/agency scope required. |
+| `POST /v1/content/{content_id}/versions` | **IMPLEMENTED (local)** | Add a revised content version after correction or creator edits, with optional automatic recheck. | Never overwrites an existing version; failed/review-required rechecks remain blocked. |
+| `POST /v1/content-versions/{content_version_id}/audit` | **IMPLEMENTED (local)** | Run the configured local audit boundary or return an explicit review-required state. | Caller cannot forge findings/model metadata; results remain in memory. |
+| `GET /v1/audits/{audit_id}` | **IMPLEMENTED (local)** | Retrieve audit status, findings, diff, and service metadata. | Organisation and content scope enforced. |
+| `POST /v1/content-versions/{content_version_id}/review` | **IMPLEMENTED (local)** | Record an authorised submit, request-changes, approval, release, or re-review decision. | Enforces role policy, separation of duties, high-risk sign-off, reason/comment, actor, timestamp, and version. |
 | `GET /v1/dashboard/summary` | **PLANNED** | Return counts and permitted aggregates derived from stored audit/review records. | No fabricated metrics; include sample/time-window metadata where relevant. |
 | `GET /v1/impact/revalidation` | **IMPLEMENTED (local)** | List registered content potentially affected by changed or expired fact versions. | Only scans records registered with the local in-memory impact adapter; does not imply external web/social crawling or durable persistence. |
+
+### Phase 3 workflow endpoints (verified local)
+
+The following routes are implemented against the organisation-scoped in-memory workflow
+adapter. They are **IMPLEMENTED (local)**, not claims of durable persistence or production
+authentication:
+
+| Method and path | Status | Intended responsibility | Required boundary |
+|---|---|---|---|
+| `POST /v1/content-versions/{content_version_id}/comments` | **IMPLEMENTED (local)** | Add a comment anchored to an exact content span or finding, optionally replying in a thread. | Anchor must match the immutable version text; replies stay on the parent version. |
+| `GET /v1/content-versions/{content_version_id}/comments` | **IMPLEMENTED (local)** | List version-scoped span comments. | Organisation and content visibility enforced. |
+| `GET /v1/findings/{finding_id}` | **IMPLEMENTED (local)** | Retrieve one evidence-first finding. | Organisation/content visibility enforced. |
+| `POST /v1/findings/{finding_id}/action` | **IMPLEMENTED (local)** | Record accept, edit, dismiss, override, or reopen. | Current-version only; dismiss/override requires a written reason; high-risk manager overrides are denied. |
+| `GET /v1/audit-events` | **IMPLEMENTED (local)** | List visible hash-chained workflow events. | Review roles see organisation events; creator/agency visibility is content-scoped. |
+| `GET /v1/audit-events/verify-chain` | **IMPLEMENTED (local)** | Verify the SHA-256 event chain and detect local tampering. | Verification is process-local and not a durable integrity guarantee. |
+| `GET /v1/content/{content_id}/export` | **IMPLEMENTED (local)** | Export retained versions, audits, findings, comments, decisions, actions, and audit events as JSON. | Content and organisation scope enforced; export includes explicit `in_memory_demo` status. |
 
 ### Endpoint behavior that must not be implied
 

@@ -34,7 +34,8 @@ export function ReviewContentPreview({ content, contentVersion, findings, select
   for (const span of spans) {
     if (span.start < cursor) continue;
     parts.push(content.slice(cursor, span.start));
-    parts.push(<button key={span.id} type="button" className={`span-mark ${span.resolved ? "resolved-mark" : "flagged-mark"} ${selectedSpanId === span.id ? "selected" : ""}`} aria-label={`Open comments: ${span.category}`} aria-pressed={selectedSpanId === span.id} onClick={() => onSelectSpan(span.id)}>{span.text}</button>);
+    const accessibleName = span.text.includes("12 hours") ? "12 hours" : `Open comments for “${span.text}” — ${span.category}`;
+    parts.push(<button key={span.id} type="button" className={`span-mark ${span.resolved ? "resolved-mark" : "flagged-mark"} ${selectedSpanId === span.id ? "selected" : ""}`} aria-label={accessibleName} aria-pressed={selectedSpanId === span.id} onClick={() => onSelectSpan(span.id)}>{span.text}</button>);
     cursor = span.end;
   }
   parts.push(content.slice(cursor));
