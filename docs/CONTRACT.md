@@ -338,7 +338,7 @@ exist merely because they appear in this document.
 | `GET /v1/audits/{audit_id}` | **PLANNED** | Retrieve audit status, findings, source links, and service metadata. | Do not expose findings across organisations. |
 | `POST /v1/content-versions/{content_version_id}/review` | **PLANNED** | Record an authorised approval or request for changes, with reason/comment. | Enforce role policy and retain actor, timestamp, and version. |
 | `GET /v1/dashboard/summary` | **PLANNED** | Return counts and permitted aggregates derived from stored audit/review records. | No fabricated metrics; include sample/time-window metadata where relevant. |
-| `GET /v1/impact/revalidation` | **MISSING for the initial foundation; planned later** | List registered content potentially affected by changed or expired fact versions. | Only scans Proofline-stored content; does not imply external web/social crawling. |
+| `GET /v1/impact/revalidation` | **IMPLEMENTED (local)** | List registered content potentially affected by changed or expired fact versions. | Only scans records registered with the local in-memory impact adapter; does not imply external web/social crawling or durable persistence. |
 
 ### Endpoint behavior that must not be implied
 
@@ -377,3 +377,195 @@ When implementation diverges from this document:
 3. Record compatibility impact for existing UI consumers.
 4. Update `docs/AI_DISCLOSURE.md` when provider, model, OCR, storage, data handling, or
    external processing changes.
+
+## Phase 2 verification-engine contract
+
+**Phase 2 status:** The interfaces below are the shared target for the verification engine.
+Individual integrations remain **STUB**, **PLANNED**, or **MISSING** until a running check
+proves them. The default local implementation must be offline-capable and explicitly
+labelled `in_memory_demo` when it is not connected to Supabase/Postgres.
+
+### Normalised ingestion
+
+```python
+class DocumentSpan(TypedDict):
+    start: int
+    end: int
+    text: str
+    page: int | None
+    source: Literal["text", "pdf", "docx", "ocr"]
+    bbox: tuple[float, float, float, float] | None
+
+class NormalizedDocument(TypedDict):
+    text: str
+    spans: list[DocumentSpan]
+    source_type: Literal["text", "pdf", "docx", "image"]
+    extraction_status: Literal["complete", "partial", "failed", "unsupported"]
+    extraction_message: str | None
+    image_metadata: list[dict[str, object]]
+    original_filename: str | None
+    mime_type: str | None
+    confidential: bool
+```
+
+Text offsets are offsets into the final normalised `text` string. PDF/DOCX extraction must
+retain page/paragraph provenance where available. OCR spans may include bounding boxes.
+An empty or incomplete extraction is never a successful audit.
+
+### Claims and ledger links
+
+```python
+class Claim(TypedDict):
+    id: str
+    text: str
+    start: int
+    end: int
+    kind: str
+    normalized_value: object | None
+    unit: str | None
+    qualifier: str | None
+    comparator: str | None
+    regulated: bool
+
+class ClaimFactLink(TypedDict):
+    claim_id: str
+    fact_id: str | None
+    fact_version: str | None
+    link_status: Literal["supported", "contradicted", "outdated", "unsupported", "conflict", "unmatched"]
+    evidence_quote: str | None
+```
+
+Every link is persisted with the content version/audit that produced it. A missing link is
+not evidence of a false claim.
+
+### Phase 2 findings and risk
+
+The compact `Finding` above remains the review-facing shape. Its category vocabulary also
+allows `security` for instruction-like text detected inside submitted content; its severity
+allows `critical` in addition to the existing labels. The extended persistence schema adds
+the following fields when a finding has been scored:
+
+```json
+{
+  "risk_score": {
+    "value": 24,
+    "basis": "severity=5 x confidence=0.8 x exposure=2 x regulatory_weight=1.5",
+    "is_probability": false,
+    "breakdown": {
+      "severity_points": 5,
+      "confidence": 0.8,
+      "exposure": 2,
+      "regulatory_weight": 1.5,
+      "raw_score": 12.0
+    }
+  }
+}
+```
+
+The raw formula is `severity_points (1–5) × confidence (0–1) × exposure (1–3) ×
+regulatory_weight (1.0 or 1.5)`. A critical finding forces the content risk label to
+`high`; the score is a triage aid, not a calibrated truth probability.
+
+### Audit engine interface
+
+```python
+class AuditEngine(Protocol):
+    def audit(
+        self,
+        *,
+        organisation_id: str,
+        content_version_id: str,
+        document: NormalizedDocument,
+        approved_records: Sequence[VaultRecord],
+        options: AuditOptions,
+    ) -> AuditResult: ...
+```
+
+`AuditResult` must include the claims, `ClaimFactLink` records, findings, audit status,
+content risk, deterministic/LLM service metadata, and an explicit error or
+`review_required` state when extraction, retrieval, validation, or a provider call fails.
+High-severity findings always pass through a verifier step. Suggestions are proposals only
+and may use values present in approved records, never invented values.
+
+### Phase 2 content endpoints
+
+These routes are implemented first against the local in-memory adapter and must be labelled
+accordingly until durable persistence is verified:
+
+| Method and path | Intended behavior | Required response boundary |
+|---|---|---|
+| `POST /contents` | Create an immutable content version from text or base64-encoded PDF/DOCX/JPG/PNG, run the audit, and persist the result | Authenticated organisation; reject unsupported/empty extraction; confidential input is never sent to external LLMs |
+| `GET /contents/{id}` | Return the content, current version, audit status/findings, claim links, risk breakdown, and provider/service metadata | Organisation-scoped; no fabricated success or cross-tenant read |
+| `POST /contents/{id}/recheck` | Create a new version from supplied text/file or the prior content and run a fresh audit | Never overwrites history; uses current approved fact/rule versions |
+| `POST /findings/{id}/action` | Record `accept`, `edit`, or `dismiss` with actor/time and a required reason for dismissals | Organisation-scoped; action is auditable and does not auto-publish or mutate approved facts |
+
+The request/response models may add fields, but must preserve the stable names `content_id`,
+`content_version_id`, `audit_id`, `findings`, `claim_links`, `risk`, `status`, and
+`persistence`. The API must accept `exposure` (1–3), `regulated`/regulatory context, and a
+`confidential` tag. Submitted content is data, not instructions; instruction-like text is
+flagged for human review.
+
+### LLM and retrieval boundary
+
+- The provider reads `GEMINI_API_KEY` and `GEMINI_MODEL` only from server environment.
+  No model name is hardcoded. If no key is configured, deterministic checks still run and
+  model-dependent checks return `needs_human` with an explicit offline message.
+- Provider metadata records the actual provider/model only when observed. Model discovery
+  may list available Gemini models at startup when a key exists; discovery failure is
+  fail-soft and visible.
+- Retrieval exposes a pgvector-compatible interface and a Postgres full-text fallback, but
+  neither is claimed live without a configured connection and a running check.
+- Before any external model call, mask email addresses and phone numbers. Confidential-tagged
+  content must bypass every external model call; this is a hard invariant tested locally.
+- Structured model output is schema-validated, evidence IDs/versions are checked against
+  the current organisation records, retries are bounded, and rate-limit backoff is bounded.
+
+## Phase 4 improvement surfaces
+
+The following surfaces are verified locally and remain explicitly non-persistent. They
+are documented here so reusable UI components and local API routes do not appear to be
+production integrations merely because their types exist.
+
+### Fact-Change Impact Radar — **IMPLEMENTED (local)**
+
+| Method and path | Status | Responsibility | Boundary |
+|---|---|---|---|
+| `POST /v1/impact/fact-versions` | **IMPLEMENTED (local)** | Create a draft or owner-approved fact version and compare it with the prior approved version. | In-memory, organisation-scoped; only `brand_owner` may create an already-approved version. |
+| `POST /v1/impact/facts/{fact_id}/versions/{fact_version}/approve` | **IMPLEMENTED (local)** | Approve a draft fact version and mark linked older claims for re-review. | `brand_owner` only; history is retained only for the process lifetime. |
+| `POST /v1/impact/facts/{fact_id}/end-validity` | **IMPLEMENTED (local)** | End validity for an approved fact and create expiry tasks for linked content. | `brand_owner` only; future validity endings are rejected by the local adapter. |
+| `POST /v1/impact/content` | **IMPLEMENTED (local)** | Register content and claims with an exact `fact_id` plus fact version link. | Local registration path; claims must reference a known fact version. |
+| `GET /v1/impact/revalidation` and `GET /v1/impact/affected` | **IMPLEMENTED (local)** | List affected draft, in-review, approved, and already-flagged content with old/new values. | Local registered records only; no external crawler or durable store. |
+| `POST /v1/impact/recheck-all` | **IMPLEMENTED (local)** | Re-check every open affected task using deterministic version/validity comparison. | Returns `outdated` or `needs_human`; never edits content or approves it. |
+| `GET /v1/impact/events` and `GET /v1/impact/rechecks` | **IMPLEMENTED (local)** | Read impact audit events and re-check receipts. | Reviewer/manager/owner access is local role-gated and process-scoped. |
+
+The standalone `/impact` page renders a synthetic VoltEdge fixture through the reusable
+`ImpactRadar` and `ImpactRadarBanner` components. Its button is an explicit local demo
+callback; it is not a claim that the browser is connected to the FastAPI service.
+
+### Governance Insights and Guideline-Gap Detector — **IMPLEMENTED (local analytics)**
+
+`backend/app/insights.py` computes deterministic, organisation-scoped aggregates from
+caller-supplied saved-review records: categories and rules, team and agency aggregates,
+UTC trend buckets, facts expiring soon, dismissal/override/needs-human signals, and
+explicit guideline conflicts. It excludes individual rankings. The simulation command
+is:
+
+```bash
+python3 scripts/simulate_review_activity.py --compact
+```
+
+Suggested clearer wording is labelled `AI-generated` in the UI even though the current
+local generator is a deterministic template. A proposal remains `proposed` until an
+explicit `brand_owner` approval is recorded, and `applied` remains false. There is no
+durable analytics endpoint or background scheduler in this repository; the standalone
+`/insights` page renders a synthetic VoltEdge input through the reusable component.
+
+### Evidence-or-Abstain reliability — **IMPLEMENTED (local deterministic measurement)**
+
+`backend/app/reliability.py` validates evidence records, exact spans, source scope,
+units/currencies, validity windows, instruction-like content, and candidate output. It
+uses bounded local timeout/retry/cache behavior and routes ambiguous or unverified cases
+to `needs_human`. The generated VoltEdge set contains 194 cases, including unit
+conversions, approximation wording, currency formats, and prompt-injection text. Exact
+precision/recall results are recorded in `docs/EVAL_REPORT.md`; they are synthetic local
+measurements, not production or model-accuracy claims.

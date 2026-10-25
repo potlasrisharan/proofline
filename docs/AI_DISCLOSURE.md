@@ -1,37 +1,61 @@
 # Proofline AI and external-processing disclosure
 
-**Document status:** Policy and disclosure template for Phase 1; it records known
-boundaries and planned behavior, not an assertion that every integration is live.
-**Last reviewed:** 2026-10-25
+**Document status:** Current local implementation disclosure; external integrations
+remain explicitly unverified. This document records what is present in the repository
+on **October 25, 2026**, not what the PRD proposes.
 **Example tenant:** VoltEdge (fictional)
 
 Proofline is designed as an evidence-backed review assistant. It is not a generic
 content generator, a guarantee of real-world truth, legal advice, or an automatic
-publisher. AI may help identify candidate claims, assess contextual tone or messaging,
-and propose intent-preserving wording, but an authorised person remains accountable for
-the final decision.
+publisher. Any future model output would be a candidate for validation and human review.
 
-## Current implementation disclosure
+## What is implemented locally
 
-- The repository contains a runnable Next.js demonstration UI and a local FastAPI
-  foundation. The FastAPI vault adapter is explicitly non-persistent (`in_memory_demo`)
-  and optional JWT verification is configuration-gated. A Supabase project, external
-  model provider, OCR provider, and durable tenant storage must not be presented as
-  connected unless verified in the running deployment.
-- This document does **not** name a live AI provider or model because the provider,
-  model version, data-retention terms, and deployment wiring have not been established
-  by the Phase 1 contract.
-- The existing README identifies the seeded UI workspace as Northstar Labs. New
-  contract and documentation examples use fictional VoltEdge data so examples are not
-  mistaken for customer information.
-- If a route is only a scaffold, it must be labeled **STUB** and return a truthful
-  not-implemented or dependency-unavailable state. A screen or type definition alone
-  is not evidence of an AI integration.
-- The local vault route is labelled **IMPLEMENTED (local)** only for its in-memory
-  create/list/version/approval behavior. It is not a persistence guarantee and should
-  not be used with confidential production records.
+| Area | Status | Verified behavior |
+|---|---|---|
+| Next.js UI | **IMPLEMENTED (local demo)** | Seeded fictional VoltEdge screens use local React state for findings, corrections, re-scan, comments, role preview, approval transitions, and a synthetic audit log. No model call occurs in this UI path. |
+| FastAPI health and vault API | **IMPLEMENTED (local)** | `/health` reports `persistence: "in_memory_demo"` and `ai_provider: "not_configured"`; vault records can be created, listed, read, versioned, and approved in an organisation-scoped in-memory store. |
+| Content/review workflow API | **IMPLEMENTED (local contract workflow)** | Text/metadata content versions, caller-supplied structured findings, re-check diffing, finding actions, comments, review decisions, exports, and hash-linked events can be retained in a separate in-memory store. It does not extract claims or call a model. |
+| Local content-audit API | **IMPLEMENTED (local, dependency-gated)** | `/contents` accepts bounded text/base64 files, runs local ingestion and deterministic checks, validates findings/claim links, and stores audit results in memory. Missing providers or incomplete extraction become `review_required`/`failed` states. |
+| Authentication boundary | **IMPLEMENTED (local boundary)** | Opt-in development headers and HS256 JWT verification are available when configured; there is no live Supabase Auth membership lookup. |
+| Browser API client | **IMPLEMENTED (unused boundary)** | `app/lib/proofline-api.ts` defines typed vault calls, but the seeded UI does not invoke it. |
+| Local ingestion, deterministic audit, and validation | **IMPLEMENTED (local, dependency-gated)** | Bounded text/PDF/DOCX/image ingestion, lexical claim extraction, deterministic evidence-or-abstain rules, schema/span/evidence validation, risk metadata, and explicit failed/review-required states exist in `backend/app/`. Optional parser/OCR packages are discovered lazily. |
+| External AI/OCR provider | **STUB / MISSING externally** | The Gemini adapter is fail-soft and disabled unless `GEMINI_API_KEY` and `GEMINI_MODEL` are configured; no external model call was observed. Hosted OCR is not configured. |
+| Durable storage | **STUB / PLANNED** | Supabase migration/RLS/seed artifacts exist; no live Supabase project or durable adapter is connected. |
 
-## What AI may do when enabled
+A screen, type definition, SQL migration, package dependency, or Dockerfile is not by
+itself evidence that an external service is active. If a route is only a scaffold, its
+status must remain **STUB**, **PLANNED**, or **MISSING** and its response must not imply
+successful unavailable work.
+
+The local vault adapter is useful for contract and RBAC tests only. It is non-persistent,
+clears on process restart, and must not be used with confidential production records.
+
+## Current local verification behavior
+
+The local backend contains a dependency-tolerant pipeline: bounded ingestion, lexical
+claim extraction, deterministic checks, optional model candidates, schema/span/evidence
+validation, and `review_required`/`failed` handling. It keeps `persistence:
+"in_memory_demo"`; the API routes do not claim durable storage. The local deterministic
+reliability engine reports `external_calls: 0`, and the optional model service abstains
+when no configured provider is available. This is implementation behavior, not a model
+accuracy or production-performance result.
+
+## Phase 4 local improvement disclosure
+
+| Improvement | Status | Actual local behavior | Not implied |
+|---|---|---|---|
+| Fact-Change Impact Radar | **IMPLEMENTED (local)** | The in-memory impact adapter versions fictional VoltEdge facts, links registered claims by exact fact ID/version, marks eligible content `re_review_required`, creates re-review tasks, records impact events, and returns deterministic re-check receipts. | No durable persistence, scheduled worker, external website/social scan, automatic edit, or approval. |
+| Governance Insights and Guideline-Gap Detector | **IMPLEMENTED (local analytics)** | `backend/app/insights.py` aggregates supplied review activity by category, rule, team, agency, trend, expiry, and ambiguity signal. Suggested wording is labelled `AI-generated`; approval returns a separate owner decision and keeps `applied: false`. | No individual ranking, automatic rule activation, durable analytics store, or claim that synthetic numbers are user research or production metrics. |
+| Evidence-or-Abstain reliability | **IMPLEMENTED (local deterministic measurement)** | The local library validates source scope/version, exact spans, units/currencies, validity, candidate schemas, timeouts, bounded retries, cache behavior, and prompt-injection text. Doubtful cases become `needs_human`; 194 synthetic VoltEdge cases are measured in `docs/EVAL_REPORT.md`. | No external model accuracy claim, exchange-rate inference, universal numeric-language coverage, or production reliability guarantee. |
+
+The standalone `/impact` and `/insights` pages render explicitly synthetic VoltEdge
+fixtures through reusable client components. Their actions are local demo callbacks and
+do not prove that the browser is connected to the FastAPI service or a durable database.
+
+## Planned or optional external behavior
+
+The following provider/deployment choices remain **PLANNED**, **STUB**, or unverified:
 
 The planned audit pipeline separates deterministic checks from model-assisted checks:
 
@@ -69,26 +93,28 @@ The planned audit pipeline separates deterministic checks from model-assisted ch
 
 ## External services and data handling
 
-Before any external AI/OCR provider is connected, the implementation owner must fill
-the provider record below with verified facts. Until then, the values remain
-**Unknown / not configured**.
+No external AI/OCR/database/hosting service is verified as connected in the current
+repository. The following table is deliberately explicit about what remains unknown:
 
-| Field | Current Phase 1 disclosure |
-|---|---|
-| AI provider and model | Unknown / not configured; do not infer from a package name or UI label. |
-| OCR/PDF extraction provider | Unknown / not configured. A local parser and a hosted service have different disclosure requirements. |
-| Data sent | At most the minimum relevant content excerpt and approved evidence needed for the configured check; exact payload must be documented after integration. |
-| Sensitive data policy | Do not use real customer or confidential brand data in demo fixtures. Uploaded material is private by default. |
-| Retention and deletion | Unknown until provider and storage policy are selected; document both application and provider retention. |
-| Processing region | Unknown until deployment/provider terms are verified. |
-| Training/use by provider | Unknown until the provider's current terms and account settings are verified; do not promise that submitted content is never used for training. |
-| Secrets | Provider keys belong in server-side secrets management, never in browser code, source control, or logs. |
-| Failure handling | Timeouts, quota errors, malformed output, and unavailable providers must produce explicit failed/review-required states. |
+| Service or decision | Current status | Disclosure boundary |
+|---|---|---|
+| AI provider/model/version | **STUB / not configured** | A Gemini adapter exists behind environment-only configuration, but no provider/model call was observed. The UI/API health path reports `ai_provider: "not_configured"`. |
+| PDF/DOCX/local OCR extraction | **IMPLEMENTED (local, optional dependencies)** | The ingestion module validates bytes/limits, extracts text where an installed parser is available, and reports `complete`, `partial`, `failed`, or `unsupported`. Hosted OCR is not configured. |
+| Hosted OCR extraction provider | **MISSING / not configured** | No external OCR service is connected; the UI document path remains explicitly unavailable. |
+| Supabase database/storage | **STUB / PLANNED** | SQL migration, RLS design, and VoltEdge seed are present; no live project, Storage bucket, or durable adapter is connected. |
+| Supabase Auth/membership lookup | **PLANNED** | Local JWT verification is configuration-gated; it does not prove a live Auth integration. |
+| Hosting/deployment | **MISSING / unverified** | A local Dockerfile exists, but no hosted deployment or runtime environment has been smoke-tested. |
+| Data sent to external providers | **None observed in this workspace** | Local deterministic/ingestion paths do not require a network provider. The optional Gemini seam masks email/phone data and blocks confidential content, but no live request was verified. |
+| Retention/deletion | **Unknown for future providers** | Application-process memory currently ends with the local API process; provider and durable-storage retention are not selected. |
+| Processing region | **Unknown** | Do not promise a region until the actual provider and deployment are verified. |
+| Provider training/use settings | **Unknown** | Do not promise that content is excluded from provider training until current terms and account settings are checked. |
+| Secrets | **Local boundary implemented** | Keep values in ignored local environment files or server-side secret storage; never place keys in browser code, source control, fixtures, or logs. |
+| Failure handling | **Contract rule / future implementation** | Timeouts, quota errors, malformed output, and unavailable dependencies must become failed or `review_required` states. |
 
 ### Required provider record before a live demo
 
 Replace each `TBD` only with facts verified from the actual deployment and provider
-configuration:
+configuration. Until that happens, this record remains incomplete:
 
 ```text
 Provider: TBD
@@ -128,27 +154,33 @@ If no approved battery record exists, the system must show **unsupported/unverif
 
 The final project submission should separately record significant AI assistance used to
 plan, write, refactor, test, or design the product, according to the event rules. The
-entry below records this Phase 1 continuation from the runtime context available to the
-coding assistant; the team should add any other contributors or tools from their actual
-activity rather than guessing.
+entry below records the coding-assistant activity visible in this workspace. Add other
+people or tools only from the team's actual records; do not infer contributions.
 
 ```text
 Development tool/provider: Coding assistant in this app
 Model/version: gpt-6.1-sol
-Dates and contributors: 2026-10-25; project owner and coding assistant
-Work assisted (planning/code/docs/design/tests): Phase 1 audit, contracts, FastAPI foundation, tests, SQL seed review, and handoff docs
-Human review performed: Repository rules, PRD, diffs, test output, and local API/SQL smoke results reviewed in this session
-Generated material retained or discarded: Retained only as reviewed repository changes; no private prompts, credentials, or customer data added
+Dates and contributors: 2026-10-25; coding-assistant documentation task T5
+Work assisted (planning/code/docs/design/tests): Repository documentation and disclosure update; the project record also contains earlier Phase 1 audit, contract, FastAPI foundation, test, SQL seed review, and handoff work
+Human review performed: Not recorded for this documentation update; project-owner review pending
+Agent checks performed: Repository rules, PRD, implementation files, documentation diffs, local checks, and command output inspected
+Generated material retained or discarded: Retained as workspace documentation changes pending owner review; no credentials or customer data added
 ```
 
 ## Libraries and templates used in this foundation
 
 - Existing Next.js 16, React 19, TypeScript, ESLint, and the repository's pre-existing
   UI assets.
+- Playwright test tooling for local/CI browser smoke tests; it is not a runtime model or
+  content-processing provider.
 - FastAPI, Starlette, Pydantic, PyJWT, Uvicorn, HTTPX, and pytest from
   `backend/requirements.txt`.
 - Supabase/PostgreSQL SQL syntax and RLS patterns are represented in the migration;
   no live Supabase project or generated client code is claimed.
+
+The `GEMINI_API_KEY` and `GEMINI_MODEL` names in `.env.example` are **PLANNED**
+configuration placeholders. They do not prove that a Gemini model is selected,
+configured, or called by the local runtime.
 
 This repository document is a transparency aid. It is not a substitute for checking
 the actual provider terms, configured data controls, deployment environment, or event

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { ModalAccessibility } from "./components/modal-accessibility";
 import "./globals.css";
+import "./trust.css";
 
 export const metadata: Metadata = {
   title: "Proofline — Brand truth, before publish",
@@ -13,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>{children}<ModalAccessibility /></body>
     </html>
   );
 }

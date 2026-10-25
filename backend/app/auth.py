@@ -16,8 +16,12 @@ def _principal_from_claims(claims: dict[str, object]) -> Principal:
     user_id = claims.get("sub")
     organisation_id = claims.get("organisation_id") or claims.get("org_id")
     role = claims.get("proofline_role") or claims.get("role_name")
+    agency_id = claims.get("agency_id") or claims.get("proofline_agency_id")
     if not all(isinstance(value, str) and value for value in (user_id, organisation_id, role)):
         raise _unauthorized("JWT is missing Proofline subject, organisation, or role claims")
+    assert isinstance(user_id, str)
+    assert isinstance(organisation_id, str)
+    assert isinstance(role, str)
     try:
         parsed_role = Role(role)
     except ValueError as exc:
@@ -27,6 +31,7 @@ def _principal_from_claims(claims: dict[str, object]) -> Principal:
         organisation_id=organisation_id,
         role=parsed_role,
         auth_source="supabase_jwt",
+        agency_id=agency_id if isinstance(agency_id, str) and agency_id else None,
     )
 
 
@@ -35,6 +40,7 @@ async def get_current_principal(
     x_proofline_user: str | None = Header(default=None),
     x_proofline_organisation: str | None = Header(default=None),
     x_proofline_role: str | None = Header(default=None),
+    x_proofline_agency: str | None = Header(default=None),
     settings: Settings = Depends(get_settings),
 ) -> Principal:
     """Resolve a caller from a verified JWT or an explicitly enabled dev header.
@@ -69,6 +75,9 @@ async def get_current_principal(
     if settings.dev_auth_enabled:
         if not all((x_proofline_user, x_proofline_organisation, x_proofline_role)):
             raise _unauthorized("development auth requires user, organisation, and role headers")
+        assert x_proofline_user is not None
+        assert x_proofline_organisation is not None
+        assert x_proofline_role is not None
         try:
             role = Role(x_proofline_role)
         except ValueError as exc:
@@ -78,6 +87,7 @@ async def get_current_principal(
             organisation_id=x_proofline_organisation,
             role=role,
             auth_source="development_header",
+            agency_id=x_proofline_agency,
         )
 
     raise _unauthorized("authentication is not configured")

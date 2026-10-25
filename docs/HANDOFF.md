@@ -32,3 +32,28 @@
 - **Next phase:** connect a real Supabase project only after credentials/policies are
   available; implement persistence and content audit behind the documented contract,
   then wire the Next.js UI through the typed client without removing human approval.
+
+## 2026-10-26 00:16 IST — Phase 4 continuation after interrupted swarm
+
+- **Completed locally:** preserved the interrupted swarm work; added and tested the
+  in-memory Fact-Change Impact Radar, deterministic Governance Insights/Guideline-Gap
+  Detector, 194-case Evidence-or-Abstain dataset/evaluator, CI/container configuration,
+  and the Phase 4 documentation set. Added standalone synthetic `/impact` and `/insights`
+  pages that expose the reusable local UI components and explicit human-review actions.
+- **Verified:** `python3 -m pytest -q` reported 137 passed with 3 warnings;
+  `python3 scripts/generate_golden.py --check` matched 194 cases;
+  `python3 scripts/eval.py --report docs/EVAL_REPORT.md` regenerated the measured report;
+  and the review-activity simulation emitted 10 events, 5 proposals, and no individual
+  rankings.
+- **Not verified / broken:** ESLint could not load the installed
+  `node-exports-info` dependency because Node `v25.9.0` raised `ETIMEDOUT`; Next.js build
+  reported another build process already running; `npm test` timed out before completing;
+  Playwright results are therefore not claimed. The final standalone page wiring was added
+  after the last successful typecheck, so it needs a fresh frontend check.
+- **Deployment:** no hosted URL was created. Supabase, external AI/OCR, durable storage,
+  and hosting credentials were unavailable; do not claim CI green or a deployed link.
+- **Next chat must know:** first resolve the local Node/dependency/build-process issue,
+  then run `npm run lint`, `npm run typecheck`, `npm run build`, `npm test`, and the E2E
+  checks. Review the final diff before any deployment. If deploying, obtain project-
+  dedicated hosting credentials and environment values through the owner; never commit or
+  paste secrets.

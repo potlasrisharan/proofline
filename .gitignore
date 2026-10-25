@@ -8,3 +8,8 @@ out/
 *.tsbuildinfo
 __pycache__/
 .agent-lock
+playwright-report/
+test-results/
+.pytest_cache/
+.venv/
+.vercel/

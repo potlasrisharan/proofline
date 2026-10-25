@@ -1,0 +1,71 @@
+.radar {
+  color: var(--ink, #142c2a);
+  background: var(--panel, #fff);
+  border: 1px solid var(--line, #dfe9e4);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.header, .summary, .itemHeading, .itemFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+.header { padding: 24px; }
+.header h2 { margin: 0; font-size: 21px; letter-spacing: -.035em; }
+.header p, .summary p { margin: 7px 0 0; color: #52675f; font-size: 13px; line-height: 1.5; }
+.header p { max-width: 65ch; }
+.localLabel { padding: 6px 9px; border: 1px solid #c9d8d1; border-radius: 5px; font-size: 11px; color: #52675f; }
+.boundary { padding: 12px 24px; border-top: 1px solid #dfe9e4; border-bottom: 1px solid #dfe9e4; color: #52675f; background: #f5f8f5; font-size: 12px; line-height: 1.5; }
+.summary { padding: 22px 24px; background: #fff9ed; border-bottom: 1px solid #e7dac4; }
+.summary strong { font-size: 16px; }
+.summary p { font-size: 12px; }
+.radar button, .banner button { min-height: 40px; padding: 8px 12px; border: 1px solid #c9d8d1; border-radius: 6px; color: #193a38; background: white; font-size: 12px; font-weight: 650; }
+.radar button:focus-visible, .banner button:focus-visible, .trace summary:focus-visible { outline: 3px solid #5579d7; outline-offset: 3px; }
+.radar .recheckButton { border-color: #193a38; background: #193a38; color: #f3fff9; }
+.radar button:disabled { cursor: not-allowed; opacity: .55; }
+.list { margin: 0; padding: 0; list-style: none; }
+.item { padding: 24px; border-bottom: 1px solid #dfe9e4; }
+.item h3 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
+.reviewLabel { border-left: 3px solid #bd8338; padding: 3px 8px; color: #76501d; background: #fff5df; font-size: 11px; font-weight: 650; }
+.meta { margin: 7px 0 16px; color: #52675f; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.item blockquote { max-width: 75ch; margin: 0 0 18px; padding: 2px 0 2px 12px; border-left: 2px solid #bd8338; font-family: Georgia, serif; font-size: 16px; line-height: 1.5; }
+.change { display: grid; grid-template-columns: 1fr 1fr; margin: 0; border: 1px solid #dfe9e4; border-radius: 6px; overflow: hidden; }
+.change > div { padding: 14px 16px; background: #f5f8f5; }
+.change > div + div { border-left: 1px solid #dfe9e4; background: #f0faf6; }
+.change dt { margin: 0 0 7px; color: #52675f; font-size: 11px; }
+.change dd { margin: 0; font-size: 15px; font-weight: 650; overflow-wrap: anywhere; }
+.source { display: block; margin-top: 8px; color: #52675f; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.itemFooter { margin-top: 14px; }
+.itemFooter > span { color: #52675f; font-size: 12px; }
+.trace { margin-top: 16px; color: #52675f; font-size: 11px; }
+.trace summary { width: fit-content; cursor: pointer; padding: 3px 0; }
+.trace dl { margin-bottom: 0; }
+.trace dl > div { display: grid; grid-template-columns: 100px 1fr; gap: 8px; margin-top: 8px; }
+.trace dd { margin: 0; overflow-wrap: anywhere; }
+.empty { margin: 0; padding: 32px 24px; font-size: 14px; line-height: 1.5; color: #52675f; }
+.empty strong { color: #193a38; }
+.empty p { margin: 7px 0 0; max-width: 65ch; }
+.help { margin: 0; padding: 14px 24px; color: #52675f; font-size: 12px; line-height: 1.5; }
+.error { margin: 16px 24px; padding: 14px; border: 1px solid #dca59a; border-radius: 6px; color: #7d3126; background: #fff4f0; font-size: 13px; line-height: 1.5; }
+.error p { margin: 6px 0 12px; }
+.result { margin: 16px 24px 0; padding: 14px; border-left: 3px solid #3e9a82; color: #285b4e; background: #f0faf6; font-size: 13px; line-height: 1.5; }
+.banner { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid #e7dac4; border-radius: 9px; color: #193a38; background: #fff9ed; }
+.bannerSymbol { display: grid; place-items: center; width: 28px; height: 28px; flex-shrink: 0; border: 1px solid #bd8338; border-radius: 50%; color: #76501d; font-weight: 700; }
+.banner strong { font-size: 14px; }
+.banner p { max-width: 70ch; margin: 5px 0; font-size: 12px; line-height: 1.5; color: #52675f; }
+.banner small { color: #52675f; font-size: 11px; }
+.banner button { margin-left: auto; flex-shrink: 0; }
+
+@media (max-width: 600px) {
+  .header, .summary, .item { padding: 18px; }
+  .change { grid-template-columns: 1fr; }
+  .change > div + div { border-left: 0; border-top: 1px solid #dfe9e4; }
+  .summary .recheckButton { width: 100%; }
+  .banner { flex-wrap: wrap; align-items: flex-start; }
+  .banner > div { flex: 1; min-width: 180px; }
+  .banner button { margin-left: 42px; }
+}
