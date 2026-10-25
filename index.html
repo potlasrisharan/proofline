@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Proofline is an evidence-backed brand governance review workspace."
+    />
+    <title>Proofline — Northstar Labs</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Workspace navigation">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">P</div>
+          <div>
+            <p class="brand-name">Proofline</p>
+            <p class="brand-subtitle">Brand governance</p>
+          </div>
+        </div>
+
+        <div class="workspace-switcher">
+          <div class="workspace-avatar">N</div>
+          <div class="workspace-copy">
+            <span class="eyebrow">Workspace</span>
+            <strong>Northstar Labs</strong>
+          </div>
+          <button class="icon-button" type="button" aria-label="Switch workspace" title="Switch workspace">⌄</button>
+        </div>
+
+        <nav class="nav-list" aria-label="Primary">
+          <button class="nav-item is-active" data-view="overview" type="button">
+            <span class="nav-icon">◈</span>
+            <span>Overview</span>
+            <span class="nav-count">4</span>
+          </button>
+          <button class="nav-item" data-view="reviews" type="button">
+            <span class="nav-icon">◌</span>
+            <span>Review queue</span>
+            <span class="nav-count">3</span>
+          </button>
+          <button class="nav-item" data-view="registry" type="button">
+            <span class="nav-icon">▤</span>
+            <span>Truth registry</span>
+          </button>
+          <button class="nav-item" data-view="insights" type="button">
+            <span class="nav-icon">⌁</span>
+            <span>Insights</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-note">
+          <span class="status-dot is-good"></span>
+          <div>
+            <strong>Registry is current</strong>
+            <p>Last synced 8 min ago</p>
+          </div>
+        </div>
+
+        <button class="user-card" type="button" aria-label="Open account menu">
+          <span class="avatar avatar-maya">MC</span>
+          <span class="user-copy">
+            <strong>Maya Chen</strong>
+            <span>Content lead</span>
+          </span>
+          <span class="user-menu">•••</span>
+        </button>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="breadcrumb">
+            <span>Northstar Labs</span>
+            <span class="breadcrumb-divider">/</span>
+            <strong id="page-breadcrumb">Overview</strong>
+          </div>
+          <div class="topbar-actions">
+            <span class="last-saved"><span class="status-dot is-good"></span>All changes saved</span>
+            <button class="ghost-button" type="button" id="help-button">?</button>
+            <button class="avatar avatar-maya avatar-button" type="button" aria-label="Open Maya Chen profile">MC</button>
+          </div>
+        </header>
+
+        <div class="content-wrap">
+          <section class="view-panel is-visible" data-panel="overview" aria-labelledby="overview-heading">
+            <div class="page-intro">
+              <div>
+                <p class="kicker">Monday, October 26, 2026</p>
+                <h1 id="overview-heading">Good morning, Maya.</h1>
+                <p class="intro-copy">Your workspace has <strong>3 items</strong> waiting for a human decision.</p>
+              </div>
+              <button class="primary-button" id="new-review-button" type="button"><span>＋</span> Start a review</button>
+            </div>
+
+            <div class="metric-grid" aria-label="Workspace summary">
+              <article class="metric-card metric-card-primary">
+                <div class="metric-card-top"><span class="metric-label">Needs attention</span><span class="metric-symbol">!</span></div>
+                <strong class="metric-value">03</strong>
+                <p>2 high priority findings</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-card-top"><span class="metric-label">In review</span><span class="metric-symbol">◌</span></div>
+                <strong class="metric-value">04</strong>
+                <p>Across 3 campaigns</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-card-top"><span class="metric-label">Approved this week</span><span class="metric-symbol is-mint">✓</span></div>
+                <strong class="metric-value">12</strong>
+                <p>+20% from last week</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-card-top"><span class="metric-label">Registry coverage</span><span class="metric-symbol is-blue">↗</span></div>
+                <strong class="metric-value">92<span class="metric-unit">%</span></strong>
+                <p>of active claims linked</p>
+              </article>
+            </div>
+
+            <div class="overview-grid">
+              <section class="surface queue-surface" aria-labelledby="queue-heading">
+                <div class="surface-heading">
+                  <div>
+                    <p class="section-kicker">Your work</p>
+                    <h2 id="queue-heading">Review queue</h2>
+                  </div>
+                  <button class="text-button" data-view-link="reviews" type="button">View all <span>→</span></button>
+                </div>
+                <div class="queue-list" id="overview-queue"></div>
+              </section>
+
+              <section class="surface activity-surface" aria-labelledby="activity-heading">
+                <div class="surface-heading">
+                  <div>
+                    <p class="section-kicker">Workspace pulse</p>
+                    <h2 id="activity-heading">Recent activity</h2>
+                  </div>
+                  <span class="quiet-label">Last 7 days</span>
+                </div>
+                <div class="activity-list" id="overview-activity"></div>
+                <div class="insight-callout">
+                  <span class="callout-icon">✦</span>
+                  <div>
+                    <strong>One pattern worth a look</strong>
+                    <p>“Up to” claims were flagged 6 times this month. Consider adding a clearer product-spec rule.</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="view-panel" data-panel="reviews" aria-labelledby="reviews-heading">
+            <div class="page-intro compact-intro">
+              <div>
+                <p class="kicker">Content review</p>
+                <h1 id="reviews-heading">Make the decision easy to defend.</h1>
+                <p class="intro-copy">Every finding below is connected to a current source, rule, or explicit evidence gap.</p>
+              </div>
+              <div class="review-summary-chip"><span class="status-dot is-coral"></span><strong id="review-summary-count">2 findings need review</strong></div>
+            </div>
+
+            <div class="review-layout">
+              <section class="surface review-list-surface" aria-labelledby="review-list-heading">
+                <div class="surface-heading">
+                  <div>
+                    <p class="section-kicker">Assigned to you</p>
+                    <h2 id="review-list-heading">Open reviews</h2>
+                  </div>
+                  <button class="filter-button" type="button">All statuses <span>⌄</span></button>
+                </div>
+                <div class="queue-list queue-list-tall" id="review-queue"></div>
+              </section>
+
+              <section class="review-detail" aria-labelledby="detail-heading">
+                <div class="detail-header">
+                  <div class="detail-title-wrap">
+                    <div class="file-icon">✣</div>
+                    <div>
+                      <div class="title-row"><h2 id="detail-heading">Model X launch email</h2><span class="status-pill status-needs-changes" id="detail-status">Needs changes</span></div>
+                      <p class="detail-meta">Email campaign · v2 · Submitted by Aisha Rahman · 18 min ago</p>
+                    </div>
+                  </div>
+                  <button class="icon-button detail-more" type="button" aria-label="More review actions">•••</button>
+                </div>
+
+                <div class="review-progress" aria-label="Review progress">
+                  <div class="progress-step is-done"><span>1</span><strong>Submitted</strong></div>
+                  <div class="progress-line is-done"></div>
+                  <div class="progress-step is-active"><span>2</span><strong>Resolve findings</strong></div>
+                  <div class="progress-line" id="progress-line-two"></div>
+                  <div class="progress-step" id="progress-approval"><span>3</span><strong>Approval</strong></div>
+                </div>
+
+                <div class="detail-tabs" role="tablist" aria-label="Review detail tabs">
+                  <button class="detail-tab is-active" data-detail-tab="findings" role="tab" type="button">Findings <span class="tab-count" id="findings-tab-count">2</span></button>
+                  <button class="detail-tab" data-detail-tab="content" role="tab" type="button">Submitted content</button>
+                  <button class="detail-tab" data-detail-tab="history" role="tab" type="button">History</button>
+                </div>
+
+                <div class="detail-tab-panel is-visible" data-detail-panel="findings">
+                  <div class="finding-banner" id="finding-banner">
+                    <div class="banner-symbol">!</div>
+                    <div><strong>2 issues need attention before approval</strong><p>Apply the suggested correction, then run a fresh scan to confirm the revision.</p></div>
+                    <span class="banner-risk">1 high · 1 medium</span>
+                  </div>
+                  <div class="finding-list" id="finding-list"></div>
+                  <div class="scan-panel" id="scan-panel">
+                    <div class="scan-copy"><span class="scan-icon">↻</span><div><strong>Ready to re-scan</strong><p>Run Proofline against the edited version and the same source set.</p></div></div>
+                    <button class="secondary-button" id="rescan-button" type="button">Re-scan revision</button>
+                  </div>
+                </div>
+
+                <div class="detail-tab-panel" data-detail-panel="content">
+                  <div class="content-preview-card">
+                    <div class="content-preview-header"><span class="content-type">EMAIL · PRODUCT LAUNCH</span><span class="content-version" id="content-version-label">Version 2</span></div>
+                    <h3>Meet the new Northstar Model X.</h3>
+                    <p id="content-copy">Designed for deep work and long days, Model X gives you up to <mark class="flagged-mark" id="battery-claim">20 hours</mark> of battery life, with a brighter display and a quiet, all-day performance.</p>
+                    <p>Pre-order today and be among the first to experience our most reliable laptop yet.</p>
+                    <div class="content-footer"><span>Northstar Labs · Consumer hardware</span><span>Source text retained</span></div>
+                  </div>
+                  <p class="tab-helper">The original submission stays available while you work. Suggested edits create a new version rather than replacing the source.</p>
+                </div>
+
+                <div class="detail-tab-panel" data-detail-panel="history">
+                  <div class="history-list" id="history-list"></div>
+                </div>
+
+                <div class="review-actions" id="review-actions">
+                  <button class="ghost-button wide-button" id="request-changes-button" type="button">Request changes</button>
+                  <button class="primary-button wide-button" id="approve-button" type="button" disabled>Approve revision</button>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="view-panel" data-panel="registry" aria-labelledby="registry-heading">
+            <div class="page-intro compact-intro">
+              <div>
+                <p class="kicker">Brand truth registry</p>
+                <h1 id="registry-heading">The sources behind every decision.</h1>
+                <p class="intro-copy">Current approved facts and rules are versioned, scoped, and visible to reviewers.</p>
+              </div>
+              <button class="primary-button" type="button" id="add-source-button"><span>＋</span> Add source</button>
+            </div>
+            <div class="registry-grid" id="registry-grid"></div>
+            <div class="registry-footer"><span class="status-dot is-good"></span><strong>All 18 active records have an owner and source.</strong><span>Last reviewed October 24, 2026</span></div>
+          </section>
+
+          <section class="view-panel" data-panel="insights" aria-labelledby="insights-heading">
+            <div class="page-intro compact-intro">
+              <div>
+                <p class="kicker">Governance insights</p>
+                <h1 id="insights-heading">See where your guidelines need help.</h1>
+                <p class="intro-copy">Patterns come from saved findings and reviewer decisions, not model confidence scores.</p>
+              </div>
+              <span class="review-summary-chip"><span class="status-dot is-blue"></span>Last 30 days</span>
+            </div>
+            <div class="insights-grid">
+              <section class="surface insight-chart-card"><div class="surface-heading"><div><p class="section-kicker">Issue mix</p><h2>What keeps surfacing</h2></div></div><div class="bar-chart" id="issue-bars"></div></section>
+              <section class="surface insight-list-card"><div class="surface-heading"><div><p class="section-kicker">Guideline health</p><h2>Clarity opportunities</h2></div></div><div class="clarity-list" id="clarity-list"></div></section>
+            </div>
+            <div class="privacy-note"><span>◌</span><p><strong>Human review stays in the loop.</strong> Insights suggest where a rule may need clarification; only an authorised brand owner can update the registry.</p></div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <dialog class="modal" id="start-review-modal" aria-labelledby="modal-title">
+      <form method="dialog" class="modal-card">
+        <button class="modal-close" value="cancel" aria-label="Close dialog">×</button>
+        <p class="kicker">New review</p>
+        <h2 id="modal-title">Bring a draft into Proofline.</h2>
+        <p class="modal-copy">This MVP demo is seeded with a realistic email review. Choose an intake path to see how a new submission would enter the queue.</p>
+        <div class="intake-options">
+          <button class="intake-option" value="cancel" type="submit"><span class="intake-icon">T</span><span><strong>Paste text</strong><small>Best for a quick claim check</small></span><span>→</span></button>
+          <button class="intake-option" value="cancel" type="submit"><span class="intake-icon">▧</span><span><strong>Upload a document</strong><small>PDF, DOCX, JPG or PNG</small></span><span>→</span></button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
