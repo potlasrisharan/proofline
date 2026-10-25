@@ -366,6 +366,8 @@ def act_on_audit_finding(
 ):
     if payload.action not in {FindingAction.ACCEPT, FindingAction.EDIT, FindingAction.DISMISS}:
         raise _input_error("Phase 2 finding actions are accept, edit, or dismiss", "action")
+    if payload.action is FindingAction.DISMISS and not (payload.reason or "").strip():
+        raise _input_error("a written reason is required to dismiss a finding", "reason")
     store = _content_store(request)
     try:
         finding = store.act_on_finding(principal, finding_id, payload)

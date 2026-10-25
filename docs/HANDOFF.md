@@ -66,14 +66,36 @@
   accessible naming, corrected the audit-log filter label, and repaired the first-revision
   diff empty state. Backend finding diffs now include span offsets, and same-version
   resubmission is rejected rather than bypassing immutable revision/recheck expectations.
-- **Verified:** `python3 -m pytest -q backend/tests` — 130 passed; browser smoke — 2 passed;
+- **Verified at that checkpoint:** `python3 -m pytest -q backend/tests` — 130 passed; browser smoke — 2 passed;
   collaboration — 5 passed; API workflow — 4 passed; `npm run typecheck` and `npm run build`
   passed. `python3 -m app.eval` ran and reported 27 honest legacy evaluator failures.
-- **Broken/not verified:** `npm run lint` and the `npm test` wrapper stop before project
+- **Broken/not verified at that checkpoint:** `npm run lint` and the `npm test` wrapper stop before project
   checks because ESLint 9.39.5 cannot load the installed `resolve/lib/async.js` path under
   Node v25.9.0, reporting `ETIMEDOUT`. No lint pass is claimed. The browser flow remains
   local seeded state and the API remains in-memory.
-- **Next chat must know:** if green `npm test` is required, repair or replace the local
-  Node/ESLint toolchain using the project's supported Node version and then rerun all checks.
-  Do not treat the 52-case evaluator output as a passing reliability result; it contains
-  visible Phase 2 failures that need separate investigation.
+- **Superseded by the 01:53 IST entry below:** the toolchain and 52-case evaluator issues
+  were rechecked and resolved locally without claiming any external service is live.
+
+## 2026-10-26 01:53 IST — Phase 2 verification continuation completed
+
+- **Completed:** resumed the existing Phase 2 implementation without replacing the later
+  Phase 3/4 commits. Fixed the audit-to-verification option adapter, derived approved term
+  and disclaimer policies, expanded conservative fact matching for attributes/offers/claims,
+  added multi-currency parsing, preserved deterministic rule evidence, tightened alt-text
+  applicability, and made missing dismissal reasons return an explicit validation error.
+- **Acceptance path:** applicable VoltEdge battery mismatches now produce a critical,
+  contradicted factual finding with source/version evidence, a Claim–Fact Ledger link, and
+  an approved-value suggestion. Expired offers produce outdated offer findings. Unknown or
+  conflicting evidence remains unsupported or needs human review.
+- **Checks:** `python3 -m pytest -q` — **140 passed**, 3 deprecation warnings; `cd backend &&
+  python3 -m app.eval` — **52 cases, 0 honest failures**; `python3 scripts/generate_golden.py
+  --check` — **194 cases matched**; `npm test` — **passed** with 7 browser tests and 133
+  backend tests; API Playwright — **4 passed**. `docs/EVAL_REPORT.md` contains the measured
+  tables and offline caveats.
+- **Known gaps:** all runtime behavior remains local/in-memory. No live Gemini request,
+  Supabase/Auth/Storage/pgvector connection, hosted OCR/vision service, or deployment was
+  exercised. The separate 194-case reliability report remains a synthetic deterministic
+  measurement, not model accuracy.
+- **Next chat must know:** preserve the explicit `in_memory_demo` and offline-provider
+  labels. If deployment or live provider work is requested, obtain project-dedicated access
+  and update `docs/AI_DISCLOSURE.md` only from verified runtime/provider facts.

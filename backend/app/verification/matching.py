@@ -22,7 +22,7 @@ from .types import Claim, ClaimFactLink, Evidence
 # Customer-specific aliases come exclusively from the supplied approved records.
 KEY_SYNONYMS: dict[str, tuple[str, ...]] = {
     "battery life": ("battery runtime", "battery duration", "battery backup", "battery"),
-    "price": ("cost", "selling price", "retail price", "mrp"),
+    "price": ("cost", "selling price", "retail price", "mrp", "available for"),
     "discount": ("discount percentage", "percent off", "percentage off", "off", "save"),
     "warranty": ("warranty period", "warranty duration"),
     "storage": ("storage capacity", "disk capacity"),
@@ -86,7 +86,17 @@ class RecordView:
 
     @property
     def logical_key(self) -> str:
-        for key in ("key", "fact_key", "term", "name", "title"):
+        for key in (
+            "key",
+            "fact_key",
+            "attribute",
+            "term",
+            "name",
+            "title",
+            "offer",
+            "offer_name",
+            "claim",
+        ):
             if self.value.get(key):
                 return normalize_key(self.value[key])
         return ""
@@ -213,6 +223,9 @@ def _key_score(claim: Claim, record: RecordView) -> tuple[float, bool]:
     for candidate_key in keys:
         if explicit == candidate_key or phrase_matches(context, candidate_key):
             return 1.0, True
+        tokens = [token for token in candidate_key.split() if len(token) > 1]
+        if len(tokens) >= 2 and all(phrase_matches(context, token) for token in tokens):
+            return 0.96, True
     for canonical, synonyms in KEY_SYNONYMS.items():
         if key == canonical or key in synonyms:
             if any(phrase_matches(context, alias) for alias in (canonical, *synonyms)):
@@ -280,9 +293,24 @@ def record_validity(record: RecordView, *, today: date | None = None) -> str:
 def record_quantity(record: RecordView) -> NormalizedQuantity | None:
     value = record.value
     raw = value.get("value", value.get("amount", value.get("number", value.get("approved_value"))))
+    unit = value.get("unit", value.get("units"))
+    currency = value.get("currency")
+    if raw is None and value.get("discount_percent") is not None:
+        raw = value.get("discount_percent")
+        unit = "%"
     if raw is None:
         raw = value.get("approved_text", value.get("text"))
-    return normalize_quantity(raw, unit=value.get("unit", value.get("units")), qualifier=value.get("qualifier"))
+    if raw is None and value.get("price") is not None:
+        raw = value.get("price")
+        unit = value.get("currency", unit)
+    if raw is None:
+        return None
+    if unit is None and currency is not None:
+        unit = currency
+    qualifier = normalize_key(value.get("qualifier"))
+    if qualifier not in {"up to", "at least", "at most", "more than", "less than", "over", "under", "from", "starting at", "as low as"}:
+        qualifier = None
+    return normalize_quantity(raw, unit=unit, qualifier=qualifier)
 
 
 def comparable_quantities(left: NormalizedQuantity | None, right: NormalizedQuantity | None) -> bool:
@@ -320,6 +348,13 @@ def compare_claim_value(claim: Claim, record: RecordView, *, today: date | None 
         approved_range = parse_date_range(str(raw or ""), today=today)
         if isinstance(claim.normalized_value, DateRange) and approved_range:
             return (claim.normalized_value.start, claim.normalized_value.end) == (approved_range.start, approved_range.end)
+    if claim.kind in {"comparative", "guarantee", "promotional"}:
+        approved_claim = record.value.get("claim") or record.value.get("approved_text") or record.value.get("wording")
+        if isinstance(approved_claim, str) and phrase_matches(
+            normalize_key(str(claim.metadata.get("context", claim.text))),
+            normalize_key(approved_claim),
+        ):
+            return True
     # A generic claim word appearing in a fact is not substantiation. Comparative
     # rules require an explicit approved claim/substantiation field separately.
     return None
@@ -351,7 +386,19 @@ def match_claim_to_fact(
         record = normalise_record(raw_record)
         if record is None or record.status.casefold() not in {"approved", "expired", "superseded"}:
             continue
-        if record.resource not in {None, "facts", "fact", "brand_record", "product_fact", "offer", "promotion"}:
+        if record.resource not in {
+            None,
+            "facts",
+            "fact",
+            "brand_record",
+            "product_fact",
+            "offer",
+            "promotion",
+            "disclaimer",
+            "disclaimers",
+            "guideline",
+            "guidelines",
+        }:
             continue
         applicable, complete = scope_applicability(record, scope=scope, context=context)
         if not applicable:

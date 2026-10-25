@@ -56,7 +56,38 @@
 - Unit conversions use explicit local factors only. No exchange rates, semantic guesses, OCR, PDF/DOCX extraction, retrieval, model provider, network, or durable persistence are exercised by this report.
 - Word-number and fraction challenge cases are expected to route to `needs_human`; they measure graceful degradation rather than broad natural-language numeric coverage.
 - A high precision/recall result here does not establish model accuracy, real-world truth, legal compliance, accessibility certification, or production reliability.
-- The original 52-case API evaluator remains a separate contract/integration artifact. Its current baseline records failures when the local snapshot lacks `/contents` and seeds vault records as a creator; those failures are not silently folded into this local report.
+- The separate 52-case HTTP contract evaluator was rerun on **2026-10-26** after the
+  verification-engine integration fix. It reported **52 cases and 0 honest failures**.
+  This is still a local/in-memory check: it uses a fictional capturing provider for the
+  PII-masking probe, makes no real model request, and does not prove Gemini, Supabase, or
+  durable persistence is live.
+
+## Phase 2 HTTP contract evaluation
+
+The command `cd backend && python3 -m app.eval` exercises the documented `/contents`,
+`/contents/{id}/recheck`, `/findings/{id}/action`, and vault boundaries with isolated
+VoltEdge fixtures. Category metrics below are case-level projections; a case can pass its
+broader contract assertions even when it contributes a false-negative to a narrower
+category projection (for example, an unsupported factual claim represented as a
+`promotional`/unsupported finding).
+
+| Category | Precision | Recall | Expected + | Predicted + | Case failures |
+|---|---:|---:|---:|---:|---:|
+| accessibility | 1.000 | 1.000 | 2 | 2 | 0 |
+| factual | 1.000 | 0.769 | 13 | 10 | 0 |
+| legal | 1.000 | 1.000 | 1 | 1 | 0 |
+| offer_date | 1.000 | 1.000 | 2 | 2 | 0 |
+| promotional | 0.714 | 1.000 | 5 | 7 | 0 |
+| security | 1.000 | 1.000 | 1 | 1 | 0 |
+| source_conflict | 1.000 | 1.000 | 1 | 1 | 0 |
+| terminology | 1.000 | 1.000 | 3 | 3 | 0 |
+| tone | 0.022 | 1.000 | 1 | 45 | 0 |
+
+The low tone precision is expected in offline mode because every non-confidential case
+receives an explicit `needs_human` notice for model-dependent contextual checks. The
+factual recall projection is lower because the evidence-or-abstain contract intentionally
+represents some no-source claims as unsupported/promotional rather than inventing a hard
+factual verdict. These metrics are not model accuracy or production truth guarantees.
 
 ## Reproduction
 

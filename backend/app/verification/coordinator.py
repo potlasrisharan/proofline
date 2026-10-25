@@ -198,6 +198,7 @@ def coordinate_verification(
             options=RuleOptions(
                 content_version_id=options.content_version_id,
                 today=options.today,
+                scope=options.scope,
                 fuzzy_terms=options.fuzzy_terms,
                 ruleset_version=options.ruleset_version,
             ),

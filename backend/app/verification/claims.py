@@ -52,12 +52,12 @@ DEFAULT_REGULATED_KEYWORDS: tuple[str, ...] = (
 
 
 _PRICE_RE = re.compile(
-    rf"(?<!\w)(?P<currency>₹|rs\.?|inr\.?|rupees?|रु\.?)\s*(?P<number>{NUMBER_PATTERN})"
+    rf"(?<!\w)(?P<currency>\$|€|£|₹|rs\.?|inr\.?|usd\.?|eur\.?|gbp\.?|rupees?|रु\.?)\s*(?P<number>{NUMBER_PATTERN})"
     r"(?:\s*(?P<scale>lakh(?:s)?|lac(?:s)?|crore(?:s)?|cr))?(?!\w)",
     re.IGNORECASE,
 )
 _SUFFIX_PRICE_RE = re.compile(
-    rf"(?<!\w)(?P<number>{NUMBER_PATTERN})(?:(?:\s*(?P<scale>lakh(?:s)?|lac(?:s)?|crore(?:s)?|cr))(?:\s*(?:rupees?|inr|₹))?|\s*(?:rupees?|inr|₹))(?!\w)",
+    rf"(?<!\w)(?P<number>{NUMBER_PATTERN})(?:(?:\s*(?P<scale>lakh(?:s)?|lac(?:s)?|crore(?:s)?|cr))(?:\s*(?:rupees?|inr|usd|eur|gbp|₹|\$|€|£))?|\s*(?:rupees?|inr|usd|eur|gbp|₹|\$|€|£))(?!\w)",
     re.IGNORECASE,
 )
 _PERCENT_RE = re.compile(
@@ -79,7 +79,7 @@ _DATE_RE = re.compile(rf"\b{DATE_PATTERN}\b", re.IGNORECASE)
 _COMPARATIVE_RE = re.compile(
     r"\b(?:best|fastest|cheapest|most\s+\w+(?:\s+\w+)?|least\s+\w+(?:\s+\w+)?|"
     r"number\s+one|no\.?\s*1|no\.?\s*one|better\s+than|worse\s+than|faster\s+than|"
-    r"slower\s+than|more\s+\w+\s+than|less\s+\w+\s+than|guaranteed?|"
+    r"slower\s+than|more\s+\w+\s+than|less\s+\w+\s+than|smarter\s+choice|guarantees?|"
     r"guarantee(?:d)?|free)\b",
     re.IGNORECASE,
 )

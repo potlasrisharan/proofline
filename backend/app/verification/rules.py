@@ -11,7 +11,7 @@ from __future__ import annotations
 import math
 import re
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
@@ -40,6 +40,7 @@ from .types import (
 class RuleOptions:
     content_version_id: str = ""
     today: date | None = None
+    scope: Mapping[str, Any] = field(default_factory=dict)
     fuzzy_terms: bool = True
     regulated: bool = False
     exposure: int = 1
@@ -100,19 +101,34 @@ def _make_finding(
     )
 
 
-def _suggestion_for_record(claim: Claim, record: RecordView, *, intent_note: str) -> Suggestion | None:
+def _suggestion_for_record(
+    claim: Claim,
+    record: RecordView,
+    *,
+    intent_note: str,
+    disclaimer_text: str | None = None,
+) -> Suggestion | None:
     """Build a suggestion only from values explicitly present in the approved record."""
 
     replacement = record.value.get("approved_text", record.value.get("wording", record.value.get("suggestion")))
     if isinstance(replacement, str) and replacement.strip():
         return Suggestion(replacement.strip(), intent_note)
-    key = record.value.get("key") or record.value.get("fact_key") or record.value.get("name")
+    key = record.value.get("key") or record.value.get("fact_key") or record.value.get("attribute") or record.value.get("name")
     value = record.value.get("value", record.value.get("amount", record.value.get("approved_value")))
     unit = record.value.get("unit", record.value.get("units"))
     if key is None or value is None:
         return None
-    # Keep this as an exact approved value fragment, without inventing a sentence.
-    approved = f"{key}: {value}{f' {unit}' if unit else ''}"
+    qualifier = normalize_key(record.value.get("qualifier"))
+    if qualifier in {"up to", "at most"}:
+        approved = f"Up to {value}{f' {unit}' if unit else ''}"
+    elif qualifier in {"at least", "from", "starting at"}:
+        approved = f"{qualifier.title()} {value}{f' {unit}' if unit else ''}"
+    else:
+        approved = f"{value}{f' {unit}' if unit else ''}"
+    if normalize_key(str(key)) in {"battery life", "battery duration", "battery runtime"} or normalize_key(str(record.value.get("attribute"))) == "battery life":
+        approved = f"{approved} of battery life"
+    if disclaimer_text:
+        approved = f"{approved}* {disclaimer_text.strip()}"
     if normalize_key(approved) == normalize_key(claim.text):
         return None
     return Suggestion(approved, intent_note)
@@ -126,6 +142,7 @@ def check_numeric_mismatches(
     content_version_id: str = "",
     today: date | None = None,
     scope: Mapping[str, Any] | None = None,
+    disclaimer_text: str | None = None,
 ) -> list[Finding]:
     """Flag a numeric/price/percentage/unit mismatch only with an applicable fact."""
 
@@ -145,7 +162,7 @@ def check_numeric_mismatches(
                     # high-risk review item regardless of whether the value is a
                     # product quantity, price, or date.  The reviewer still sees the
                     # deterministic evidence and the risk breakdown separately.
-                    severity=FindingSeverity.HIGH,
+                    severity=FindingSeverity.CRITICAL,
                     evidence=match.record.evidence,
                     evidence_refs=(match.record.evidence,),
                     content_version_id=content_version_id,
@@ -154,7 +171,12 @@ def check_numeric_mismatches(
                         f"The submitted {claim.kind} {claim.text!r} is not compatible with the approved "
                         f"value in fact {match.record.id} version {match.record.version}."
                     ),
-                    suggestion=_suggestion_for_record(claim, match.record, intent_note="Use the supplied approved value after human review."),
+                    suggestion=_suggestion_for_record(
+                        claim,
+                        match.record,
+                        intent_note="Use the supplied approved value after human review.",
+                        disclaimer_text=disclaimer_text,
+                    ),
                     metadata={"fact_id": match.record.id, "fact_version": match.record.version, "match_reason": match.reason},
                 )
             )
@@ -170,6 +192,28 @@ def check_numeric_mismatches(
                     confidence=1.0,
                     reason="Multiple applicable approved fact versions conflict or cannot be scoped safely; no numeric verdict was asserted.",
                     metadata={"candidate_fact_ids": [record.id for record in match.candidates]},
+                )
+            )
+        elif (
+            match.status == "unsupported"
+            and match.record is not None
+            and not (claim.kind in {"quantity", "number", "price", "percentage"} and match.record.value.get("claim"))
+        ):
+            findings.append(
+                _make_finding(
+                    span=claim.span,
+                    category="unsupported_claim",
+                    verdict=FindingVerdict.NEEDS_HUMAN,
+                    severity=FindingSeverity.REVIEW_REQUIRED,
+                    evidence=match.record.evidence,
+                    evidence_refs=(match.record.evidence,),
+                    content_version_id=content_version_id,
+                    confidence=0.5,
+                    reason=(
+                        "An approved record was found, but its scope, validity, qualifier, or units were not "
+                        "sufficient to establish a deterministic comparison; human review is required."
+                    ),
+                    metadata={"evidence_not_sufficient": True, "match_reason": match.reason},
                 )
             )
         elif match.status == "unmatched":
@@ -214,7 +258,7 @@ def check_offer_validity(
                     span=claim.span,
                     category="outdated_fact_or_offer",
                     verdict=FindingVerdict.OUTDATED,
-                    severity=FindingSeverity.HIGH,
+                    severity=FindingSeverity.CRITICAL,
                     evidence=match.record.evidence,
                     evidence_refs=(match.record.evidence,),
                     content_version_id=content_version_id,
@@ -545,6 +589,15 @@ def check_missing_alt_text(
             continue
         if image.get("alt_text") is not None or image.get("alt") is not None or image.get("aria_label") is not None:
             continue
+        meaningful = image.get("image_has_meaningful_text")
+        if not (
+            meaningful is True
+            or image.get("requires_alt_text") is True
+            or image.get("decorative") is False
+        ):
+            # Presence of measurable colour metadata alone does not establish that
+            # an image conveys information needing alternative text.
+            continue
         marker = str(image.get("filename", image.get("id", f"image {index + 1}")))
         span = _text_span(text, marker) if text else Span(0, len(marker), marker)
         findings.append(
@@ -737,8 +790,44 @@ def run_deterministic_rules(
     claims = list(claims) or []
     records = list(approved_records)
     findings: list[Finding] = []
-    findings.extend(check_numeric_mismatches(text, claims, records, content_version_id=options.content_version_id, today=options.today))
-    findings.extend(check_offer_validity(text, claims, records, content_version_id=options.content_version_id, today=options.today))
+    required_disclaimer = None
+    for record in records:
+        adapted = record if isinstance(record, RecordView) else None
+        value = adapted.value if adapted is not None else (
+            record.get("value", {}) if isinstance(record, Mapping) else getattr(record, "value", {})
+        )
+        resource = str(
+            adapted.resource if adapted is not None else (
+                record.get("resource", "") if isinstance(record, Mapping) else getattr(record, "resource", "")
+            )
+        ).casefold()
+        if resource not in {"disclaimers", "disclaimer", "guidelines", "guideline"} or not isinstance(value, Mapping):
+            continue
+        candidate = value.get("required_text") or value.get("required_disclaimer")
+        if isinstance(candidate, str) and candidate.strip():
+            required_disclaimer = candidate.strip()
+            break
+    findings.extend(
+        check_numeric_mismatches(
+            text,
+            claims,
+            records,
+            content_version_id=options.content_version_id,
+            today=options.today,
+            scope=options.scope,
+            disclaimer_text=required_disclaimer,
+        )
+    )
+    findings.extend(
+        check_offer_validity(
+            text,
+            claims,
+            records,
+            content_version_id=options.content_version_id,
+            today=options.today,
+            scope=options.scope,
+        )
+    )
     if term_policy is not None:
         findings.extend(check_terms(text, term_policy, content_version_id=options.content_version_id, fuzzy=options.fuzzy_terms))
     if disclaimer_requirements is not None:

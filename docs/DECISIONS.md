@@ -38,3 +38,27 @@ client state rather than claims of authenticated persistence. The local FastAPI 
 continues to enforce the stronger server-side boundaries for API tests. We corrected only
 verified UI and workflow issues needed for the real-user demo and documented the remaining
 Node/ESLint and legacy evaluator blockers instead of weakening checks.
+
+## 2026-10-26 — Adapt the verification package at the audit boundary
+
+The Phase 2 audit pipeline now constructs the verification package's own typed options from
+the API audit options and approved vault rows. This keeps the pure rules layer independent
+from FastAPI while ensuring configured terms, disclaimers, image measurements, scope, and
+injectable dates reach the deterministic checks. Matching remains conservative: product or
+market scope that cannot be established is not silently treated as applicable evidence.
+
+## 2026-10-26 — Treat deterministic rule citations as first-class evidence
+
+Built-in checks such as WCAG contrast cite a named rule/version rather than a vault record.
+The local verifier accepts those rule citations when they contain an ID, version, and quote;
+brand-record evidence still must resolve to the authenticated organisation's approved row.
+This preserves evidence-or-abstain semantics without marking measured local rules as invented
+because they are not stored in the demo vault.
+
+## 2026-10-26 — Critical findings remain high-risk in the Phase 3 workflow
+
+The Phase 2 contract requires direct factual mismatches and expired offers to be marked
+`critical`, while the existing Phase 3 API journey only required a high-risk open finding.
+The E2E assertion now accepts either `high` or `critical` while continuing to verify the
+approval denial, evidence linkage, correction, revision history, and audit-chain behavior.
+This is a compatibility clarification, not an auto-approval or severity downgrade.

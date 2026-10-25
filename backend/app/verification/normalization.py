@@ -66,11 +66,11 @@ _QUALIFIER_RE = re.compile(
 NUMBER_PATTERN = r"\d+(?:[, _]\d{2,3})*(?:\.\d+)?"
 _NUMBER_RE = rf"(?P<number>{NUMBER_PATTERN})"
 _PRICE_RE = re.compile(
-    rf"(?<!\w)(?P<prefix>₹|rs\.?|inr\.?|rupees?|रु\.?)\s*{_NUMBER_RE}(?:\s*(?P<scale>lakh(?:s)?|lac(?:s)?|crore(?:s)?|cr))?(?!\w)",
+    rf"(?<!\w)(?P<prefix>\$|€|£|₹|rs\.?|inr\.?|usd\.?|eur\.?|gbp\.?|rupees?|रु\.?)\s*{_NUMBER_RE}(?:\s*(?P<scale>lakh(?:s)?|lac(?:s)?|crore(?:s)?|cr))?(?!\w)",
     re.IGNORECASE,
 )
 _SUFFIX_PRICE_RE = re.compile(
-    rf"(?<!\w){_NUMBER_RE}(?:(?:\s*(?P<scale>lakh(?:s)?|lac(?:s)?|crore(?:s)?|cr))(?:\s*(?:rupees?|inr|₹))?|\s*(?:rupees?|inr|₹))(?!\w)",
+    rf"(?<!\w){_NUMBER_RE}(?:(?:\s*(?P<scale>lakh(?:s)?|lac(?:s)?|crore(?:s)?|cr))(?:\s*(?:rupees?|inr|₹|usd|eur|gbp|\$|€|£))?|\s*(?:rupees?|inr|usd|eur|gbp|\$|€|£))(?!\w)",
     re.IGNORECASE,
 )
 _PERCENT_RE = re.compile(rf"(?<!\w){_NUMBER_RE}\s*(?:%|percent(?:age)?)(?!\w)", re.IGNORECASE)
@@ -107,6 +107,20 @@ _SCALE_FACTORS = {
     "crores": Decimal("10000000"),
     "cr": Decimal("10000000"),
 }
+_CURRENCY_ALIASES = {
+    "$": "USD",
+    "usd": "USD",
+    "€": "EUR",
+    "eur": "EUR",
+    "£": "GBP",
+    "gbp": "GBP",
+    "₹": "INR",
+    "inr": "INR",
+    "rs": "INR",
+    "rupee": "INR",
+    "rupees": "INR",
+    "रु": "INR",
+}
 
 
 def _decimal(raw: str | int | float | Decimal) -> Decimal | None:
@@ -123,6 +137,7 @@ def normalize_key(value: Any) -> str:
 
     text = unicodedata.normalize("NFKC", str(value or "")).casefold()
     text = text.replace("&", " and ")
+    text = text.replace("_", " ")
     text = re.sub(r"[^\w\s]+", " ", text, flags=re.UNICODE)
     return re.sub(r"\s+", " ", text).strip()
 
@@ -151,8 +166,8 @@ def _quantity_from_parts(
     if value is None:
         return None
     raw_unit = unit.casefold().strip().rstrip(".") if unit else None
-    if raw_unit in {"inr", "rs", "₹", "rupee", "rupees", "money"}:
-        currency = "INR"
+    if raw_unit in _CURRENCY_ALIASES:
+        currency = _CURRENCY_ALIASES[raw_unit]
     if raw_unit in _SCALE_FACTORS and not scale:
         scale = raw_unit
     if scale:
@@ -243,7 +258,12 @@ def normalize_money(value: Any, *, currency: str = "INR") -> NormalizedQuantity 
     if match:
         number = match.group("number")
         scale = match.groupdict().get("scale")
-        return _quantity_from_parts(number, None, original=match.group(0), currency=currency, scale=scale)
+        prefix = match.groupdict().get("prefix")
+        detected_currency = _CURRENCY_ALIASES.get(str(prefix or "").casefold(), currency.upper())
+        if prefix is None:
+            suffix = match.group(0).casefold().strip().split()[-1]
+            detected_currency = _CURRENCY_ALIASES.get(suffix, currency.upper())
+        return _quantity_from_parts(number, None, original=match.group(0), currency=detected_currency, scale=scale)
     # A structured record may provide a bare number plus a money unit.
     raw = _decimal(value)
     if raw is not None:
@@ -260,16 +280,24 @@ def normalize_quantity(value: Any, unit: str | None = None, *, qualifier: str | 
         supplied_unit = value.get("unit") or value.get("units") or unit
         supplied_value = value.get("value", value.get("amount", value.get("number")))
         supplied_qualifier = value.get("qualifier", qualifier)
+        supplied_currency = value.get("currency")
         if supplied_value is not None:
-            if str(supplied_unit or "").casefold() in {"inr", "rs", "₹", "rupee", "rupees", "money"}:
-                return normalize_money(supplied_value)
+            if supplied_currency:
+                return _quantity_from_parts(
+                    supplied_value,
+                    str(supplied_unit) if supplied_unit is not None else None,
+                    currency=_CURRENCY_ALIASES.get(str(supplied_currency).casefold(), str(supplied_currency).upper()),
+                    qualifier=supplied_qualifier,
+                )
+            if str(supplied_unit or "").casefold() in {*_CURRENCY_ALIASES, "money"}:
+                return normalize_money(supplied_value, currency=_CURRENCY_ALIASES.get(str(supplied_unit).casefold(), "INR"))
             return normalize_quantity(supplied_value, str(supplied_unit) if supplied_unit is not None else None, qualifier=supplied_qualifier)
         text = value.get("text") or value.get("raw") or value.get("label")
         if text is not None:
             return normalize_quantity(text, unit=unit, qualifier=qualifier)
     if isinstance(value, (int, float, Decimal)):
-        if unit and unit.casefold() in {"inr", "rs", "₹", "rupee", "rupees", "money"}:
-            return normalize_money(value)
+        if unit and unit.casefold() in {*_CURRENCY_ALIASES, "money"}:
+            return normalize_money(value, currency=_CURRENCY_ALIASES.get(unit.casefold(), "INR"))
         return _quantity_from_parts(value, unit, original=str(value), qualifier=qualifier)
 
     text = str(value) if value is not None else ""

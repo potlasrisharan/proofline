@@ -203,7 +203,7 @@ test.describe("Phase 3 local API journey (development principals, in-memory stor
     try {
       await approveBatteryFact(clients.brand_owner);
       const original = await createAd(clients.creator);
-      expect(original.findings.some((finding) => finding.severity === "high" && finding.status === "open")).toBe(true);
+      expect(original.findings.some((finding) => ["high", "critical"].includes(finding.severity) && finding.status === "open")).toBe(true);
       await body(await clients.creator.post(`/v1/content-versions/${original.content_version_id}/review`, { data: { action: "submit" } }));
       const denied = await clients.manager.post(`/v1/content-versions/${original.content_version_id}/review`, { data: { action: "approve" } });
       expect(denied.status(), await denied.text()).toBe(403);

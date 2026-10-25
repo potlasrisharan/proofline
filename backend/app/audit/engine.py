@@ -207,6 +207,92 @@ def _quote_is_real(quote: str, record: Mapping[str, Any]) -> bool:
     return bool(normalized) and any(normalized in " ".join(candidate.split()).casefold() for candidate in candidates)
 
 
+def _record_value(row: Mapping[str, Any]) -> Mapping[str, Any]:
+    value = row.get("value")
+    return value if isinstance(value, Mapping) else {}
+
+
+def _record_source(row: Mapping[str, Any]) -> tuple[str, str]:
+    return (
+        str(row.get("source_id") or row.get("id") or "registry-record"),
+        str(row.get("source_version") or row.get("version") or "1"),
+    )
+
+
+def _configured_term_policy(records: Sequence[Mapping[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    policy: list[dict[str, Any]] = []
+    for row in records:
+        resource = str(row.get("resource", "")).casefold()
+        if resource not in {"terms", "term", "guidelines", "guideline"}:
+            continue
+        value = _record_value(row)
+        source_id, version = _record_source(row)
+        banned = value.get("banned", value.get("banned_terms", ()))
+        if isinstance(banned, str):
+            banned = [banned]
+        if isinstance(banned, Sequence) and not isinstance(banned, (str, bytes)):
+            for term in banned:
+                if str(term).strip():
+                    policy.append(
+                        {
+                            "term": str(term),
+                            "id": source_id,
+                            "version": version,
+                            "preferred": value.get("preferred") or value.get("preferred_term"),
+                        }
+                    )
+    return {"banned": policy} if policy else {}
+
+
+def _configured_disclaimers(records: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    requirements: list[dict[str, Any]] = []
+    for row in records:
+        resource = str(row.get("resource", "")).casefold()
+        if resource not in {"disclaimers", "disclaimer", "guidelines", "guideline"}:
+            continue
+        value = _record_value(row)
+        wording = value.get("required_text") or value.get("required_disclaimer")
+        if not isinstance(wording, str) or not wording.strip():
+            continue
+        source_id, version = _record_source(row)
+        requirements.append(
+            {
+                "required_text": wording.strip(),
+                "id": source_id,
+                "version": version,
+                "allow_suggestion": True,
+            }
+        )
+    return requirements
+
+
+def _contrast_pairs(metadata: Mapping[str, Any], document: Mapping[str, Any]) -> list[dict[str, Any]]:
+    configured = metadata.get("contrast_pairs")
+    if isinstance(configured, Sequence) and not isinstance(configured, (str, bytes)):
+        return [dict(item) for item in configured if isinstance(item, Mapping)]
+    pairs: list[dict[str, Any]] = []
+    raw_images = document.get("image_metadata")
+    images = raw_images if isinstance(raw_images, Sequence) and not isinstance(raw_images, (str, bytes)) else ()
+    if not images and metadata.get("foreground") is not None and metadata.get("background") is not None:
+        images = (metadata,)
+    for image in images:
+        if not isinstance(image, Mapping):
+            continue
+        foreground = image.get("foreground", image.get("fg"))
+        background = image.get("background", image.get("bg"))
+        if foreground is None or background is None:
+            continue
+        pairs.append(
+            {
+                "foreground": foreground,
+                "background": background,
+                "text": image.get("text") or image.get("alt_text") or document.get("text", ""),
+                "large_text": bool(image.get("large_text", False) or (image.get("font_size_px") or 0) >= 18),
+            }
+        )
+    return pairs
+
+
 def _fallback_deterministic(
     *,
     organisation_id: str,
@@ -370,6 +456,40 @@ class AuditEngine:
         try:
             package = importlib.import_module("..verification", package=__package__)
             runner = getattr(package, "run_verification", None) or getattr(package, "coordinate_verification")
+            metadata = options.metadata if isinstance(options.metadata, Mapping) else {}
+            scope = {
+                name: value
+                for name, value in {
+                    "product": options.product,
+                    "market": options.market,
+                    "channel": options.channel,
+                    "language": options.language,
+                }.items()
+                if value is not None
+            }
+            term_policy = metadata.get("term_policy") or metadata.get("terminology_policy") or _configured_term_policy(approved_records)
+            disclaimer_requirements = (
+                metadata.get("disclaimer_requirements")
+                or metadata.get("required_disclaimers")
+                or _configured_disclaimers(approved_records)
+            )
+            image_metadata = document.get("image_metadata") or metadata.get("image_metadata")
+            verification_options = package.AuditOptions(
+                content_version_id=content_version_id,
+                today=options.today,
+                scope=scope,
+                regulated_keywords=tuple(metadata.get("regulated_keywords", ()) or ()),
+                term_policy=term_policy or None,
+                disclaimer_requirements=disclaimer_requirements or None,
+                image_metadata=image_metadata,
+                contrast_pairs=_contrast_pairs(metadata, document),
+                observed_colours=tuple(metadata.get("observed_colours", metadata.get("observed_colors", ())) or ()),
+                approved_palette=metadata.get("approved_palette", metadata.get("palette")),
+                fuzzy_terms=bool(metadata.get("fuzzy_terms", True)),
+                extraction_status=str(document.get("extraction_status", "complete")),
+                extraction_message=document.get("extraction_message"),
+                ruleset_version=RULESET_VERSION,
+            )
             kwargs: dict[str, Any] = {
                 "organisation_id": organisation_id,
                 "content_version_id": content_version_id,
@@ -377,7 +497,7 @@ class AuditEngine:
                 "approved_records": approved_records,
                 "records": approved_records,
                 "text": document["text"],
-                "options": options,
+                "options": verification_options,
             }
             signature = inspect.signature(runner)
             accepted = {key: value for key, value in kwargs.items() if key in signature.parameters}
@@ -500,7 +620,13 @@ class AuditEngine:
         explanation = "local span/schema/evidence validation passed"
         record = _evidence_record(evidence, records) if isinstance(evidence, Mapping) else None
         if isinstance(evidence, Mapping):
-            if record is None or not _quote_is_real(str(evidence.get("quote", "")), record):
+            rule_evidence = (
+                str(evidence.get("source_type", "")).casefold() == "rule"
+                and bool(evidence.get("source_id"))
+                and bool(evidence.get("version"))
+                and bool(str(evidence.get("quote", "")).strip())
+            )
+            if not rule_evidence and (record is None or not _quote_is_real(str(evidence.get("quote", "")), record)):
                 verified = False
                 explanation = "evidence ID/version/quote could not be verified in the approved organisation records"
                 evidence = None

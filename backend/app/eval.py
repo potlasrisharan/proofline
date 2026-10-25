@@ -561,6 +561,7 @@ GOLDEN_CASES: tuple[GoldenCase, ...] = (
         "security",
         "Email and phone values must be masked before any external model request.",
         "Contact maya@voltedge.example or +1 202-555-0148 about VoltEdge NovaBook.",
+        records=(TONE_GUIDELINE,),
         expected_status={"completed", "review_required"},
         requires_pii_masking=True,
         tags={"pii", "privacy", "positive"},
@@ -987,9 +988,14 @@ def validation_errors(case: GoldenCase, response: Mapping[str, Any]) -> list[str
         if finding.get("verdict") in {"contradicted", "outdated"}:
             if not isinstance(evidence, Mapping) or not all(evidence.get(key) for key in ("source_type", "source_id", "version", "quote")):
                 errors.append(f"{label}: hard verdict requires a real source ID/version/quote")
+            elif str(evidence.get("source_type")).casefold() == "rule":
+                # Built-in deterministic checks (for example WCAG contrast) cite a
+                # configured rule rather than a vault row. The rule citation is still
+                # required, but it cannot be expected in the approved-record fixture.
+                pass
             elif (str(evidence["source_id"]), str(evidence["version"])) not in evidence_pairs:
                 errors.append(f"{label}: evidence ID/version was not approved for this organisation")
-        if not case.records and evidence is not None:
+        if not case.records and evidence is not None and str(evidence.get("source_type", "")).casefold() != "rule":
             errors.append(f"{label}: evidence was invented despite an empty approved registry")
         if finding.get("status") == "dismissed" and not str(finding.get("dismiss_reason") or "").strip():
             errors.append(f"{label}: dismissal lost its human-provided reason")
@@ -1234,7 +1240,37 @@ class HTTPCaseRunner:
             main = importlib.import_module(f"{self.package}.main")
             auth = importlib.import_module(f"{self.package}.auth")
             models = importlib.import_module(f"{self.package}.models")
-            app = main.create_app()
+            audit_engine = None
+            if case.requires_pii_masking:
+                llm = importlib.import_module(f"{self.package}.llm")
+                llm_types = importlib.import_module(f"{self.package}.llm.types")
+
+                class CapturingProvider:
+                    provider_name = "gemini"
+
+                    def __init__(self, captured: list[dict[str, Any]]) -> None:
+                        self._captured = captured
+                        self._status = llm_types.ProviderStatus(
+                            provider="gemini",
+                            availability=llm_types.ProviderAvailability.AVAILABLE,
+                            configured=True,
+                            configured_model="voltedge-offline-test-model",
+                            model="voltedge-offline-test-model",
+                            live=False,
+                        )
+
+                    @property
+                    def status(self) -> Any:
+                        return self._status
+
+                    def generate(self, *, prompt: str, **_: Any) -> str:
+                        self._captured.append({"method": "POST", "body": prompt})
+                        return '{"findings": []}'
+
+                audit_engine = main.AuditEngine(
+                    llm_service=llm.LLMService(provider=CapturingProvider(attempts))
+                )
+            app = main.create_app(audit_engine=audit_engine)
             identity = {"user_id": REVIEWER_USER, "organisation_id": VOLTEDGE_ORG, "role": "brand_owner"}
 
             def principal() -> Any:

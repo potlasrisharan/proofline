@@ -123,6 +123,16 @@ evidence; a module or type alone is not proof of an active integration.
 3. Main integration verifies offline acceptance cases before any optional provider work.
 4. Full lint/typecheck/build/pytest/evaluation run; failures remain visible in `STATE.md`.
 
+### Phase 2 completion status
+
+**Verified locally on 2026-10-26:** the five workstreams are integrated behind the shared
+contract. Text/PDF/DOCX/image ingestion, claim extraction, deterministic rules, optional
+LLM/offline boundaries, evidence validation, Claim–Fact Ledger links, risk scoring, content
+recheck, and finding actions are implemented against the local in-memory adapter. The
+52-case HTTP evaluator reports zero honest failures; the 194-case reliability report remains
+a separate synthetic deterministic measurement. Live Gemini, OCR/vision fallback, pgvector,
+Supabase/Auth/Storage, and durable persistence remain **STUB**, **PLANNED**, or **MISSING**.
+
 ## Phase 4 — improvements, hardening, deploy, and docs
 
 **Date:** 2026-10-25
