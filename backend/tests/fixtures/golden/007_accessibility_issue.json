@@ -1,0 +1,33 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_accessibility_issue",
+  "title": "Important text in an image has no alternative text",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "image",
+    "market": "US",
+    "language": "en-US",
+    "content": "VoltEdge NovaBook S1 promotional image",
+    "asset_metadata": {
+      "contains_meaningful_text": true,
+      "alt_text": "",
+      "contrast_measurement_available": false,
+      "accessibility_checks_available": true
+    }
+  },
+  "expected_findings": [
+    {
+      "category": "accessibility_issue",
+      "severity": "medium",
+      "evidence_status": "review_required",
+      "excerpt": "VoltEdge NovaBook S1 promotional image",
+      "evidence_refs": [],
+      "suggested_correction": {
+        "text": "Add descriptive alternative text that conveys the image's purpose and the visible product claim.",
+        "rationale": "The image contains meaningful text but no alternative text was supplied; contrast was not assessed because measurable colours were unavailable.",
+        "preserves_intent": true
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_accessibility_review"
+}

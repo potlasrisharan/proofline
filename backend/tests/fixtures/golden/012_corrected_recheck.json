@@ -1,0 +1,27 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_corrected_recheck",
+  "title": "Re-scan of corrected copy remains traceable and clean",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "channel": "email",
+    "previous_fixture_id": "voltedge_fact_mismatch_battery",
+    "content_version_number": 2,
+    "content": "Meet the VoltEdge NovaBook S1 with up to 10 hours of video playback. Terms apply."
+  },
+  "expected_findings": [],
+  "expected_history": {
+    "previous_findings": [
+      {
+        "category": "fact_mismatch",
+        "status_after_rescan": "resolved"
+      }
+    ],
+    "new_content_version_required": true,
+    "original_content_preserved": true
+  },
+  "expected_outcome": "rescan_completed_without_findings"
+}

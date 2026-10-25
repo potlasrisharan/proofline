@@ -1,0 +1,42 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_terminology_violation",
+  "title": "Banned term should use the preferred brand term",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "content": "Get a cheap VoltEdge NovaBook S1 for your next project."
+  },
+  "expected_findings": [
+    {
+      "category": "terminology_violation",
+      "severity": "low",
+      "evidence_status": "supported_mismatch",
+      "excerpt": "cheap",
+      "evidence_refs": [
+        {
+          "kind": "rule",
+          "id": "50000000-0000-4000-8000-000000000001",
+          "version": "1",
+          "excerpt": "Banned term: cheap; preferred replacement: affordable",
+          "applicability": "VoltEdge; US; text/email/paid social"
+        },
+        {
+          "kind": "rule",
+          "id": "50000000-0000-4000-8000-000000000002",
+          "version": "1",
+          "excerpt": "Preferred term: affordable",
+          "applicability": "VoltEdge; US; text/email/paid social"
+        }
+      ],
+      "suggested_correction": {
+        "text": "Get an affordable VoltEdge NovaBook S1 for your next project.",
+        "rationale": "Uses the approved preferred term instead of the banned term.",
+        "preserves_intent": true
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_terminology_finding"
+}

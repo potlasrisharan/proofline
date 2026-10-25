@@ -1,0 +1,15 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_clean_supported_copy",
+  "title": "Approved battery wording and qualifier pass the MVP checks",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "channel": "email",
+    "content": "Meet the VoltEdge NovaBook S1 with up to 10 hours of video playback. Terms apply."
+  },
+  "expected_findings": [],
+  "expected_outcome": "audit_completed_without_findings"
+}

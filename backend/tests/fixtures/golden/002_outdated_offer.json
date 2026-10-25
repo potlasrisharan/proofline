@@ -1,0 +1,36 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_outdated_offer",
+  "title": "Expired promotion is used as current copy",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "planned_publication_at": "2026-10-25T12:00:00Z",
+    "content": "Save 20% on the VoltEdge NovaBook S1 today."
+  },
+  "expected_findings": [
+    {
+      "category": "outdated_fact_or_offer",
+      "severity": "high",
+      "evidence_status": "supported_mismatch",
+      "excerpt": "Save 20% on the VoltEdge NovaBook S1 today",
+      "evidence_refs": [
+        {
+          "kind": "brand_record",
+          "id": "30000000-0000-4000-8000-000000000003",
+          "version": "1",
+          "excerpt": "20% off NovaBook S1 from October 1 through October 15, 2026.",
+          "applicability": "VoltEdge NovaBook S1; US; paid social/email"
+        }
+      ],
+      "suggested_correction": {
+        "text": "Remove the expired 20% offer or replace it with a currently approved promotion.",
+        "rationale": "The configured offer ended on October 15, 2026 and cannot be presented as current on October 25, 2026.",
+        "preserves_intent": false
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_expired_offer"
+}

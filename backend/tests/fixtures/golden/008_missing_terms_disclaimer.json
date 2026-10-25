@@ -1,0 +1,36 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_missing_terms_disclaimer",
+  "title": "Promotion copy omits the configured terms qualifier",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "channel": "email",
+    "content": "Save 20% on the VoltEdge NovaBook S1 through October 15."
+  },
+  "expected_findings": [
+    {
+      "category": "configured_policy_disclaimer",
+      "severity": "medium",
+      "evidence_status": "supported_mismatch",
+      "excerpt": "Save 20% on the VoltEdge NovaBook S1 through October 15.",
+      "evidence_refs": [
+        {
+          "kind": "rule",
+          "id": "70000000-0000-4000-8000-000000000001",
+          "version": "1",
+          "excerpt": "Terms apply.",
+          "applicability": "Offers and discounts; US; email/web/paid social"
+        }
+      ],
+      "suggested_correction": {
+        "text": "Save 20% on the VoltEdge NovaBook S1 through October 15. Terms apply.",
+        "rationale": "Adds the configured qualifier required for promotional content.",
+        "preserves_intent": true
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_disclaimer_finding"
+}

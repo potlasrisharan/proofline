@@ -1,0 +1,41 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_visual_mismatch",
+  "title": "Submitted logo metadata conflicts with the approved asset",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "image",
+    "market": "US",
+    "language": "en-US",
+    "content": "VoltEdge NovaBook S1 launch graphic",
+    "asset_metadata": {
+      "logo_name": "VoltEdge wordmark",
+      "logo_colour": "#FF00FF",
+      "logo_stretched": true,
+      "visual_checks_available": true
+    }
+  },
+  "expected_findings": [
+    {
+      "category": "visual_mismatch",
+      "severity": "medium",
+      "evidence_status": "supported_mismatch",
+      "excerpt": "VoltEdge NovaBook S1 launch graphic",
+      "evidence_refs": [
+        {
+          "kind": "asset",
+          "id": "80000000-0000-4000-8000-000000000001",
+          "version": "1",
+          "excerpt": "Use the approved VoltEdge wordmark without stretching, recolouring, or adding effects.",
+          "applicability": "VoltEdge wordmark; approved light-background asset"
+        }
+      ],
+      "suggested_correction": {
+        "text": "Use the approved VoltEdge wordmark in its approved colour and proportions.",
+        "rationale": "The submitted metadata indicates an unapproved colour and stretched logo treatment.",
+        "preserves_intent": true
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_visual_finding"
+}

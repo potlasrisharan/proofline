@@ -1,0 +1,27 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_unsupported_claim",
+  "title": "Comparative claim has no approved evidence",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "content": "The VoltEdge NovaBook S1 is the best laptop for every creator."
+  },
+  "expected_findings": [
+    {
+      "category": "unsupported_claim",
+      "severity": "review_required",
+      "evidence_status": "unsupported_unverified",
+      "excerpt": "the best laptop for every creator",
+      "evidence_refs": [],
+      "suggested_correction": {
+        "text": "The VoltEdge NovaBook S1 is designed for clear, focused everyday work.",
+        "rationale": "Removes the unsubstantiated superlative and keeps a positive product message without inventing evidence.",
+        "preserves_intent": true
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_evidence_gap"
+}

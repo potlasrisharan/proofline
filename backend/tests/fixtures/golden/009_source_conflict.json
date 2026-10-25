@@ -1,0 +1,58 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_source_conflict_price",
+  "title": "Two active approved records disagree on price",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "content": "The VoltEdge NovaBook S1 is available for $1,299."
+  },
+  "registry_overrides": {
+    "conflicting_active_records": [
+      {
+        "id": "fixture-price-record-a",
+        "version": "2",
+        "value": "US list price: $1,299.",
+        "source_id": "fixture-source-price-a"
+      },
+      {
+        "id": "fixture-price-record-b",
+        "version": "1",
+        "value": "US list price: $1,199.",
+        "source_id": "fixture-source-price-b"
+      }
+    ]
+  },
+  "expected_findings": [
+    {
+      "category": "source_conflict",
+      "severity": "review_required",
+      "evidence_status": "source_conflict",
+      "excerpt": "$1,299",
+      "evidence_refs": [
+        {
+          "kind": "brand_record",
+          "id": "fixture-price-record-a",
+          "version": "2",
+          "excerpt": "US list price: $1,299.",
+          "applicability": "VoltEdge NovaBook S1; US"
+        },
+        {
+          "kind": "brand_record",
+          "id": "fixture-price-record-b",
+          "version": "1",
+          "excerpt": "US list price: $1,199.",
+          "applicability": "VoltEdge NovaBook S1; US"
+        }
+      ],
+      "suggested_correction": {
+        "text": "Pause publication and ask an authorised brand owner to resolve the conflicting price records.",
+        "rationale": "The registry contains conflicting active evidence, so Proofline must not silently select a price.",
+        "preserves_intent": false
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_source_conflict"
+}

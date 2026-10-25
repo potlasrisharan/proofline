@@ -6,4 +6,5 @@ out/
 .env*
 !.env.example
 *.tsbuildinfo
+__pycache__/
 .agent-lock

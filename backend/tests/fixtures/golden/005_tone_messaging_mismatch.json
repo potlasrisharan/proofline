@@ -1,0 +1,35 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_tone_messaging_mismatch",
+  "title": "Casual hype conflicts with the approved product voice",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "content": "Yo! This beast absolutely destroys every other laptop. Grab it now or regret it."
+  },
+  "expected_findings": [
+    {
+      "category": "tone_messaging_mismatch",
+      "severity": "medium",
+      "evidence_status": "style_suggestion",
+      "excerpt": "Yo! This beast absolutely destroys every other laptop. Grab it now or regret it.",
+      "evidence_refs": [
+        {
+          "kind": "rule",
+          "id": "60000000-0000-4000-8000-000000000001",
+          "version": "1",
+          "excerpt": "Use clear, confident language; avoid hype, slang, insults, and absolute promises.",
+          "applicability": "VoltEdge; US; en-US"
+        }
+      ],
+      "suggested_correction": {
+        "text": "Meet the VoltEdge NovaBook S1: clear, focused performance for everyday work.",
+        "rationale": "Keeps the launch intent while removing slang, pressure language, and an unsupported absolute comparison.",
+        "preserves_intent": true
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_style_suggestion"
+}

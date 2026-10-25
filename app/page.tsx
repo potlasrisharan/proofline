@@ -244,7 +244,7 @@ export default function Home() {
 
         <div className="sidebar-bottom">
           <button className="nav-item muted" type="button" onClick={() => notify("Workspace settings are available to authorised brand owners.")}><span aria-hidden="true">⚙</span> Workspace settings</button>
-          <div className="registry-health"><span className="health-dot" /><div><strong>Registry is current</strong><small>Last synced 8 min ago</small></div></div>
+          <div className="registry-health"><span className="health-dot" /><div><strong>Seeded registry</strong><small>No live sync configured</small></div></div>
           <div className="profile-card">
             <div className="avatar">MC</div>
             <div><strong>Maya Chen</strong><small>Content lead</small></div>
@@ -257,7 +257,7 @@ export default function Home() {
         <header className="topbar">
           <div className="breadcrumb"><span>Northstar Labs</span><i>/</i><strong>{pageTitles[activeView]}</strong></div>
           <div className="top-actions">
-            <span className="save-state"><span className="health-dot" /> All changes saved</span>
+            <span className="save-state"><span className="health-dot" /> Demo state only</span>
             <button className="icon-button" type="button" aria-label="Explain Proofline" onClick={() => notify("Proofline links each finding to an approved source or explains when evidence is missing.")}>?</button>
             <button className="avatar avatar-button" type="button" aria-label="Open Maya Chen profile" onClick={() => notify("Signed in as Maya Chen · Content lead")}>MC</button>
           </div>
@@ -295,7 +295,7 @@ export default function Home() {
               </div>
 
               <section className="tip-banner"><div className="tip-icon">✦</div><div><strong>Make your registry work harder.</strong><p>Add one approved source to unlock evidence-linked reviews for your next campaign.</p></div><button type="button" className="tip-link" onClick={() => navigate("registry")}>Open truth registry <span>↗</span></button></section>
-              <footer className="footer"><span>Proofline beta · seeded workspace</span><span>Built for confident publishing.</span></footer>
+              <footer className="footer"><span>Proofline beta · seeded workspace · local state only</span><span>Built for confident publishing.</span></footer>
             </section>
           ) : null}
 

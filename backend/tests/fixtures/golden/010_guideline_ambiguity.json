@@ -1,0 +1,56 @@
+{
+  "fixture_schema_version": "golden-v1",
+  "fixture_id": "voltedge_guideline_ambiguity",
+  "title": "Conflicting tone guidance requires owner review",
+  "tenant": "voltedge",
+  "input": {
+    "content_type": "text",
+    "market": "US",
+    "language": "en-US",
+    "content": "VoltEdge brings serious power to playful projects."
+  },
+  "registry_overrides": {
+    "conflicting_guidelines": [
+      {
+        "id": "fixture-guideline-formal",
+        "version": "1",
+        "body": "Use formal, serious language and avoid playful wording."
+      },
+      {
+        "id": "fixture-guideline-warm",
+        "version": "1",
+        "body": "Use warm, playful language to make technology approachable."
+      }
+    ]
+  },
+  "expected_findings": [
+    {
+      "category": "guideline_ambiguity",
+      "severity": "review_required",
+      "evidence_status": "review_required",
+      "excerpt": "serious power to playful projects",
+      "evidence_refs": [
+        {
+          "kind": "rule",
+          "id": "fixture-guideline-formal",
+          "version": "1",
+          "excerpt": "Avoid playful wording.",
+          "applicability": "VoltEdge; US; en-US"
+        },
+        {
+          "kind": "rule",
+          "id": "fixture-guideline-warm",
+          "version": "1",
+          "excerpt": "Use warm, playful language.",
+          "applicability": "VoltEdge; US; en-US"
+        }
+      ],
+      "suggested_correction": {
+        "text": "Ask the authorised brand owner to clarify whether formal or playful tone takes precedence for this channel.",
+        "rationale": "The active guidance conflicts; Proofline should recommend clarification instead of activating a new rule or choosing silently.",
+        "preserves_intent": false
+      }
+    }
+  ],
+  "expected_outcome": "audit_completed_with_guideline_review"
+}
