@@ -44,8 +44,12 @@ Proofline's target hosted architecture is now Cloudflare-first:
    ```
 
 8. Configure the Pages domain and Worker URL in the browser API boundary, then run the
-   health and authenticated smoke checks. A deployment is not complete until the UI and
-   Worker are actually paired and D1/R2/Queue runtime behavior is observed.
+   health and authenticated smoke checks. For the browser client, set
+   `NEXT_PUBLIC_PROOFLINE_LOCAL_API=true`, `NEXT_PUBLIC_PROOFLINE_API_URL` to the Worker
+   URL, and `NEXT_PUBLIC_PROOFLINE_API_AUTH=cloudflare_access`; this uses browser
+   credentials for the Access boundary and does not expose a bearer token. Use
+   `local_headers` only for local development. A deployment is not complete until the UI
+   and Worker are actually paired and D1/R2/Queue runtime behavior is observed.
 
 ## Current boundary
 
