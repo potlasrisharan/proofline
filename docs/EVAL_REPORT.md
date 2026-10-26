@@ -1,3 +1,4 @@
+<!-- BEGIN PROOFLINE GENERATED RELIABILITY REPORT -->
 # Evidence-or-Abstain local reliability evaluation
 
 **Status:** IMPLEMENTED local deterministic measurement. This report contains no external-model call and makes no model-accuracy claim.
@@ -56,11 +57,17 @@
 - Unit conversions use explicit local factors only. No exchange rates, semantic guesses, OCR, PDF/DOCX extraction, retrieval, model provider, network, or durable persistence are exercised by this report.
 - Word-number and fraction challenge cases are expected to route to `needs_human`; they measure graceful degradation rather than broad natural-language numeric coverage.
 - A high precision/recall result here does not establish model accuracy, real-world truth, legal compliance, accessibility certification, or production reliability.
-- The separate 52-case HTTP contract evaluator was rerun on **2026-10-26** after the
-  verification-engine integration fix. It reported **52 cases and 0 honest failures**.
-  This is still a local/in-memory check: it uses a fictional capturing provider for the
-  PII-masking probe, makes no real model request, and does not prove Gemini, Supabase, or
-  durable persistence is live.
+- The separate Phase 2 HTTP contract evaluator is maintained alongside this report. Its local VoltEdge results are not silently folded into this reliability measurement, and neither evaluation makes an external model request.
+
+## Reproduction
+
+```bash
+python3 scripts/generate_golden.py --check
+python3 scripts/eval.py --check-report docs/EVAL_REPORT.md
+python3 scripts/eval.py --report docs/EVAL_REPORT.md  # explicit regeneration
+python3 -m pytest -q backend/tests/test_reliability.py backend/tests/test_golden_fixtures.py
+```
+<!-- END PROOFLINE GENERATED RELIABILITY REPORT -->
 
 ## Phase 2 HTTP contract evaluation
 
@@ -88,11 +95,3 @@ receives an explicit `needs_human` notice for model-dependent contextual checks.
 factual recall projection is lower because the evidence-or-abstain contract intentionally
 represents some no-source claims as unsupported/promotional rather than inventing a hard
 factual verdict. These metrics are not model accuracy or production truth guarantees.
-
-## Reproduction
-
-```bash
-python3 scripts/generate_golden.py --check
-python3 scripts/eval.py --report docs/EVAL_REPORT.md
-python3 -m pytest -q backend/tests/test_reliability.py backend/tests/test_golden_fixtures.py
-```

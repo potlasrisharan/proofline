@@ -32,6 +32,22 @@ successful unavailable work.
 The local vault adapter is useful for contract and RBAC tests only. It is non-persistent,
 clears on process restart, and must not be used with confidential production records.
 
+## User-facing transparency surface
+
+The `/privacy` route is **IMPLEMENTED (local demo)** as the user-facing transparency
+surface for the current build. It states the browser-state boundary, the exact local
+data paths, the absence of a verified runtime model/provider, the in-memory API limit,
+the session-storage retention caveat, and the synthetic VoltEdge-only rule. It also
+labels the missing in-app confidential-material flag honestly: this build does not offer
+a confidentiality selector, consent flow, or deletion guarantee for sensitive content.
+
+The page does not claim that data never leaves an organisation in a future deployment.
+It says that no external transfer was observed for the current frontend routes and that
+provider, model, region, retention, training-use settings, and deployment logs must be
+verified before confidential content is accepted. **IMPLEMENTED**, **STUB**,
+**PLANNED**, and **MISSING** are used as status labels rather than treating a mock,
+adapter, or planned service as connected.
+
 ## Current local verification behavior
 
 The local backend contains a dependency-tolerant pipeline: bounded ingestion, lexical
@@ -109,6 +125,7 @@ repository. The following table is deliberately explicit about what remains unkn
 | Retention/deletion | **Unknown for future providers** | Application-process memory currently ends with the local API process; provider and durable-storage retention are not selected. |
 | Processing region | **Unknown** | Do not promise a region until the actual provider and deployment are verified. |
 | Provider training/use settings | **Unknown** | Do not promise that content is excluded from provider training until current terms and account settings are checked. |
+| In-app confidential-material flag | **MISSING** | The local demo has no confidential selector or operator workflow; use fictional VoltEdge material only. |
 | Secrets | **Local boundary implemented** | Keep values in ignored local environment files or server-side secret storage; never place keys in browser code, source control, fixtures, or logs. |
 | Failure handling | **Contract rule / future implementation** | Timeouts, quota errors, malformed output, and unavailable dependencies must become failed or `review_required` states. |
 
@@ -132,8 +149,9 @@ Owner and verification date: TBD
 
 ## Human control and user-facing notice
 
-The UI and API should make these points clear before a user submits content to a
-configured external service:
+The local `/privacy` surface makes these points clear before the demo is used. A future
+connected route must repeat them before a user submits content to a configured external
+service:
 
 - Automated output is advisory and may be wrong, incomplete, stale, or biased.
 - Findings are checked against the organisation's approved records, not guaranteed
@@ -142,6 +160,22 @@ configured external service:
 - Suggested corrections are proposals that a creator can accept, edit, or reject.
 - An authorised human decides whether content is approved or sent back for changes.
 - Proofline does not replace legal, regulatory, accessibility, or specialist review.
+
+## Verification and report handling
+
+The local reliability evaluator is a deterministic measurement over the committed,
+synthetic VoltEdge fixture set. It does not read provider credentials, call a network
+service, or include source content in the generated report. `scripts/test.sh` runs
+`python3 scripts/eval.py --check-report docs/EVAL_REPORT.md`, which compares the marked
+generated section without rewriting the tracked report. The separately maintained Phase
+2 HTTP contract results remain outside that generated section.
+
+`scripts/eval.py` prints the report without a destination by default. `--check-report`
+is read-only; `--report` is the explicit regeneration path and preserves the adjacent
+hand-maintained sections in `docs/EVAL_REPORT.md`. The writer refuses secret-like
+destinations such as `.env` files, key/certificate files, and paths named for tokens or
+credentials. These controls prevent a test/evaluation run from mutating committed
+reports or overwriting local secrets.
 
 ## Fictional VoltEdge example
 

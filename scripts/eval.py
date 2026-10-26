@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from difflib import unified_diff
 import json
 from pathlib import Path
 import sys
@@ -19,6 +20,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DATASET = ROOT / "backend/tests/fixtures/golden/generated/reliability_v1.json"
+GENERATED_REPORT_START = "<!-- BEGIN PROOFLINE GENERATED RELIABILITY REPORT -->"
+GENERATED_REPORT_END = "<!-- END PROOFLINE GENERATED RELIABILITY REPORT -->"
 sys.path.insert(0, str(ROOT))
 
 from backend.app.reliability import LocalReliabilityEngine, ReliabilityRequest  # noqa: E402
@@ -155,32 +158,129 @@ def render_report(dataset: dict[str, Any], results: list[CaseResult]) -> str:
         "- Unit conversions use explicit local factors only. No exchange rates, semantic guesses, OCR, PDF/DOCX extraction, retrieval, model provider, network, or durable persistence are exercised by this report.",
         "- Word-number and fraction challenge cases are expected to route to `needs_human`; they measure graceful degradation rather than broad natural-language numeric coverage.",
         "- A high precision/recall result here does not establish model accuracy, real-world truth, legal compliance, accessibility certification, or production reliability.",
-        "- The original 52-case API evaluator remains a separate contract/integration artifact. Its current baseline records failures when the local snapshot lacks `/contents` and seeds vault records as a creator; those failures are not silently folded into this local report.",
+        "- The separate Phase 2 HTTP contract evaluator is maintained alongside this report. Its local VoltEdge results are not silently folded into this reliability measurement, and neither evaluation makes an external model request.",
         "",
         "## Reproduction",
         "",
         "```bash",
         "python3 scripts/generate_golden.py --check",
-        "python3 scripts/eval.py --report docs/EVAL_REPORT.md",
+        "python3 scripts/eval.py --check-report docs/EVAL_REPORT.md",
+        "python3 scripts/eval.py --report docs/EVAL_REPORT.md  # explicit regeneration",
         "python3 -m pytest -q backend/tests/test_reliability.py backend/tests/test_golden_fixtures.py",
         "```",
     ])
     return "\n".join(lines) + "\n"
 
 
+def _resolve_path(path: Path) -> Path:
+    return path if path.is_absolute() else ROOT / path
+
+
+def _secret_like_path(path: Path) -> bool:
+    name = path.name.lower()
+    suffix = path.suffix.lower()
+    return (
+        name == ".env"
+        or name.startswith(".env.")
+        or suffix in {".key", ".pem", ".p12", ".pfx"}
+        or any(token in name for token in ("secret", "credential", "password", "token"))
+    )
+
+
+def _generated_section(content: str) -> str:
+    """Return the generated portion of a report, preserving hand-maintained sections."""
+
+    start = content.find(GENERATED_REPORT_START)
+    end = content.find(GENERATED_REPORT_END, start + len(GENERATED_REPORT_START)) if start >= 0 else -1
+    if start < 0 and end < 0:
+        return content
+    if start < 0 or end < 0:
+        raise ValueError("report has an incomplete generated-section marker")
+    section_start = start + len(GENERATED_REPORT_START)
+    return content[section_start:end].lstrip("\n").rstrip("\n") + "\n"
+
+
+def _replace_generated_section(content: str, report: str) -> str:
+    """Replace only the generated report section and retain adjacent hand-written notes."""
+
+    start = content.find(GENERATED_REPORT_START)
+    end = content.find(GENERATED_REPORT_END, start + len(GENERATED_REPORT_START)) if start >= 0 else -1
+    if start < 0 and end < 0:
+        return report
+    if start < 0 or end < 0:
+        raise ValueError("report has an incomplete generated-section marker")
+    prefix = content[:start]
+    suffix = content[end + len(GENERATED_REPORT_END):]
+    replacement = f"{GENERATED_REPORT_START}\n{report.rstrip()}\n{GENERATED_REPORT_END}"
+    if suffix and not suffix.startswith("\n"):
+        suffix = f"\n{suffix}"
+    if not suffix:
+        replacement += "\n"
+    return f"{prefix}{replacement}{suffix}"
+
+
+def _check_report(destination: Path, report: str) -> int:
+    if not destination.is_file():
+        print(f"Evaluation report is missing: {destination}", file=sys.stderr)
+        return 1
+    try:
+        actual = _generated_section(destination.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError) as error:
+        print(f"Could not read evaluation report {destination}: {error}", file=sys.stderr)
+        return 1
+    if actual != report:
+        print(f"Evaluation report is stale: {destination}", file=sys.stderr)
+        print("The check is read-only. To intentionally regenerate the generated section, run:", file=sys.stderr)
+        print(f"  python3 scripts/eval.py --report {destination}", file=sys.stderr)
+        diff = unified_diff(actual.splitlines(), report.splitlines(), fromfile="tracked", tofile="generated", n=1)
+        for line in list(diff)[:80]:
+            print(line, file=sys.stderr)
+        return 1
+    print(f"Evaluation report matches {destination} (read-only check).")
+    return 0
+
+
+def _write_report(destination: Path, report: str) -> None:
+    if _secret_like_path(destination):
+        raise ValueError(f"refusing to write an evaluation report to secret-like path: {destination}")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.is_file():
+        current = destination.read_text(encoding="utf-8")
+        rendered = _replace_generated_section(current, report)
+    else:
+        rendered = report
+    destination.write_text(rendered, encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", type=Path, default=DATASET)
-    parser.add_argument("--report", type=Path, default=None)
+    report_group = parser.add_mutually_exclusive_group()
+    report_group.add_argument(
+        "--report",
+        type=Path,
+        default=None,
+        help="explicitly write the generated report section to PATH",
+    )
+    report_group.add_argument(
+        "--check-report",
+        type=Path,
+        default=None,
+        help="compare the generated report section with PATH without writing",
+    )
     args = parser.parse_args()
     dataset = load_dataset(args.dataset)
     results = run_cases(dataset)
     report = render_report(dataset, results)
-    print(report)
+    if args.check_report is not None:
+        return _check_report(_resolve_path(args.check_report), report)
     if args.report is not None:
-        destination = args.report if args.report.is_absolute() else ROOT / args.report
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(report, encoding="utf-8")
+        try:
+            _write_report(_resolve_path(args.report), report)
+        except (OSError, UnicodeDecodeError, ValueError) as error:
+            print(f"Could not write evaluation report: {error}", file=sys.stderr)
+            return 2
+    print(report)
     # Evaluation is a measurement command. A case exception is visible in the
     # report but does not turn the output into a fabricated pass/fail claim.
     return 0

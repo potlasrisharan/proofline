@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
 
 from .auth import get_current_principal, require_roles
@@ -26,10 +26,12 @@ from .models import (
     ContentResponse,
     ContentVersionCreateRequest,
     ContentVersionsResponse,
+    DashboardSummaryResponse,
     FindingActionRequest,
     FindingResponse,
     ReviewRequest,
     ReviewDecisionResponse,
+    ReviewDecisionsResponse,
     VaultCreateRequest,
     VaultListResponse,
     VaultRecordResponse,
@@ -245,6 +247,22 @@ def create_app(
             decision=decision,
         )
 
+    @app.get("/v1/content-versions/{content_version_id}/review-decisions", response_model=ReviewDecisionsResponse)
+    async def list_review_decisions(
+        content_version_id: str,
+        principal: Annotated[Principal, Depends(get_current_principal)],
+        request: Request,
+    ) -> ReviewDecisionsResponse:
+        try:
+            decisions = _workflow(request).list_decisions(principal, content_version_id)
+        except WorkflowNotFoundError as exc:
+            raise workflow_error(exc) from exc
+        return ReviewDecisionsResponse(
+            persistence="in_memory_demo",
+            content_version_id=content_version_id,
+            items=decisions,
+        )
+
     @app.post("/v1/content-versions/{content_version_id}/comments", response_model=CommentsResponse, status_code=status.HTTP_201_CREATED)
     async def create_comment(
         content_version_id: str,
@@ -299,6 +317,18 @@ def create_app(
         except WorkflowNotFoundError as exc:
             raise workflow_error(exc) from exc
         return JSONResponse(content=export)
+
+    @app.get("/v1/dashboard/summary", response_model=DashboardSummaryResponse)
+    async def dashboard_summary(
+        principal: Annotated[Principal, Depends(get_current_principal)],
+        request: Request,
+        window_days: int | None = Query(default=None, ge=1, le=3660),
+    ) -> DashboardSummaryResponse:
+        try:
+            summary = _workflow(request).dashboard_summary(principal, window_days=window_days)
+        except WorkflowStateError as exc:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+        return DashboardSummaryResponse(**summary)
 
     @app.get("/v1/{resource}", response_model=VaultListResponse)
     async def list_vault_records(

@@ -10,7 +10,7 @@ changing the review contract.
 
 from collections import defaultdict, deque
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 from threading import RLock
@@ -909,6 +909,135 @@ class InMemoryWorkflowStore:
             if finding.content_version_id == version_id
         ]
 
+    def list_decisions(self, principal: Principal, version_id: str) -> list[ReviewDecision]:
+        """Return review decisions for one visible immutable content version."""
+
+        with self._lock:
+            version = self._version(principal.organisation_id, version_id)
+            content = self._content(principal.organisation_id, version.content_id)
+            if not self.can_view_content(content, principal):
+                raise WorkflowNotFoundError(version_id)
+            return sorted(
+                (
+                    decision.model_copy(deep=True)
+                    for decision in self._decisions[principal.organisation_id]
+                    if decision.content_version_id == version_id
+                ),
+                key=lambda value: (value.created_at, value.id),
+            )
+
+    # -------------------------------------------------------------------------
+    # Saved-record dashboard aggregation
+    # -------------------------------------------------------------------------
+    def dashboard_summary(
+        self,
+        principal: Principal,
+        *,
+        window_days: int | None = None,
+    ) -> dict[str, Any]:
+        """Aggregate only records visible to ``principal`` from this process.
+
+        With no window, all retained in-memory records are included.  When a window is
+        supplied, audit and decision counts are restricted to the trailing UTC window;
+        the content count remains the visible workspace count so the response still
+        describes the caller's permitted scope.
+        """
+
+        if window_days is not None and (isinstance(window_days, bool) or not 1 <= window_days <= 3660):
+            raise WorkflowStateError("window_days must be between 1 and 3660")
+
+        with self._lock:
+            now = _now()
+            window_start = now - timedelta(days=window_days) if window_days is not None else None
+
+            def in_window(value: datetime | None) -> bool:
+                if value is None:
+                    return False
+                timestamp = value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+                return window_start is None or window_start <= timestamp <= now
+
+            visible_contents = [
+                content
+                for content in self._contents[principal.organisation_id].values()
+                if self.can_view_content(content, principal)
+            ]
+            visible_content_ids = {content.id for content in visible_contents}
+            visible_versions = [
+                version
+                for version in self._versions[principal.organisation_id].values()
+                if version.content_id in visible_content_ids
+            ]
+            visible_version_ids = {version.id for version in visible_versions}
+            audits = [
+                audit
+                for audit in self._audits[principal.organisation_id].values()
+                if audit.content_id in visible_content_ids and in_window(audit.created_at)
+            ]
+            audit_ids = {audit.id for audit in audits}
+            audited_version_ids = {audit.content_version_id for audit in audits}
+            findings = [
+                finding
+                for finding in self._findings[principal.organisation_id].values()
+                if finding.content_version_id in visible_version_ids
+                and finding.audit_run_id in audit_ids
+            ]
+            decisions = [
+                decision
+                for decision in self._decisions[principal.organisation_id]
+                if decision.content_id in visible_content_ids and in_window(decision.created_at)
+            ]
+
+            def count_values(values: list[str]) -> dict[str, int]:
+                counts: dict[str, int] = {}
+                for value in values:
+                    counts[value] = counts.get(value, 0) + 1
+                return dict(sorted(counts.items()))
+
+            unresolved = {
+                FindingStatus.OPEN,
+                FindingStatus.ACCEPTED,
+                FindingStatus.EDITED,
+            }
+            open_findings = [finding for finding in findings if finding.status in unresolved]
+            open_high_priority = [
+                finding
+                for finding in open_findings
+                if finding.severity in HIGH_RISK_SEVERITIES
+            ]
+            content_status_counts = count_values(
+                [content.workflow_status.value for content in visible_contents]
+            )
+            audit_status_counts = count_values([audit.status.value for audit in audits])
+            finding_category_counts = count_values([finding.category.value for finding in findings])
+            finding_severity_counts = count_values([finding.severity.value for finding in findings])
+            decision_counts = count_values([decision.action.value for decision in decisions])
+
+            return {
+                "persistence": "in_memory_demo",
+                "organisation_id": principal.organisation_id,
+                "generated_at": now,
+                "window_start": window_start,
+                "window_end": now,
+                "window_days": window_days,
+                "content_count": len(visible_contents),
+                "audited_content_count": len({audit.content_id for audit in audits}),
+                "audited_version_count": len(audited_version_ids),
+                "audit_count": len(audits),
+                "finding_count": len(findings),
+                "open_finding_count": len(open_findings),
+                "open_high_priority_findings": len(open_high_priority),
+                "open_high_priority_finding_count": len(open_high_priority),
+                "content_status_counts": content_status_counts,
+                "approval_state_counts": content_status_counts,
+                "audit_status_counts": audit_status_counts,
+                "finding_category_counts": finding_category_counts,
+                "findings_by_category": finding_category_counts,
+                "finding_severity_counts": finding_severity_counts,
+                "review_decision_count": len(decisions),
+                "review_decision_counts": decision_counts,
+                "decisions_by_action": decision_counts,
+            }
+
     # -------------------------------------------------------------------------
     # Threaded comments
     # -------------------------------------------------------------------------
@@ -1138,6 +1267,31 @@ class InMemoryWorkflowStore:
                 for action in self._finding_actions[principal.organisation_id]
                 if action.finding_id in finding_ids
             ]
+            claims = [
+                claim
+                for audit in audits
+                for claim in audit.claims
+            ]
+            claim_links = [
+                claim_link
+                for audit in audits
+                for claim_link in audit.claim_links
+            ]
+            evidence_references: list[dict[str, Any]] = []
+            seen_evidence: set[str] = set()
+            for finding in findings:
+                if finding.evidence is None:
+                    continue
+                evidence = finding.evidence.model_dump(mode="json")
+                fingerprint = _canonical_json(evidence)
+                if fingerprint in seen_evidence:
+                    continue
+                seen_evidence.add(fingerprint)
+                evidence_references.append(evidence)
+            sorted_audits = sorted(audits, key=lambda value: (value.created_at, value.id))
+            latest_audit = sorted_audits[-1] if sorted_audits else None
+            sorted_decisions = sorted(decisions, key=lambda value: (value.created_at, value.id))
+            decision_rows = [decision.model_dump(mode="json") for decision in sorted_decisions]
             events = [
                 event
                 for event in self._events[principal.organisation_id]
@@ -1151,12 +1305,20 @@ class InMemoryWorkflowStore:
                 "persistence": "in_memory_demo",
                 "exported_at": _now().isoformat(),
                 "organisation_id": principal.organisation_id,
+                "current_version_id": content.current_version_id,
+                "content_version_id": content.current_version_id,
+                "review_status": content.workflow_status.value,
+                "audit_date": latest_audit.created_at.isoformat() if latest_audit else None,
                 "content": content.model_dump(mode="json"),
                 "versions": [version.model_dump(mode="json") for version in sorted(versions, key=lambda value: value.version)],
-                "audits": [audit.model_dump(mode="json") for audit in sorted(audits, key=lambda value: value.created_at)],
+                "audits": [audit.model_dump(mode="json") for audit in sorted_audits],
+                "claims": [claim.model_dump(mode="json") for claim in claims],
+                "claim_links": [claim_link.model_dump(mode="json") for claim_link in claim_links],
                 "findings": [finding.model_dump(mode="json") for finding in findings],
+                "evidence_references": evidence_references,
                 "comments": [comment.model_dump(mode="json") for comment in comments],
-                "decisions": [decision.model_dump(mode="json") for decision in decisions],
+                "decisions": decision_rows,
+                "review_decisions": decision_rows,
                 "finding_actions": [action.model_dump(mode="json") for action in finding_actions],
                 "audit_events": [event.model_dump(mode="json") for event in events],
                 "chain_verification": self.verify_chain(principal),

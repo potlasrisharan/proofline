@@ -2,7 +2,7 @@
 
 **Document status:** Local implementation boundary and future-control checklist; not a
 security certification or legal opinion.
-**Last reviewed:** October 25, 2026.
+**Last reviewed:** October 26, 2026.
 **Example tenant:** VoltEdge (fictional).
 
 This document describes the controls that can be evidenced in the current repository and
@@ -22,6 +22,16 @@ compliance, production readiness, or protection of real customer data.
 
 The local API is suitable for contract/RBAC tests with fictional data, not confidential
 production records.
+
+## User-facing local disclosure
+
+The `/privacy` route is **IMPLEMENTED (local demo)** and mirrors this boundary for demo
+users: no verified runtime model/provider receives frontend drafts, the local API is
+process-memory only, and `/submit`/`/findings` use browser session storage when
+available. The page labels the external AI/OCR/database/deployment paths as
+**STUB**, **PLANNED**, or **MISSING** where they are not verified. This build has no
+in-app confidential-material flag or deletion guarantee, so the safe local-use rule is
+fictional VoltEdge material only.
 
 ## Privacy principles
 

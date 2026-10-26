@@ -134,3 +134,40 @@ def test_configured_terms_disclaimers_and_measured_contrast_are_deterministic() 
     assert response.status_code == 201, response.text
     categories = {item["category"] for item in response.json()["findings"]}
     assert {"terminology", "accessibility"}.issubset(categories)
+
+
+def test_audited_content_export_includes_saved_ledger_and_review_metadata() -> None:
+    client = make_client()
+    approve(
+        client,
+        "facts",
+        {
+            "product": "VoltEdge NovaBook S1",
+            "attribute": "battery_life",
+            "value": 10,
+            "unit": "hours",
+            "qualifier": "up_to",
+        },
+        source_id="spec-voltedge-novabook",
+        source_version="3",
+    )
+    created = client.post(
+        "/contents",
+        json={
+            "title": "VoltEdge export sample",
+            "source_text": "VoltEdge NovaBook S1 gives you up to 20 hours of battery life.",
+        },
+    )
+    assert created.status_code == 201, created.text
+    content_id = created.json()["content_id"]
+
+    export = client.get(f"/v1/content/{content_id}/export")
+    assert export.status_code == 200, export.text
+    body = export.json()
+    assert body["persistence"] == "in_memory_demo"
+    assert body["content_version_id"] == body["current_version_id"]
+    assert body["review_status"] == "ai_checked"
+    assert body["claims"]
+    assert body["claim_links"]
+    assert body["evidence_references"]
+    assert body["evidence_references"][0]["source_id"] == "spec-voltedge-novabook"

@@ -178,5 +178,6 @@ Further documentation:
 - [`docs/AI_DISCLOSURE.md`](docs/AI_DISCLOSURE.md) — local implementation and external-processing disclosure
 - [`docs/PRIVACY_SECURITY.md`](docs/PRIVACY_SECURITY.md) — data, secret, tenancy, and security boundaries
 - [`docs/LIMITATIONS_ROADMAP.md`](docs/LIMITATIONS_ROADMAP.md) — current limitations and proposed next work
+- [`docs/PROGRESS_CHECKLIST.md`](docs/PROGRESS_CHECKLIST.md) — collaborator-facing implementation checklist and handoff
 - [`docs/USER_TESTING.md`](docs/USER_TESTING.md) — blank protocol/template for future research
 - [`CONTRIBUTIONS.md`](CONTRIBUTIONS.md) — blank contribution-record template

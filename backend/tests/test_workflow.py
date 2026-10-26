@@ -328,6 +328,90 @@ def test_written_action_history_and_json_export_survive_reopen() -> None:
     assert report["chain_verification"]["valid"] is True
 
 
+def test_review_decisions_are_listed_and_exported_with_current_review_metadata() -> None:
+    client, _store, content, _ = setup()
+    version_id = content["current_version_id"]
+    assert review(client, version_id, "submit").status_code == 200
+    requested = review(
+        client,
+        version_id,
+        "request_changes",
+        role="manager",
+        reason="Use the approved VoltEdge launch wording.",
+        comment="Please revise before the next review.",
+    )
+    assert requested.status_code == 200, requested.text
+
+    decisions = client.get(
+        f"/v1/content-versions/{version_id}/review-decisions",
+        headers=headers("manager"),
+    )
+    assert decisions.status_code == 200, decisions.text
+    rows = decisions.json()["items"]
+    assert [row["action"] for row in rows] == ["submit", "request_changes"]
+    assert rows[-1]["actor_id"] == "voltedge-manager"
+    assert rows[-1]["comment"] == "Please revise before the next review."
+
+    report = client.get(f"/v1/content/{content['id']}/export", headers=headers("creator"))
+    assert report.status_code == 200, report.text
+    exported = report.json()
+    assert exported["review_status"] == "changes_requested"
+    assert exported["content_version_id"] == version_id
+    assert exported["audit_date"]
+    assert exported["decisions"] == exported["review_decisions"]
+    assert len(exported["review_decisions"]) == 2
+
+
+def test_dashboard_summary_aggregates_saved_records_and_scopes_creator_visibility() -> None:
+    client, store, content, _ = setup([candidate(severity=FindingSeverity.HIGH)])
+    version_id = content["current_version_id"]
+    assert review(client, version_id, "submit").status_code == 200
+    assert review(
+        client,
+        version_id,
+        "request_changes",
+        role="manager",
+        reason="Please revise the fictional VoltEdge wording.",
+    ).status_code == 200
+
+    manager = principal(Role.MANAGER, user="voltedge-manager")
+    second_content, second_version = store.create_content(
+        manager,
+        ContentCreateRequest(title="VoltEdge second item", text="A second saved draft."),
+    )
+    store.create_audit(manager, second_version.id, AuditRequest())
+
+    manager_summary = client.get("/v1/dashboard/summary", headers=headers("manager"))
+    assert manager_summary.status_code == 200, manager_summary.text
+    manager_body = manager_summary.json()
+    assert manager_body["persistence"] == "in_memory_demo"
+    assert manager_body["organisation_id"] == ORG
+    assert manager_body["content_count"] == 2
+    assert manager_body["audited_content_count"] == 2
+    assert manager_body["audited_version_count"] == 2
+    assert manager_body["audit_count"] == 2
+    assert manager_body["finding_count"] == 1
+    assert manager_body["open_high_priority_findings"] == 1
+    assert manager_body["finding_category_counts"] == {"tone": 1}
+    assert manager_body["approval_state_counts"] == {"ai_checked": 1, "changes_requested": 1}
+    assert manager_body["review_decision_count"] == 2
+    assert manager_body["decisions_by_action"] == {"request_changes": 1, "submit": 1}
+
+    creator_summary = client.get("/v1/dashboard/summary", headers=headers("creator"))
+    assert creator_summary.status_code == 200, creator_summary.text
+    creator_body = creator_summary.json()
+    assert creator_body["content_count"] == 1
+    assert creator_body["audited_content_count"] == 1
+    assert creator_body["audit_count"] == 1
+    assert creator_body["finding_count"] == 1
+    assert creator_body["review_decision_count"] == 2
+    assert second_content.id not in {
+        item["id"] for item in client.get("/v1/content", headers=headers("creator")).json()["items"]
+    }
+
+    assert client.get("/v1/dashboard/summary?window_days=0", headers=headers("manager")).status_code == 422
+
+
 def test_hash_chain_verifier_detects_metadata_and_event_id_tampering() -> None:
     client, store, _content, _ = setup()
     verification = client.get("/v1/audit-events/verify-chain", headers=headers("brand_owner")).json()

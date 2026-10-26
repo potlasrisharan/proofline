@@ -542,9 +542,48 @@ class ReviewDecisionResponse(BaseModel):
     decision: ReviewDecision
 
 
+class ReviewDecisionsResponse(BaseModel):
+    persistence: Literal["in_memory_demo"]
+    content_version_id: str
+    items: list[ReviewDecision]
+
+
 class AuditEventsResponse(BaseModel):
     persistence: Literal["in_memory_demo"]
     items: list[AuditEvent]
+
+
+class DashboardSummaryResponse(BaseModel):
+    """Saved-record aggregates exposed by the local dashboard boundary.
+
+    The summary is deliberately count-based and organisation/visibility scoped.  It
+    reports the in-memory adapter explicitly so the response cannot be mistaken for
+    durable production analytics.
+    """
+
+    persistence: Literal["in_memory_demo"]
+    organisation_id: str
+    generated_at: datetime
+    window_start: datetime | None = None
+    window_end: datetime
+    window_days: int | None = None
+    content_count: int = Field(ge=0)
+    audited_content_count: int = Field(ge=0)
+    audited_version_count: int = Field(ge=0)
+    audit_count: int = Field(ge=0)
+    finding_count: int = Field(ge=0)
+    open_finding_count: int = Field(ge=0)
+    open_high_priority_findings: int = Field(ge=0)
+    open_high_priority_finding_count: int = Field(ge=0)
+    content_status_counts: dict[str, int] = Field(default_factory=dict)
+    approval_state_counts: dict[str, int] = Field(default_factory=dict)
+    audit_status_counts: dict[str, int] = Field(default_factory=dict)
+    finding_category_counts: dict[str, int] = Field(default_factory=dict)
+    findings_by_category: dict[str, int] = Field(default_factory=dict)
+    finding_severity_counts: dict[str, int] = Field(default_factory=dict)
+    review_decision_count: int = Field(ge=0)
+    review_decision_counts: dict[str, int] = Field(default_factory=dict)
+    decisions_by_action: dict[str, int] = Field(default_factory=dict)
 
 
 class ContentAuditResponse(BaseModel):
