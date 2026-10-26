@@ -29,10 +29,13 @@ export function Phase4Shell({ current, eyebrow, title, description, children }: 
           <span>VoltEdge workspace</span>
         </div>
         <nav className="nav-list" aria-label="Primary">
-          <Link className="nav-item" href="/"><span aria-hidden="true">◈</span>Overview &amp; review queue</Link>
+          <Link className="nav-item" href="/"><span aria-hidden="true">◈</span>Overview</Link>
+          <Link className="nav-item" href="/?view=reviews"><span aria-hidden="true">◇</span>Review queue</Link>
           <Link className="nav-item" href="/submit"><span aria-hidden="true">＋</span>Submit content</Link>
+          <Link className="nav-item" href="/?view=registry"><span aria-hidden="true">▦</span>Truth registry</Link>
           <Link className={`nav-item ${current === "impact" ? "active" : ""}`} href="/impact" aria-current={current === "impact" ? "page" : undefined}><span aria-hidden="true">!</span>Impact radar</Link>
           <Link className={`nav-item ${current === "insights" ? "active" : ""}`} href="/insights" aria-current={current === "insights" ? "page" : undefined}><span aria-hidden="true">⌁</span>Governance insights</Link>
+          <Link className="nav-item" href="/?view=audit-log"><span aria-hidden="true">≋</span>Audit log</Link>
           <Link className="nav-item" href="/privacy"><span aria-hidden="true">◌</span>Privacy &amp; AI disclosure</Link>
         </nav>
         <div className="sidebar-bottom">

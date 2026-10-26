@@ -423,8 +423,14 @@ function roleInitials(role: ProoflineRole) {
   return role === "legal_reviewer" ? "AR" : role === "brand_owner" ? "BO" : role === "creator" ? "CR" : role === "manager" ? "MG" : "AG";
 }
 
+function initialDashboardView(): View {
+  if (typeof window === "undefined") return "overview";
+  const requestedView = new URLSearchParams(window.location.search).get("view");
+  return requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log" ? requestedView : "overview";
+}
+
 export default function Home() {
-  const [activeView, setActiveView] = useState<View>("overview");
+  const [activeView, setActiveView] = useState<View>(initialDashboardView);
   const [detailTab, setDetailTab] = useState<DetailTab>("findings");
   const [auditState, setAuditState] = useState<AuditState>("needs-changes");
   const [findings, setFindings] = useState<Finding[]>(initialFindings);
@@ -491,6 +497,7 @@ export default function Home() {
       return;
     }
     setActiveView(view);
+    window.history.replaceState(null, "", view === "overview" ? "/" : `/?view=${view}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -731,7 +738,7 @@ export default function Home() {
               <div className="dashboard-grid">
                 <section className="panel workflow-panel">
                   <div className="panel-heading"><div><p className="eyebrow">The Proofline method</p><h2>From source to sign-off</h2></div><span className="panel-badge">3 steps</span></div>
-                  <div className="workflow-list">{workflow.map((step) => <div className="workflow-row" key={step.number}><span className="step-number">{step.number}</span><div><strong>{step.title}</strong><p>{step.detail}</p></div><span className="row-arrow" aria-hidden="true">↗</span></div>)}</div>
+                   <div className="workflow-list">{workflow.map((step) => <button className="workflow-row" key={step.number} type="button" onClick={() => navigate(step.number === "01" ? "registry" : step.number === "02" ? "reviews" : "audit-log")}><span className="step-number">{step.number}</span><span><strong>{step.title}</strong><p>{step.detail}</p></span><span className="row-arrow" aria-hidden="true">↗</span></button>)}</div>
                   <div className="workflow-note"><span>✦</span> Every finding keeps its evidence trail.</div>
                 </section>
 

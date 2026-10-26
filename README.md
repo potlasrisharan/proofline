@@ -37,6 +37,29 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000). The UI is local and seeded; it does
 not require an account, API key, database, or external service.
 
+### Navigation guide
+
+The local UI has a guided review path and direct links for each major surface:
+
+1. **Overview** — see the workspace summary and choose a review role.
+2. **Review queue** — filter the seeded queue, open the NovaBook S1 review, inspect findings,
+   comments, revisions, and approval actions.
+3. **Submit content** — paste a text draft, set its channel/region/language, and run the
+   local evidence check using fictional VoltEdge data.
+4. **Findings** — inspect highlighted spans, evidence status, corrections, re-checks, and
+   revision history for the submitted draft.
+5. **Truth registry** — view the seeded facts, terminology, policy, and accessibility records.
+6. **Impact radar** — inspect the local fact-change and expiry revalidation demonstration.
+7. **Governance insights** — inspect synthetic recurring-issue and guideline-gap signals.
+8. **Audit log** — review the local hash-linked activity history when the selected role has
+   access.
+9. **Privacy & AI disclosure** — see which services are actually connected and which remain
+   `STUB`, `PLANNED`, or `MISSING`.
+
+The dashboard tabs are also deep-linkable: `/?view=reviews`, `/?view=registry`,
+`/?view=insights`, and `/?view=audit-log`. These links improve navigation only; they do
+not change the local/demo persistence or authentication boundary described below.
+
 ### UI plus local API foundation
 
 The combined launcher requires Bash and Python **3.11 or newer**; the CI/container
