@@ -1,4 +1,4 @@
-import type { Finding } from "./proofline-api";
+import type { BackendFinding, ContentAuditResponse, Finding } from "./proofline-api";
 
 /** Local, synthetic VoltEdge review adapter. No network/model call or approval occurs. */
 export type ContentScope = {
@@ -45,6 +45,7 @@ export type ContentAudit = {
 export type ContentReview = {
   schema_version: 1;
   id: string;
+  api_content_id?: string;
   scope: ContentScope;
   revisions: ContentRevision[];
   audits: ContentAudit[];
@@ -87,6 +88,8 @@ export const categoryLabels: Record<Finding["category"], string> = {
   visual: "Visual review",
   accessibility: "Accessibility",
   translation: "Language review",
+  security: "Security",
+  other: "Other review",
 };
 
 export const methodLabels = { rule: "Deterministic rule", llm: "AI-assisted", hybrid: "Rule + AI" };
@@ -213,6 +216,155 @@ export function recheckContent(review: ContentReview): ContentReview {
   const revision = latestRevision(review);
   const audit = auditRevision(revision, review.scope);
   return { ...review, audits: [...review.audits, audit], events: [...review.events, { id: uid("event"), actor: "Local deterministic checker", timestamp: audit.created_at, action: "audited", content_version_id: revision.id, finding_id: null, reason: `Fresh check of version ${revision.number}; ${audit.findings.length} finding(s). Contextual and visual checks remain unassessed.`, before: null, after: null }] };
+}
+
+const backendCategoryMap: Record<string, Finding["category"]> = {
+  factual: "factual",
+  fact_mismatch: "factual",
+  offer_date: "offer_date",
+  outdated_fact_or_offer: "offer_date",
+  terminology: "terminology",
+  terminology_violation: "terminology",
+  tone: "tone",
+  tone_messaging_mismatch: "tone",
+  promotional: "promotional",
+  unsupported_claim: "promotional",
+  legal: "legal",
+  configured_policy_disclaimer: "legal",
+  visual: "visual",
+  visual_mismatch: "visual",
+  accessibility: "accessibility",
+  accessibility_issue: "accessibility",
+  translation: "translation",
+  security: "security",
+};
+
+function mapBackendFinding(finding: BackendFinding): Finding {
+  const severity = finding.severity === "critical" || finding.severity === "high" || finding.severity === "low"
+    ? finding.severity
+    : "medium";
+  const status = ["open", "accepted", "edited", "dismissed", "resolved", "overridden"].includes(finding.status)
+    ? finding.status as Finding["status"]
+    : "open";
+  return {
+    id: finding.id,
+    content_version_id: finding.content_version_id,
+    span: finding.span,
+    category: backendCategoryMap[finding.category] ?? "other",
+    verdict: finding.verdict,
+    severity,
+    confidence: finding.confidence,
+    method: finding.method,
+    evidence: finding.evidence,
+    reason: finding.reason,
+    suggestion: finding.suggestion,
+    status,
+    dismiss_reason: finding.dismiss_reason,
+  };
+}
+
+function backendTimestamp(response: ContentAuditResponse) {
+  return response.audit?.created_at
+    ?? response.audits?.find((audit) => audit.id === response.audit_id)?.created_at
+    ?? new Date().toISOString();
+}
+
+function backendVersionText(version: NonNullable<ContentAuditResponse["content_version"]>) {
+  return version.source_text ?? version.extracted_text ?? "";
+}
+
+/** Convert a verified local API response into the browser review presentation shape. */
+export function contentReviewFromApi(
+  scope: ContentScope,
+  response: ContentAuditResponse,
+  previous?: ContentReview,
+): ContentReview {
+  const versionRows = response.versions?.length
+    ? response.versions
+    : response.content_version
+      ? [response.content_version]
+      : [];
+  const revisions: ContentRevision[] = versionRows.map((version) => ({
+    id: version.id,
+    number: version.version,
+    text: backendVersionText(version),
+    alt_text: typeof version.metadata.alt_text === "string" ? version.metadata.alt_text : scope.alt_text,
+    created_at: version.created_at,
+    based_on: version.parent_version_id,
+  }));
+  const currentVersion = response.content_version_id;
+  const currentAudit: ContentAudit = {
+    id: response.audit_id ?? `api-audit-${currentVersion}`,
+    content_version_id: currentVersion,
+    created_at: backendTimestamp(response),
+    findings: response.findings.map(mapBackendFinding),
+    status: response.status === "completed" ? "checked" : "review_required",
+  };
+  const previousAudits = previous?.audits.filter((audit) => audit.content_version_id !== currentVersion) ?? [];
+  const summaryAudits = (response.audits ?? [])
+    .filter((audit) => audit.content_version_id !== currentVersion)
+    .map((audit) => ({
+      id: audit.id,
+      content_version_id: audit.content_version_id,
+      created_at: audit.created_at,
+      findings: previousAudits.find((item) => item.id === audit.id)?.findings ?? [],
+      status: audit.status === "completed" ? "checked" as const : "review_required" as const,
+    }));
+  const audits = [...previousAudits, ...summaryAudits, currentAudit]
+    .filter((audit, index, items) => items.findIndex((candidate) => candidate.id === audit.id) === index)
+    .sort((left, right) => left.created_at.localeCompare(right.created_at));
+  const events = [...(previous?.events ?? [])];
+  if (!events.some((event) => event.action === "submitted")) {
+    events.unshift({
+      id: `api-submitted-${response.content_id}`,
+      actor: "Local API creator",
+      timestamp: revisions[0]?.created_at ?? currentAudit.created_at,
+      action: "submitted",
+      content_version_id: revisions[0]?.id ?? currentVersion,
+      finding_id: null,
+      reason: null,
+      before: null,
+      after: null,
+    });
+  }
+  if (!events.some((event) => event.action === "audited" && event.content_version_id === currentVersion)) {
+    events.push({
+      id: `api-audited-${currentAudit.id}`,
+      actor: "Local API verification pipeline",
+      timestamp: currentAudit.created_at,
+      action: "audited",
+      content_version_id: currentVersion,
+      finding_id: null,
+      reason: response.error ?? `Local API audit status: ${response.status}.`,
+      before: null,
+      after: null,
+    });
+  }
+  for (const action of response.actions ?? []) {
+    const eventAction = action.action === "accept" ? "accepted" : action.action === "edit" ? "edited" : "dismissed";
+    const eventId = `api-action-${action.finding_id}-${action.created_at}-${action.action}`;
+    if (events.some((event) => event.id === eventId)) continue;
+    events.push({
+      id: eventId,
+      actor: "Local API reviewer",
+      timestamp: action.created_at,
+      action: eventAction,
+      content_version_id: currentVersion,
+      finding_id: action.finding_id,
+      reason: action.reason,
+      before: null,
+      after: action.replacement_text,
+    });
+  }
+  return {
+    schema_version: 1,
+    id: response.content_id,
+    api_content_id: response.content_id,
+    scope,
+    revisions,
+    audits,
+    events,
+  };
 }
 
 export function riskBreakdown(findings: Finding[], channel: ContentScope["channel"]) {

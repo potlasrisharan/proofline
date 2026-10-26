@@ -16,8 +16,10 @@ export type Finding = {
     | "promotional"
     | "legal"
     | "visual"
-    | "accessibility"
-    | "translation";
+     | "accessibility"
+     | "translation"
+     | "security"
+     | "other";
   verdict: "supported" | "contradicted" | "outdated" | "unsupported" | "needs_human";
   severity: "critical" | "high" | "medium" | "low";
   confidence: number;
@@ -30,7 +32,7 @@ export type Finding = {
   } | null;
   reason: string;
   suggestion: { text: string; intent_note: string } | null;
-  status: "open" | "accepted" | "edited" | "dismissed";
+  status: "open" | "accepted" | "edited" | "dismissed" | "resolved" | "overridden";
   dismiss_reason: string | null;
 };
 
@@ -145,6 +147,13 @@ export type ContentAuditResponse = {
     status: string;
     created_at: string;
   }>;
+  audit?: {
+    id: string;
+    content_version_id: string;
+    status: string;
+    created_at: string;
+    completed_at?: string | null;
+  } | null;
   actions?: Array<{
     finding_id: string;
     action: string;
@@ -255,6 +264,8 @@ export function getLocalApiConfig(): LocalApiConfig | null {
   if (process.env.NEXT_PUBLIC_PROOFLINE_LOCAL_API !== "true") return null;
   const baseUrl = process.env.NEXT_PUBLIC_PROOFLINE_API_URL?.trim();
   if (!baseUrl) return null;
+  const auth = process.env.NEXT_PUBLIC_PROOFLINE_API_AUTH?.trim() || "local_headers";
+  if (auth !== "development_headers" && auth !== "local_headers") return null;
   const role = (process.env.NEXT_PUBLIC_PROOFLINE_API_ROLE?.trim() || "creator") as ProoflineRole;
   if (!(["creator", "manager", "legal_reviewer", "brand_owner", "agency"] as string[]).includes(role)) return null;
   return {
@@ -263,9 +274,7 @@ export function getLocalApiConfig(): LocalApiConfig | null {
     organisation: process.env.NEXT_PUBLIC_PROOFLINE_API_ORGANISATION?.trim() || "org-voltedge-ui",
     role,
     agency: process.env.NEXT_PUBLIC_PROOFLINE_API_AGENCY?.trim() || undefined,
-    auth: process.env.NEXT_PUBLIC_PROOFLINE_API_AUTH?.trim() === "local_headers"
-      ? "local_headers"
-      : "cloudflare_access",
+    auth: "local_headers",
   };
 }
 

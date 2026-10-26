@@ -12,7 +12,7 @@ or a deployed service.
 |---|---|---|
 | Next.js UI under `app/` | **IMPLEMENTED (local demo)** | A seeded fictional VoltEdge workspace with local React state for the review loop, comments, role preview, and synthetic audit-log display. |
 | FastAPI health, vault, content-audit, impact, workflow, dashboard, and export routes | **IMPLEMENTED (local)** | Health, organisation-scoped in-memory vault CRUD/version/approval, bounded local content ingestion/audit, saved-record dashboard summaries, review/comment/export transitions, and impact routes. |
-| Browser API client | **IMPLEMENTED (boundary only)** | Typed client in `app/lib/proofline-api.ts`; the seeded UI does not call it. |
+| Browser API client | **IMPLEMENTED (opt-in local boundary)** | Typed client in `app/lib/proofline-api.ts`; content submit/recheck/finding actions use it only with explicit local development-header configuration, while the default seeded demo remains browser-local. |
 | Cloudflare Pages/Workers deployment foundation | **READY / NOT DEPLOYED** | Static Pages build, Python Worker ASGI entrypoint, D1/R2/Queue bindings, and deployment docs exist; resource IDs, auth, adapters, and smoke deployment remain unverified. |
 | Cloudflare D1/R2/Queue persistence foundation | **STUB / PLANNED** | D1 schema/seed and Wrangler bindings exist; no live resources or durable adapter are connected. |
 | Legacy Supabase migration and VoltEdge seed | **LEGACY / NOT TARGET** | Retained as historical PostgreSQL/RLS reference only; Supabase is no longer the planned deployment target. |
@@ -218,8 +218,9 @@ server on port 3100 and requires that port to be free.
   evidence of a connected Cloudflare account or durable runtime.
 - `supabase/` contains a retained legacy PostgreSQL/RLS migration and fictional VoltEdge
   seed for historical reference; it is no longer the planned deployment target.
-- `app/lib/proofline-api.ts` defines a typed boundary for future API wiring; the current
-  seeded screen intentionally does not invoke it.
+- `app/lib/proofline-api.ts` defines the typed API boundary. The content review screen
+  invokes it only in the explicit local development-header mode; the default seeded demo
+  intentionally remains browser-local.
 - `backend/Dockerfile` remains a local/container fallback. `wrangler.jsonc` and
   `backend/worker.py` define the Cloudflare Worker pairing, but no hosted runtime is
   claimed until a project is created and smoke-tested.

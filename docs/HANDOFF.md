@@ -156,3 +156,18 @@
 - **Next chat must know:** the working tree is intended to be clean and the Cloudflare
   foundation remains local/ready but not deployed; no external credentials or live service
   claims were added.
+
+## 2026-10-26 17:09 IST — Opt-in browser API path verified
+
+- **Completed locally:** the typed browser client now supports vault/content/recheck/
+  finding-action requests, and `/submit`/`/findings` use it only with
+  `NEXT_PUBLIC_PROOFLINE_LOCAL_API=true` plus local `development_headers`. API failures are
+  visible; the default seeded browser demo remains sessionStorage/local-rule based.
+- **Verified:** optional API-mode frontend run passed **10 Playwright tests** against a
+  local FastAPI process with development headers. Default `npm test` passed **9 browser
+  tests** (the opt-in test skipped), 139 backend/report-safety tests, and the read-only
+  report check. Standalone pytest passed 146 tests, API E2E passed 4 tests, and the
+  correctly scoped 52-case evaluator reported 0 honest failures.
+- **Still open:** Cloudflare Access, D1/R2/Queues, external AI/OCR, hosted deployment,
+  durable persistence, and production authentication remain unverified. Do not claim the
+  optional local API mode is production authentication or durable storage.

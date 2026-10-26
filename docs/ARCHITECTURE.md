@@ -23,13 +23,13 @@ route is documented.
 flowchart LR
   subgraph Actual[IMPLEMENTED locally]
     Browser["Next.js 16 + React 19 + TypeScript<br/>seeded VoltEdge UI<br/>local React state"]
-    ApiClient["Typed browser API boundary<br/>app/lib/proofline-api.ts<br/>not invoked by demo UI"]
+    ApiClient["Typed browser API boundary<br/>app/lib/proofline-api.ts<br/>opt-in local mode"]
     FastAPI["FastAPI foundation<br/>health + vault + workflow routes"]
     Auth["Opt-in dev headers<br/>or HS256 JWT verification"]
     Memory[("InMemoryVaultStore<br/>persistence: in_memory_demo")]
     Workflow[("InMemoryWorkflowStore<br/>content/review/audit ledger<br/>in_memory_demo")]
     LocalAudit["Local ingestion + deterministic audit<br/>evidence/span/schema validation<br/>optional provider abstention"]
-    Browser -.->|not wired in current demo| ApiClient
+    Browser -.->|opt-in local mode; default stays seeded| ApiClient
     ApiClient -.->|available boundary| FastAPI
     FastAPI --> Auth
     FastAPI --> Memory
@@ -72,15 +72,18 @@ the target component is active.
 - `app/page.tsx` renders a seeded fictional VoltEdge workspace. Review findings,
   corrections, re-scan, comments, role preview, submission, approval, registry cards,
   insights, and synthetic audit events are local component state.
-- The screen displays demo-state cues and does not make a backend call.
+- The default screen displays demo-state cues and does not make a backend call; the
+  content review routes have an explicit local development-header opt-in.
 - The root `index.html`, `app.js`, and `styles.css` are retained prototype assets and are
   not the runnable product entry point.
 
-### Typed API boundary — **IMPLEMENTED (unused boundary)**
+### Typed API boundary — **IMPLEMENTED (opt-in local boundary)**
 
-`app/lib/proofline-api.ts` defines typed vault resource shapes and request helpers for
-the local FastAPI routes. The current page does not invoke this client. Authentication,
-durable persistence, and content-audit wiring therefore remain unresolved.
+`app/lib/proofline-api.ts` defines typed vault/content/recheck/finding-action shapes and
+request helpers for the local FastAPI routes. `/submit` and `/findings` invoke this client
+only when the explicit local development-header mode is enabled; the default page remains
+seeded browser state. Production authentication, durable persistence, and hosted content
+audit remain unresolved.
 
 ### FastAPI foundation — **IMPLEMENTED (local)**
 
@@ -146,7 +149,7 @@ Queue, Access policy, or durable runtime adapter is verified.
 | Decision area | Actual repository choice | Planned or unresolved choice | Why the boundary exists |
 |---|---|---|---|
 | Frontend framework | Next.js 16 + React 19 + TypeScript | The PRD's alternative Vite/Tailwind/shadcn direction remains **PLANNED** unless a later migration is verified. | Preserve the runnable application and avoid a parallel frontend. |
-| UI data source | Seeded local React state | Wire the typed client to a durable API after authentication and persistence exist. | The current screen is a demonstration, not a connected workspace. |
+| UI data source | Seeded local React state by default; opt-in local API for `/submit` and `/findings` | Wire the typed client to a durable API after production authentication and persistence exist. | The default screen is a demonstration; the opt-in path is local/in-memory and not production auth. |
 | API runtime | FastAPI with local health, vault, content-audit, impact, and review routes | Add durable adapters and verify external provider execution behind the contract. | Keep a small server-side boundary while persistence and hosted services remain incomplete. |
 | Vault persistence | `InMemoryVaultStore` (**IMPLEMENTED locally**) | Cloudflare D1 adapter with tenant isolation and durable history (**PLANNED**). | Avoid presenting ephemeral state as production data. |
 | Authentication | Opt-in dev headers and optional local JWT verifier (**IMPLEMENTED locally**) | Cloudflare Access JWT verification plus D1 membership/session mapping (**PLANNED**). | A client-supplied organisation ID is never sufficient authorization. |

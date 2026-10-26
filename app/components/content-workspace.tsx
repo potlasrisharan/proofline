@@ -3,11 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useSyncExternalStore, type ChangeEvent, type FormEvent, type ReactNode } from "react";
-import type { Finding } from "../lib/proofline-api";
+import {
+  createLocalApiClient,
+  type ContentAuditResponse,
+  type Finding,
+} from "../lib/proofline-api";
 import {
   applyFindingDecision, categoryLabels, channelLabels, createContentReview,
-  defaultContentScope, languageLabels, latestAudit, latestRevision, methodLabels,
-  recheckContent, regionLabels, riskBreakdown, sampleVoltEdgeText, verdictLabels,
+  contentReviewFromApi, defaultContentScope, languageLabels, latestAudit, latestRevision,
+  methodLabels, recheckContent, regionLabels, riskBreakdown, sampleVoltEdgeText, verdictLabels,
   type ContentReview, type ContentScope,
 } from "../lib/content-review";
 
@@ -50,6 +54,19 @@ function timestamp(value: string) {
   return new Date(value).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", second: "2-digit" });
 }
 
+function exposureForChannel(channel: ContentScope["channel"]): 1 | 2 | 3 {
+  return channel === "social" || channel === "web" ? 3 : channel === "email" ? 2 : 1;
+}
+
+function apiMetadata(scope: ContentScope) {
+  return {
+    fictional: true,
+    scheduled_date: scope.scheduled_date || null,
+    alt_text: scope.alt_text,
+    has_image: scope.has_image,
+  };
+}
+
 function Preview({ text, findings, selected, onSelect }: { text: string; findings: Finding[]; selected: string | null; onSelect: (id: string) => void }) {
   const pieces: ReactNode[] = [];
   let cursor = 0;
@@ -66,6 +83,7 @@ function Preview({ text, findings, selected, onSelect }: { text: string; finding
 
 export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   const router = useRouter();
+  const localApi = useMemo(() => createLocalApiClient(), []);
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => null);
   const review = useMemo(() => parseReview(snapshot), [snapshot]);
   const [scope, setScope] = useState<ContentScope>(defaultContentScope);
@@ -79,6 +97,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   const [actionText, setActionText] = useState("");
   const [contentTab, setContentTab] = useState<"audited" | "current" | "original">("audited");
   const [message, setMessage] = useState("");
+  const [apiBusy, setApiBusy] = useState(false);
   const audit = review ? latestAudit(review) : null;
   const revision = review ? latestRevision(review) : null;
   const auditedRevision = review?.revisions.find((item) => item.id === audit?.content_version_id) ?? null;
@@ -121,18 +140,85 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
     }
   }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     if (!text.trim()) { setError("Paste content or upload a readable .txt file before running the check."); return; }
     if (!scope.title.trim()) { setError("Give this content a review name."); return; }
-    const next = createContentReview(text, { ...scope, title: scope.title.trim() });
-    saveReview(next);
-    router.push("/findings");
+    const nextScope = { ...scope, title: scope.title.trim() };
+    if (!localApi) {
+      saveReview(createContentReview(text, nextScope));
+      router.push("/findings");
+      return;
+    }
+    setApiBusy(true);
+    try {
+      const response = await localApi.client.createContent({
+        title: nextScope.title,
+        content_type: "text",
+        text,
+        confidential: nextScope.confidential,
+        exposure: exposureForChannel(nextScope.channel),
+        product: "VoltEdge NovaBook S1",
+        market: nextScope.region,
+        channel: nextScope.channel,
+        language: nextScope.language,
+        metadata: apiMetadata(nextScope),
+      });
+      saveReview(contentReviewFromApi(nextScope, response));
+      router.push("/findings");
+    } catch (caught) {
+      setError(caught instanceof Error ? `Local API audit failed: ${caught.message}` : "Local API audit failed. Review is not marked successful.");
+    } finally {
+      setApiBusy(false);
+    }
   }
 
-  function decide(finding: Finding, action: "accepted" | "edited" | "dismissed", value: string) {
+  async function decide(finding: Finding, action: "accepted" | "edited" | "dismissed", value: string) {
     if (!review) return;
+    if (review.api_content_id) {
+      if (!localApi || !review.api_content_id) {
+        setError("This review uses the local API, but the API configuration is not available in this browser session.");
+        return;
+      }
+      setApiBusy(true);
+      try {
+        const response = await localApi.client.actOnFinding(finding.id, {
+          action: action === "accepted" ? "accept" : action === "edited" ? "edit" : "dismiss",
+          reason: action === "dismissed" ? value : undefined,
+          replacement_text: action === "edited" ? value : undefined,
+        });
+        let nextResponse: ContentAuditResponse = response;
+        if (action === "edited") {
+          const audited = review.revisions.find((item) => item.id === finding.content_version_id);
+          if (!audited || audited.text.slice(finding.span.start, finding.span.end) !== finding.span.text) {
+            throw new Error("The finding no longer matches the audited source. Run a fresh check.");
+          }
+          const revisedText = `${audited.text.slice(0, finding.span.start)}${value}${audited.text.slice(finding.span.end)}`;
+          nextResponse = await localApi.client.recheckContent(review.api_content_id, {
+            text: revisedText,
+            confidential: review.scope.confidential,
+            exposure: exposureForChannel(review.scope.channel),
+            product: "VoltEdge NovaBook S1",
+            market: review.scope.region,
+            channel: review.scope.channel,
+            language: review.scope.language,
+            metadata: apiMetadata(review.scope),
+          });
+        }
+        saveReview(contentReviewFromApi(review.scope, nextResponse, review));
+        setActionFindingId(null);
+        setActionMode(null);
+        setActionText("");
+        setMessage(action === "dismissed" ? "Dismissal recorded by the local API with its reason and audit record." : "Local API action recorded. The source version and audit history remain available for comparison.");
+        setError("");
+      } catch (caught) {
+        setError(caught instanceof Error ? `Local API action failed: ${caught.message}` : "Local API action failed. No successful state is shown.");
+      } finally {
+        setApiBusy(false);
+      }
+      return;
+    }
     try {
       saveReview(applyFindingDecision(review, finding.id, action, value));
       setActionFindingId(null);
@@ -149,8 +235,38 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
     document.getElementById(`pl-finding-${id}`)?.focus({ preventScroll: true });
   }
 
-  function recheck() {
+  async function recheck() {
     if (!review) return;
+    if (review.api_content_id) {
+      if (!localApi || !review.api_content_id) {
+        setError("This review uses the local API, but the API configuration is not available in this browser session.");
+        return;
+      }
+      setApiBusy(true);
+      try {
+        const current = latestRevision(review);
+        const response = await localApi.client.recheckContent(review.api_content_id, {
+          text: current.text,
+          confidential: review.scope.confidential,
+          exposure: exposureForChannel(review.scope.channel),
+          product: "VoltEdge NovaBook S1",
+          market: review.scope.region,
+          channel: review.scope.channel,
+          language: review.scope.language,
+          metadata: apiMetadata(review.scope),
+        });
+        saveReview(contentReviewFromApi(review.scope, response, review));
+        setSelectedFindingId(null);
+        setContentTab("audited");
+        setMessage("Fresh local API check recorded against the current content version. External AI/OCR and final approval remain unconfigured.");
+        setError("");
+      } catch (caught) {
+        setError(caught instanceof Error ? `Local API recheck failed: ${caught.message}` : "Local API recheck failed. No successful state is shown.");
+      } finally {
+        setApiBusy(false);
+      }
+      return;
+    }
     saveReview(recheckContent(review));
     setSelectedFindingId(null);
     setContentTab("audited");
@@ -167,7 +283,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
         <div className="sidebar-bottom"><div className="registry-health"><span className="health-dot" /><div><strong>Synthetic source set</strong><small>Browser-tab demo · no backend sync</small></div></div><div className="profile-card"><span className="avatar">VE</span><div><strong>VoltEdge demo creator</strong><small>Explicit revision actions</small></div></div></div>
       </aside>
       <section className="main-content" id="pl-main" tabIndex={-1}>
-        <header className="topbar"><div className="breadcrumb"><span>VoltEdge</span><i>/</i><strong>{stage === "submit" ? "Submit content" : "Evidence review"}</strong></div><span className="pl-demo-label">IMPLEMENTED · local demo</span></header>
+        <header className="topbar"><div className="breadcrumb"><span>VoltEdge</span><i>/</i><strong>{stage === "submit" ? "Submit content" : "Evidence review"}</strong></div><span className="pl-demo-label">{review?.api_content_id ? "IMPLEMENTED · local API" : localApi ? "IMPLEMENTED · local API opt-in" : "IMPLEMENTED · local demo"}</span></header>
         <div className="content-wrap pl-content-wrap">
           <div className="page-heading compact-heading"><div><p className="eyebrow">{stage === "submit" ? "Content intake" : "Findings & corrections"}</p><h1>{stage === "submit" ? "Bring the context with the draft." : "Every flag has an explanation."}</h1><p className="lede">{stage === "submit" ? "Paste or upload text, set its publication context, and run bounded checks against fictional VoltEdge sources." : "Inspect the exact span, its source version, and the limits of the check before choosing a correction."}</p></div>{stage === "findings" ? <Link className="ghost-button pl-link-button" href="/submit">Submit another draft</Link> : null}</div>
           {error ? <div className="form-error pl-message" role="alert">{error}</div> : null}
@@ -186,7 +302,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                  <label className="pl-check-label"><input type="checkbox" checked={scope.confidential} onChange={(event) => updateScope("confidential", event.target.checked)} /><span>Mark this draft confidential for local handling</span></label>
                  {scope.confidential ? <p className="pl-helper" role="status">Confidential marker recorded in this browser tab. The local demo makes no external request, but it does not provide server-side deletion or production confidentiality guarantees.</p> : null}
                  <label className="field-label" htmlFor="pl-alt">Image alt text<textarea id="pl-alt" rows={3} value={scope.alt_text} maxLength={2000} onChange={(event) => updateScope("alt_text", event.target.value)} placeholder="Describe the actual image in the context of this message." /></label>
-                <div className="submit-form-footer"><p><strong>Local browser-tab state.</strong> No content is sent to an external model or backend. Nothing is auto-applied, approved, or published.</p><button className="primary-button" type="submit" disabled={uploading}>{uploading ? "Reading file…" : "Run local evidence check"}</button></div>
+                <div className="submit-form-footer"><p><strong>{localApi ? "Opt-in local API mode." : "Local browser-tab state."}</strong> {localApi ? "The configured local API receives this fictional VoltEdge draft and returns an in-memory audit; no external provider is called." : "No content is sent to an external model or backend."} Nothing is auto-applied, approved, or published.</p><button className="primary-button" type="submit" disabled={uploading || apiBusy}>{uploading ? "Reading file…" : apiBusy ? "Running local API check…" : "Run local evidence check"}</button></div>
               </form>
               <aside className="submit-sidebar"><section className="panel context-panel"><div className="panel-heading"><h2>Scope of this check</h2></div><div className="scope-list"><div><span className="scope-icon" aria-hidden="true">⌁</span><span><strong>Synthetic, versioned VoltEdge sources</strong><small>Facts and rules are demonstration records, not production brand knowledge.</small></span></div><div><span className="scope-icon" aria-hidden="true">⌗</span><span><strong>{channelLabels[scope.channel]}</strong><small>{regionLabels[scope.region]} · {languageLabels[scope.language]}</small></span></div><div><span className="scope-icon" aria-hidden="true">◷</span><span><strong>{scope.scheduled_date || "No publication date"}</strong><small>This date is retained as context; no external scheduling occurs.</small></span></div></div></section><section className="panel intake-checklist"><h2>Evidence before assertion</h2><ul><li><span aria-hidden="true">✓</span><div><strong>Missing evidence stays unverified</strong><p>A missing source is never treated as proof that a claim is false.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>AI status stays visible</strong><p>Contextual model review is STUB. All checks on this page run as local rules.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>Decisions remain explicit</strong><p>Accept or edit a correction, or dismiss it with a written reason.</p></div></li></ul></section></aside>
             </div>
@@ -199,7 +315,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <section className="pl-content-column" aria-label="Content and risk">
                   <section className="content-preview-card enhanced-content-preview"><div className="content-preview-header"><h2>Content spans</h2><span className="content-version">Audited v{auditedRevision.number}</span></div><div className="pl-preview-tabs" aria-label="Content versions">{(["audited", "current", "original"] as const).map((tab) => <button className={contentTab === tab ? "active" : ""} type="button" key={tab} aria-pressed={contentTab === tab} onClick={() => setContentTab(tab)}>{tab === "audited" ? "Audited text" : tab === "current" ? `Current v${revision.number}` : "Original"}</button>)}</div>{contentTab === "audited" ? <Preview text={auditedRevision.text} findings={audit.findings} selected={selectedFindingId} onSelect={selectFinding} /> : <div className="pl-content-copy">{contentTab === "current" ? revision.text : originalRevision?.text}</div>}<p className="pl-helper">Select a numbered span to inspect its finding. Highlight numbers, verdict text, and severity labels also identify issues without relying on colour.</p>{review.scope.has_image ? <div className="alt-text-review"><span aria-hidden="true" className={`verdict-icon verdict-${revision.alt_text.trim() ? "supported" : "needs_human"}`}>{revision.alt_text.trim() ? "✓" : "!"}</span><div><strong>{revision.alt_text.trim() ? "Alt text provided · quality not assessed" : "Missing alt text · needs human review"}</strong><p>{revision.alt_text.trim() || "Add alt text in a revised submission or record why the image is decorative."}</p></div></div> : null}<div className="content-footer"><span>{review.scope.original_filename || "Pasted text"}</span><span>{review.revisions.length} retained version(s)</span></div></section>
                   <section className="risk-summary" aria-labelledby="pl-risk-heading"><div className="risk-summary-header"><div><h3 id="pl-risk-heading">Risk breakdown</h3><span className="pl-risk-label">{risk.label} triage priority</span></div><strong className="risk-score">{risk.score}<small>/100</small></strong></div><p className="risk-summary-copy">Demo triage formula: round(100 × severity {risk.severity} × exposure {risk.exposure} × policy {risk.policy_multiplier} ÷ 22.5). A direct fact contradiction forces High. Confidence is shown separately.</p><div className="risk-breakdown">{Object.entries(risk.counts).map(([label, count]) => <div key={label}><span className={`risk-marker ${label}`} /><strong>{count}</strong><span>{label}</span></div>)}</div><div className="pl-evidence-counts"><span>{risk.missing} evidence gap(s)</span><span>{risk.human} human-review finding(s)</span><span>{audit.findings.filter((finding) => finding.status === "dismissed").length} explicitly dismissed</span></div><p className="pl-helper">A triage aid, not a truth probability. Zero open findings is not an approval or a full-coverage pass.</p></section>
-                  <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic VoltEdge · local v1</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck}>{stale ? "Check corrected version" : "Run fresh local check"}</button></section>
+                   <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic VoltEdge · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "Check corrected version" : "Run fresh local check"}</button></section>
                 </section>
                 <section className="pl-findings-column" aria-labelledby="pl-findings-heading"><div className="pl-findings-heading"><h2 id="pl-findings-heading">{audit.findings.length} finding(s)</h2><span>{openCount} open · {audit.findings.length - openCount} actioned</span></div><p className="pl-helper">Actions refer to audited v{auditedRevision.number}. Corrections create a new version; dismissing retains the original wording.</p>{stale ? <div className="pl-stale-note" role="status">The current draft is v{revision.number}. These findings still refer to v{auditedRevision.number}; check the corrected version to refresh the verdicts.</div> : null}{!audit.findings.length ? <section className="panel pl-empty"><h3>No local rule findings</h3><p>Only the listed demo rules ran. Contextual and full factual review remain unassessed. Send the content for an authorised human review.</p></section> : audit.findings.map((finding, index) => {
                     const verdict = verdictLabels[finding.verdict];

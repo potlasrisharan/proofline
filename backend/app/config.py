@@ -24,7 +24,12 @@ class Settings:
     jwt_secret: str | None = None
     cloudflare_access_team_domain: str | None = None
     cloudflare_access_audience: str | None = None
-    allowed_origins: tuple[str, ...] = ("http://localhost:3000", "http://127.0.0.1:3000")
+    allowed_origins: tuple[str, ...] = (
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3100",
+        "http://127.0.0.1:3100",
+    )
     # Deprecated compatibility fields for existing local callers.
     supabase_url: str | None = None
     supabase_jwt_secret: str | None = None
@@ -66,7 +71,7 @@ def get_settings() -> Settings:
             origin.strip()
             for origin in os.getenv(
                 "PROOFLINE_ALLOWED_ORIGINS",
-                "http://localhost:3000,http://127.0.0.1:3000",
+                "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3100,http://127.0.0.1:3100",
             ).split(",")
             if origin.strip()
         ),

@@ -25,15 +25,15 @@ const runtimeServices: DisclosureEntry[] = [
     status: "IMPLEMENTED",
     data: "Synthetic VoltEdge records, user-entered drafts and publication context, and explicit clicks, edits, comments, and decisions made in the local demo.",
     retention: "Overview/review-queue state is held in React memory and resets on refresh. The /submit and /findings flow stores its review in browser sessionStorage for this tab, with an in-memory fallback if storage is unavailable. No durable server storage is connected.",
-    note: "The current screen is a demonstration UI. It does not call an external model, OCR provider, or Cloudflare project.",
+    note: "The default screen is a demonstration UI. The optional local API mode still does not call an external model, OCR provider, or Cloudflare project.",
   },
   {
     name: "FastAPI local foundation",
-    scope: "Local API · not wired to this screen",
+    scope: "Local API · opt-in from this screen",
     status: "IMPLEMENTED",
-    data: "Organisation-scoped vault and local content-workflow requests when the API is called directly with configured authentication. These frontend demo routes do not invoke it.",
+    data: "Organisation-scoped vault and local content-workflow requests when the API is called with configured local development headers. The content review routes invoke it only when the explicit opt-in flag is enabled.",
     retention: "In-memory demo adapter for the lifetime of the local process. Records are lost when the process stops.",
-    note: "Verified local foundation only. It is not durable storage and must not be used for confidential production records.",
+    note: "Verified local foundation only. If the opt-in API call fails, the UI shows an error rather than silently reporting a successful audit. It is not durable storage and must not be used for confidential production records.",
   },
   {
     name: "Browser-local deterministic checker",
@@ -173,7 +173,7 @@ export function DisclosurePanel({ open, onClose }: DisclosurePanelProps) {
         </div>
 
         <div className="disclosure-footer">
-          <span>Last reviewed October 25, 2026 · Phase 1 boundary</span>
+          <span>Last reviewed October 26, 2026 · Local boundary</span>
           <Link href="/privacy" onClick={onClose}>Read privacy and data handling</Link>
         </div>
       </section>

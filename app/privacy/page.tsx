@@ -28,11 +28,11 @@ const transparencyEntries: TransparencyEntry[] = [
   },
   {
     name: "FastAPI local foundation",
-    scope: "Local API · separate from this screen",
+    scope: "Local API · opt-in from this screen",
     status: "IMPLEMENTED",
-    data: "Organisation-scoped vault and local content-workflow requests only when the API is called directly with its configured local authentication boundary.",
+    data: "Organisation-scoped vault and local content-workflow requests when the explicit local development-header mode is enabled from the browser configuration.",
     retention: "The adapter is process-memory only. Its records disappear when the local API process stops.",
-    note: "This is a verified local contract/RBAC foundation, not durable storage and not a safe destination for confidential production records.",
+    note: "The default browser demo does not call it; opt-in API failures are shown as errors. This is a verified local contract/RBAC foundation, not durable storage and not a safe destination for confidential production records.",
   },
   {
     name: "External AI provider",

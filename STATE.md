@@ -82,9 +82,10 @@ proposes.
 - **Evaluation:** `python3 -m app.eval` now runs the 52-case HTTP contract evaluator with
   **0 honest failures**. Its category projections are recorded in `docs/EVAL_REPORT.md`;
   they remain synthetic local measurements, not model accuracy.
-- **Remaining gaps:** the browser demo is not wired to the FastAPI API; durable Cloudflare
-  D1/R2/Queues, live Access membership, external AI/OCR, hosted deployment, and production persistence remain
-  **STUB**, **PLANNED**, or **MISSING** as documented.
+- **Remaining gaps:** the default browser demo remains seeded/local; an explicit local
+  development-header mode now exercises the FastAPI content/recheck/finding-action path.
+  Durable Cloudflare D1/R2/Queues, live Access membership, external AI/OCR, hosted
+  deployment, and production persistence remain **STUB**, **PLANNED**, or **MISSING**.
 
 ## Phase 4 verified local work
 
@@ -125,8 +126,9 @@ proposes.
 - `npm run lint`: **WORKING** — passed with one existing unused-variable warning in
   `app/page.tsx`; no lint errors.
 - `npm run build`: **WORKING** — Next.js production build completed for all local pages.
-- `npm test`: **WORKING** — frontend lint/typecheck/build, 7 browser smoke/collaboration
-  tests, and 133 backend tests completed; 3 Starlette deprecation warnings remain.
+- `npm test`: **WORKING** — frontend lint/typecheck/build, 9 default browser
+  smoke/collaboration tests, and 139 backend/report-safety tests completed; one Starlette
+  deprecation warning remains.
 - Playwright frontend/E2E checks: **WORKING** — 7 browser tests and 4 local API workflow
   tests passed.
 
@@ -211,3 +213,18 @@ proposes.
 - **Boundary:** the Pages/Worker configuration is **READY / NOT DEPLOYED**. D1, R2,
   Queues, Access membership lookup, external AI/OCR, and durable persistence remain
   **STUB**, **PLANNED**, or **MISSING**.
+
+## 2026-10-26 17:09 IST — Opt-in browser API path verified
+
+- **Completed locally:** the typed browser client now supports vault/content/recheck/
+  finding-action requests, and `/submit`/`/findings` can use it only when
+  `NEXT_PUBLIC_PROOFLINE_LOCAL_API=true` with `development_headers`. API failures remain
+  visible; the default seeded browser demo still uses sessionStorage/local rules.
+- **Verified:** the optional API-mode frontend run passed **10 Playwright tests** against a
+  local FastAPI process with development headers. The default `npm test` run passed **9
+  Playwright tests** (the opt-in test skipped), 139 backend/report-safety tests, and the
+  read-only report check. `python3 -m pytest -q` passed 146 tests, the API E2E suite passed
+  4 tests, and the 52-case evaluator reported 0 honest failures.
+- **Boundary:** this is still local/in-memory development authentication and persistence;
+  Cloudflare Access, D1/R2/Queues, external AI/OCR, hosted deployment, and production
+  authentication remain unverified.
