@@ -16,9 +16,9 @@ compliance, production readiness, or protection of real customer data.
 | Seeded browser demo | **IMPLEMENTED (local demo)** | Uses fictional seeded VoltEdge UI state in the browser. It is not a tenant-isolated production workspace. |
 | Local vault and workflow API | **IMPLEMENTED (local)** | Stores organisation-scoped vault records plus text/metadata content versions, caller-supplied findings, comments, decisions, exports, and audit events in process memory. Data disappears when the process stops. |
 | External AI/OCR transfer | **STUB / not observed** | Local deterministic and ingestion paths can run without a network provider. Optional Gemini/OCR seams are disabled or dependency-gated; no external provider call was verified. |
-| Durable database/storage | **STUB / PLANNED** | SQL migration/RLS/seed artifacts exist; no live Supabase database or Storage adapter is connected. |
+| Durable database/storage | **STUB / PLANNED** | Cloudflare D1 migration/seed plus R2 binding artifacts exist; no live D1 database, R2 bucket, or durable adapter is connected. |
 | Content file intake | **IMPLEMENTED (local API, dependency-gated) / STUB (demo UI)** | The local `/contents` API accepts bounded text or base64 files and reports extraction states; the UI's document option remains unavailable and no hosted file storage exists. |
-| Hosted deployment | **MISSING / unverified** | Local scripts and a Dockerfile exist; no deployed environment has been verified. |
+| Hosted deployment | **READY / NOT DEPLOYED** | Pages export, Python Worker entrypoint, and Wrangler bindings exist; no deployed environment has been verified. |
 
 The local API is suitable for contract/RBAC tests with fictional data, not confidential
 production records.
@@ -29,9 +29,11 @@ The `/privacy` route is **IMPLEMENTED (local demo)** and mirrors this boundary f
 users: no verified runtime model/provider receives frontend drafts, the local API is
 process-memory only, and `/submit`/`/findings` use browser session storage when
 available. The page labels the external AI/OCR/database/deployment paths as
-**STUB**, **PLANNED**, or **MISSING** where they are not verified. This build has no
-in-app confidential-material flag or deletion guarantee, so the safe local-use rule is
-fictional VoltEdge material only.
+**STUB**, **PLANNED**, or **MISSING** where they are not verified. `/submit` also offers
+an **IMPLEMENTED (local bounded)** confidential-material marker that remains in the
+browser-tab review record; it does not provide consent, server-side deletion, or a
+production confidentiality guarantee, so the safe local-use rule is fictional VoltEdge
+material only.
 
 ## Privacy principles
 
@@ -53,7 +55,7 @@ fictional VoltEdge material only.
 
 - Protected vault routes require a resolved principal.
 - Authentication can use explicit development headers only when
-  `PROOFLINE_DEV_AUTH=true`, or an HS256 bearer token when `SUPABASE_JWT_SECRET` is set.
+  `PROOFLINE_DEV_AUTH=true`, or an HS256 bearer token when `PROOFLINE_JWT_SECRET` is set.
 - The in-memory store keys records by organisation ID and does not return another
   organisation's record through the tested route path.
 - Role checks restrict registry writes and `brand_owner` approval in the local service.
@@ -63,10 +65,10 @@ fictional VoltEdge material only.
 
 ### Production boundary — **PLANNED / MISSING**
 
-The repository does not verify Supabase Auth membership lookup, session lifecycle,
-refresh-token handling, organisation provisioning, invitation flow, administrator
-policies, or production audit logging. A client-supplied organisation ID must never be
-treated as authorization when a durable service is implemented.
+The repository does not verify Cloudflare Access JWT validation, D1 membership lookup,
+session lifecycle, organisation provisioning, invitation flow, administrator policies, or
+production audit logging. A client-supplied organisation ID must never be treated as
+authorization when a durable service is implemented.
 
 ## Secrets and configuration
 
@@ -74,9 +76,9 @@ treated as authorization when a durable service is implemented.
 - Local secret values belong in ignored `.env`/`.env.local` files or a server-side secret
   manager. Never put provider keys, JWT secrets, service-role keys, or tokens in browser
   code, fixtures, screenshots, logs, or documentation examples.
-- `SUPABASE_SERVICE_ROLE_KEY` is intentionally not configured in the browser boundary.
-- The current `SUPABASE_URL` and `SUPABASE_JWT_SECRET` settings only affect local runtime
-  configuration checks/JWT verification; they do not connect the vault to Supabase.
+- Cloudflare API tokens and binding IDs are intentionally not configured in browser code.
+- The current `PROOFLINE_JWT_SECRET` setting only enables local HS256 verification; it does
+  not connect the Worker to Cloudflare Access or D1.
 
 ## Files and external processing
 

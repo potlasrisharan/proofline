@@ -684,32 +684,34 @@ The exact stack should be confirmed against the team's skills, current availabil
 |---|---|---|
 | Frontend | React + TypeScript + Vite + Tailwind CSS | Brand setup, upload/editor, finding list, review queue, version comparison, dashboard |
 | Backend API | Python + FastAPI | Access checks, ingestion, audit orchestration, source retrieval, model calls, approval workflow |
-| Database | PostgreSQL, managed through a service such as Supabase if appropriate | Workspaces, users/roles, facts, rules, assets, content versions, findings, audits, decisions |
-| Authentication | Supabase Auth or equivalent managed identity service | Sign-in and session handling |
-| File storage | Private object storage | Brand documents, uploaded content, and approved assets |
+| Database | Cloudflare D1 (SQLite) behind a repository adapter | Workspaces, memberships, facts, rules, assets, content versions, findings, audits, decisions |
+| Authentication | Cloudflare Access at the edge plus Worker-side membership lookup | Sign-in boundary, organisation selection, role/session mapping; the Worker must validate identity and never trust a client-supplied organisation ID |
+| File storage | Cloudflare R2 with private bindings | Brand documents, uploaded content, and approved assets; store object keys and hashes in D1, not file contents in ordinary logs |
 | AI layer | A configurable LLM API accessible to the team | Contextual tone, messaging, claim analysis, and correction suggestions |
 | Deterministic rule engine | Python validation/rule functions | Exact terms, dates, numeric comparisons, mandatory disclaimers, schema checks |
 | Document extraction | Python PDF text-extraction library | Extract content from supported PDFs; report extraction quality/failure |
 | Optional vision/OCR | A tested OCR/vision component | Text embedded in supported images and limited visual checks |
-| Deployment | Docker plus accessible hosting | Reproducible backend deployment and demonstration endpoint |
+| Async processing | Cloudflare Queues with an idempotent Worker consumer | Audit, re-check, expiry, and impact jobs with explicit pending/failed/review-required states |
+| Deployment | Cloudflare Pages for the static Next.js export plus Cloudflare Python Workers for the FastAPI API | Reproducible frontend/API deployment, environment bindings, and smoke-tested demonstration endpoints |
 
-Keep the AI provider behind a small server-side interface so the team can change providers if access or cost becomes a problem. Never place provider secrets in frontend code.
+Keep the AI provider behind a small server-side interface so the team can change providers if access or cost becomes a problem. Workers AI may be evaluated for contextual assistance, but it remains optional until its model, limits, retention, and output behavior are verified. Never place provider secrets in frontend code.
 
 ## 9.2 High-level architecture
 
 The architecture should be drawn left-to-right in the PPT and implemented as a thin end-to-end slice rather than a collection of disconnected services.
 
-1. **Web client:** Authenticated user submits content and reviews findings.
-2. **API and permission layer:** Checks identity, workspace membership, file limits, and allowed actions.
+1. **Web client:** Cloudflare Pages serves the static Next.js client; an authenticated user submits content and reviews findings.
+2. **Edge/API and permission layer:** Cloudflare Access protects the Worker entrypoint; the Worker validates the Access identity, resolves D1 membership, and checks file limits and allowed actions.
 3. **Ingestion layer:** Extracts text, records file metadata, and detects extraction errors.
 4. **Brand registry retrieval:** Retrieves applicable current facts, rules, and assets based on brand, product, market, content type, and effective dates.
 5. **Rule engine:** Runs exact checks and structured comparisons where deterministic outcomes are possible.
 6. **AI audit service:** Receives the relevant content excerpt and retrieved evidence; returns structured potential findings and correction suggestions.
 7. **Validation layer:** Checks the response schema, verifies cited registry IDs, deduplicates findings where possible, and marks uncertainty or failure.
-8. **Persistence layer:** Saves content version, audit run, findings, source/rule versions, and any model/service metadata needed for traceability.
-9. **Review service:** Enforces approval permissions, writes comments and decisions, and creates new content revisions.
-10. **Claim–Fact Ledger service:** Persists extracted claim spans and links them to the exact approved fact/rule versions used during review.
-11. **Analytics service:** Aggregates saved records into workflow and recurring-issue summaries.
+8. **Persistence layer:** D1 saves content versions, audit runs, findings, source/rule versions, review decisions, and model/service metadata needed for traceability. R2 stores private source/upload objects.
+9. **Async work layer:** Queues carries audit, re-check, expiry, and impact jobs; consumers are idempotent and preserve failed/review-required states.
+10. **Review service:** Enforces approval permissions, writes comments and decisions, and creates new content revisions.
+11. **Claim–Fact Ledger service:** Persists extracted claim spans and links them to the exact approved fact/rule versions used during review.
+12. **Analytics service:** Aggregates saved records into workflow and recurring-issue summaries.
 
 ## 9.3 Audit pipeline in detail
 

@@ -13,3 +13,4 @@ test-results/
 .pytest_cache/
 .venv/
 .vercel/
+.wrangler/

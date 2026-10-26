@@ -6,7 +6,7 @@ version used for that claim.  When an approved version changes or a validity
 window ends, the store creates an auditable re-review task for matching stored
 content.
 
-The implementation does not connect to Supabase, an external audit engine, or
+The implementation does not connect to Cloudflare D1, an external audit engine, or
 any publishing system.  The response models expose ``persistence`` and
 ``implementation_status`` so callers cannot mistake this local adapter for
 durable production infrastructure.

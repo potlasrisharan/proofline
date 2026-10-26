@@ -17,12 +17,12 @@ publisher. Any future model output would be a candidate for validation and human
 | FastAPI health and vault API | **IMPLEMENTED (local)** | `/health` reports `persistence: "in_memory_demo"` and `ai_provider: "not_configured"`; vault records can be created, listed, read, versioned, and approved in an organisation-scoped in-memory store. |
 | Content/review workflow API | **IMPLEMENTED (local contract workflow)** | Text/metadata content versions, caller-supplied structured findings, re-check diffing, finding actions, comments, review decisions, exports, and hash-linked events can be retained in a separate in-memory store. It does not extract claims or call a model. |
 | Local content-audit API | **IMPLEMENTED (local, dependency-gated)** | `/contents` accepts bounded text/base64 files, runs local ingestion and deterministic checks, validates findings/claim links, and stores audit results in memory. Missing providers or incomplete extraction become `review_required`/`failed` states. |
-| Authentication boundary | **IMPLEMENTED (local boundary)** | Opt-in development headers and HS256 JWT verification are available when configured; there is no live Supabase Auth membership lookup. |
-| Browser API client | **IMPLEMENTED (unused boundary)** | `app/lib/proofline-api.ts` defines typed vault calls, but the seeded UI does not invoke it. |
+| Authentication boundary | **IMPLEMENTED (local boundary)** | Opt-in development headers and local HS256 JWT verification are available when configured; Cloudflare Access verification and D1 membership lookup are not connected. |
+| Browser API client | **IMPLEMENTED (unused boundary)** | `app/lib/proofline-api.ts` defines typed vault/content/recheck/finding-action calls, but the seeded UI does not invoke it. |
 | Browser-local deterministic checker | **IMPLEMENTED (local demo)** | `/submit` and `/findings` retain synthetic VoltEdge content in the browser tab, run bounded deterministic checks, show evidence gaps, and keep explicit correction/dismissal actions in local session state. No model call occurs. |
 | Local ingestion, deterministic audit, and validation | **IMPLEMENTED (local, dependency-gated)** | Bounded text/PDF/DOCX/image ingestion, lexical claim extraction, deterministic evidence-or-abstain rules, schema/span/evidence validation, risk metadata, and explicit failed/review-required states exist in `backend/app/`. Optional parser/OCR packages are discovered lazily. |
 | External AI/OCR provider | **STUB / MISSING externally** | The Gemini adapter is fail-soft and disabled unless `GEMINI_API_KEY` and `GEMINI_MODEL` are configured; no external model call was observed. Hosted OCR is not configured. |
-| Durable storage | **STUB / PLANNED** | Supabase migration/RLS/seed artifacts exist; no live Supabase project or durable adapter is connected. |
+| Durable storage | **STUB / PLANNED** | Cloudflare D1 migration/seed and Wrangler bindings exist; no live D1 project or durable adapter is connected. R2 and Queues are also unverified. |
 
 A screen, type definition, SQL migration, package dependency, or Dockerfile is not by
 itself evidence that an external service is active. If a route is only a scaffold, its
@@ -38,8 +38,9 @@ The `/privacy` route is **IMPLEMENTED (local demo)** as the user-facing transpar
 surface for the current build. It states the browser-state boundary, the exact local
 data paths, the absence of a verified runtime model/provider, the in-memory API limit,
 the session-storage retention caveat, and the synthetic VoltEdge-only rule. It also
-labels the missing in-app confidential-material flag honestly: this build does not offer
-a confidentiality selector, consent flow, or deletion guarantee for sensitive content.
+labels the in-app confidential-material marker honestly: the `/submit` route offers a
+browser-local checkbox that stays with the tab review record, but it is not a consent
+flow, server-side deletion guarantee, or production confidentiality control.
 
 The page does not claim that data never leaves an organisation in a future deployment.
 It says that no external transfer was observed for the current frontend routes and that
@@ -118,14 +119,16 @@ repository. The following table is deliberately explicit about what remains unkn
 | AI provider/model/version | **STUB / not configured** | A Gemini adapter exists behind environment-only configuration, but no provider/model call was observed. The UI/API health path reports `ai_provider: "not_configured"`. |
 | PDF/DOCX/local OCR extraction | **IMPLEMENTED (local, optional dependencies)** | The ingestion module validates bytes/limits, extracts text where installed `PyMuPDF`/`pdfplumber`, `python-docx`, `Pillow`, and `pytesseract` adapters are available, and reports `complete`, `partial`, `failed`, or `unsupported`. Hosted OCR is not configured. |
 | Hosted OCR extraction provider | **MISSING / not configured** | No external OCR service is connected; the UI document path remains explicitly unavailable. |
-| Supabase database/storage | **STUB / PLANNED** | SQL migration, RLS design, and VoltEdge seed are present; no live project, Storage bucket, or durable adapter is connected. |
-| Supabase Auth/membership lookup | **PLANNED** | Local JWT verification is configuration-gated; it does not prove a live Auth integration. |
-| Hosting/deployment | **MISSING / unverified** | A local Dockerfile exists, but no hosted deployment or runtime environment has been smoke-tested. |
+| Cloudflare D1 database | **STUB / PLANNED** | D1 schema, fictional seed, and Wrangler binding are present; no live database or durable adapter is connected. |
+| Cloudflare R2 storage | **STUB / PLANNED** | R2 binding is declared for private files; no bucket or upload/retention/deletion path is connected. |
+| Cloudflare Queues | **STUB / PLANNED** | Audit queue producer binding is declared; no consumer, retry policy, or durable job execution is verified. |
+| Cloudflare Access/membership lookup | **PLANNED** | Access configuration placeholders exist; Worker-side JWT verification and D1 membership resolution are not connected. |
+| Cloudflare Pages/Workers deployment | **READY / NOT DEPLOYED** | Static Pages export and Python Worker entrypoint exist; no hosted runtime or smoke deployment has been verified. |
 | Data sent to external providers | **None observed in this workspace** | Local deterministic/ingestion paths do not require a network provider. The optional Gemini seam masks email/phone data and blocks confidential content, but no live request was verified. |
 | Retention/deletion | **Unknown for future providers** | Application-process memory currently ends with the local API process; provider and durable-storage retention are not selected. |
 | Processing region | **Unknown** | Do not promise a region until the actual provider and deployment are verified. |
 | Provider training/use settings | **Unknown** | Do not promise that content is excluded from provider training until current terms and account settings are checked. |
-| In-app confidential-material flag | **MISSING** | The local demo has no confidential selector or operator workflow; use fictional VoltEdge material only. |
+| In-app confidential-material flag | **IMPLEMENTED (local bounded)** | `/submit` records an explicit browser-local marker; it does not provide server-side deletion, consent, or a production confidentiality guarantee. |
 | Secrets | **Local boundary implemented** | Keep values in ignored local environment files or server-side secret storage; never place keys in browser code, source control, fixtures, or logs. |
 | Failure handling | **Contract rule / future implementation** | Timeouts, quota errors, malformed output, and unavailable dependencies must become failed or `review_required` states. |
 
@@ -210,8 +213,9 @@ Generated material retained or discarded: Retained as workspace documentation ch
   content-processing provider.
 - FastAPI, Starlette, Pydantic, PyJWT, Uvicorn, HTTPX, and pytest from
   `backend/requirements.txt`.
-- Supabase/PostgreSQL SQL syntax and RLS patterns are represented in the migration;
-  no live Supabase project or generated client code is claimed.
+- Cloudflare D1/SQLite schema and binding patterns are represented in `cloudflare/`;
+  the legacy `supabase/` PostgreSQL/RLS artifacts are retained for historical reference
+  only and no live Cloudflare project or generated client code is claimed.
 
 The `GEMINI_API_KEY` and `GEMINI_MODEL` names in `.env.example` are **PLANNED**
 configuration placeholders. They do not prove that a Gemini model is selected,

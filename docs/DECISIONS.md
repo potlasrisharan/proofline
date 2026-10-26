@@ -17,12 +17,21 @@ the contract continue to distinguish local behavior from durable persistence, sc
 workers, external providers, and hosted deployment. A live deployment was not attempted
 without project-dedicated credentials and a selected host.
 
-## 2026-10-25 — Separate local demo behavior from Supabase persistence
+## 2026-10-25 — Separate local demo behavior from external persistence
 
-No Supabase project, URL, JWT secret, or service key was verified in the workspace. The
-foundation may provide a clearly labeled in-memory adapter for local API tests and a
-real Supabase migration/seed/RLS design, but it must expose its non-persistent status
+No hosted database, Access policy, JWT secret, or service key was verified in the workspace.
+The foundation may provide a clearly labelled in-memory adapter for local API tests and
+Cloudflare D1/R2/Queue deployment artifacts, but it must expose its non-persistent status
 and must not present demo state as production data.
+
+## 2026-10-26 — Move the hosted target to Cloudflare
+
+Cloudflare Pages is the target for the static Next.js export and Cloudflare Python Workers
+is the target for the FastAPI API. D1, R2, and Queues are the planned durable/async
+bindings, with Cloudflare Access plus D1 membership lookup as the identity boundary. The
+legacy `supabase/` PostgreSQL/RLS artifacts remain for historical reference only. No
+Cloudflare resource, deployment, Access policy, or durable adapter is claimed until it is
+created and smoke-tested.
 
 ## 2026-10-25 — Use VoltEdge for new foundation examples
 

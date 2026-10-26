@@ -37,3 +37,15 @@ test("shows the verified local privacy and AI boundary", async ({ page }) => {
   await expect(page.getByText("Use synthetic or fictional material only.", { exact: true })).toBeVisible();
   await expect(page.getByText("test wrapper checks the generated section", { exact: false })).toBeVisible();
 });
+
+test("lets a creator mark a draft confidential for local handling", async ({ page }) => {
+  await page.goto("/submit");
+
+  const marker = page.getByLabel("Mark this draft confidential for local handling");
+  await marker.check();
+
+  await expect(marker).toBeChecked();
+  await expect(page.getByText("Confidential marker recorded in this browser tab.", { exact: false })).toBeVisible();
+  await page.getByRole("button", { name: "Run local evidence check" }).click();
+  await expect(page.getByText("Confidential · browser-local", { exact: true })).toBeVisible();
+});

@@ -25,7 +25,7 @@ const runtimeServices: DisclosureEntry[] = [
     status: "IMPLEMENTED",
     data: "Synthetic VoltEdge records, user-entered drafts and publication context, and explicit clicks, edits, comments, and decisions made in the local demo.",
     retention: "Overview/review-queue state is held in React memory and resets on refresh. The /submit and /findings flow stores its review in browser sessionStorage for this tab, with an in-memory fallback if storage is unavailable. No durable server storage is connected.",
-    note: "The current screen is a demonstration UI. It does not call an external model, OCR provider, or Supabase project.",
+    note: "The current screen is a demonstration UI. It does not call an external model, OCR provider, or Cloudflare project.",
   },
   {
     name: "FastAPI local foundation",
@@ -60,12 +60,12 @@ const runtimeServices: DisclosureEntry[] = [
     note: "PDF/DOCX/image intake remains labelled STUB in the frontend. A local parser and a hosted OCR service have different data-transfer boundaries.",
   },
   {
-    name: "Supabase Auth, Database, and Storage",
-    scope: "Planned durable foundation",
+    name: "Cloudflare Access, D1, R2, and Queues",
+    scope: "Target durable foundation",
     status: "STUB",
-    data: "None in this build. No live Supabase project, membership lookup, storage bucket, or database connection is configured.",
-    retention: "Not applicable because no live project receives data. Retention and deletion rules remain to be configured and verified.",
-    note: "The repository contains a planned SQL/RLS foundation; that does not mean a Supabase service is active.",
+    data: "None in this build. Wrangler bindings and a D1 schema are present, but no live Access policy, membership lookup, D1 database, R2 bucket, or Queue consumer is configured.",
+    retention: "Not applicable because no live Cloudflare resource receives data. Retention and deletion rules remain to be configured and verified.",
+    note: "The repository contains deployment-ready bindings and a Python Worker entrypoint; that does not mean Cloudflare services are active.",
   },
   {
     name: "Hosting, analytics, and deployment services",
@@ -73,7 +73,7 @@ const runtimeServices: DisclosureEntry[] = [
     status: "MISSING",
     data: "No hosted deployment or analytics integration has been verified for this local build. Ordinary hosting request/log behavior must be documented for any future deployment.",
     retention: "Unknown until an actual hosting deployment and its request-log policy are verified.",
-    note: "Do not infer a live Vercel project, analytics provider, processing region, or retention guarantee from a framework name or configuration file.",
+    note: "Do not infer a live Cloudflare Pages or Workers deployment, analytics provider, processing region, or retention guarantee from a framework name or configuration file.",
   },
 ];
 

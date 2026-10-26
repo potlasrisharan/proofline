@@ -30,7 +30,7 @@ def _principal_from_claims(claims: dict[str, object]) -> Principal:
         user_id=user_id,
         organisation_id=organisation_id,
         role=parsed_role,
-        auth_source="supabase_jwt",
+        auth_source="proofline_jwt",
         agency_id=agency_id if isinstance(agency_id, str) and agency_id else None,
     )
 
@@ -46,23 +46,25 @@ async def get_current_principal(
     """Resolve a caller from a verified JWT or an explicitly enabled dev header.
 
     Development headers are disabled by default and are never accepted as a production
-    authentication mechanism. Supabase JWT claims must be signed with the configured
-    secret and carry an organisation and Proofline role claim.
+    authentication mechanism. Local JWT claims must be signed with the configured secret
+    and carry an organisation and Proofline role claim. A deployed Worker is intended to
+    use Cloudflare Access verification plus a D1 membership lookup; that production
+    adapter is not enabled by this local boundary.
     """
 
     if authorization:
         scheme, _, token = authorization.partition(" ")
         if scheme.lower() != "bearer" or not token:
             raise _unauthorized("use a Bearer token")
-        if not settings.supabase_jwt_secret:
+        if not settings.effective_jwt_secret:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Supabase JWT verification is not configured",
+                detail="Proofline JWT verification is not configured",
             )
         try:
             import jwt
 
-            claims = jwt.decode(token, settings.supabase_jwt_secret, algorithms=["HS256"])
+            claims = jwt.decode(token, settings.effective_jwt_secret, algorithms=["HS256"])
         except ImportError as exc:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

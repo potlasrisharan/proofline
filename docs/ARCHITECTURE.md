@@ -1,7 +1,7 @@
 # Proofline architecture
 
 **Document status:** Current repository architecture with explicit planned boundaries.
-**Last reviewed:** October 25, 2026.
+**Last reviewed:** October 26, 2026.
 **Example tenant:** VoltEdge (fictional).
 
 This document separates verified local behavior from the PRD's proposed production
@@ -38,18 +38,18 @@ flowchart LR
   end
 
   subgraph Artifacts[STUB foundation artifacts]
-    SQL["Supabase migration +<br/>fictional VoltEdge seed"]
+     SQL["Legacy PostgreSQL migration +<br/>fictional VoltEdge seed"]
     SQL -.->|not connected at runtime| FastAPI
   end
 
   subgraph Planned[PLANNED / STUB / MISSING]
-    Durable[("Supabase/PostgreSQL<br/>durable tenant storage")]
+     Durable[("Cloudflare D1<br/>durable tenant storage")]
     Extractable["Durable/production content audit<br/>and hosted extraction"]
     Extract["PDF/DOCX/OCR<br/>extraction pipeline"]
     Rules["Deterministic checks +<br/>source-linked findings"]
     Model["Configured external AI provider<br/>with validated output"]
     Review["Durable review decisions<br/>and audit history"]
-    Deploy["Verified hosted deployment"]
+     Deploy["Cloudflare Pages +<br/>Python Workers"]
     FastAPI -.->|future adapter| Durable
     ApiClient -.->|future wiring| Extractable
     Extractable --> Extract
@@ -86,8 +86,8 @@ durable persistence, and content-audit wiring therefore remain unresolved.
 
 `backend/app/main.py` exposes:
 
-- `GET /health`, which reports local process status, persistence mode, configured
-  Supabase URL/JWT-verifier flags, and `ai_provider: "not_configured"`.
+- `GET /health`, which reports local process status, persistence mode, Cloudflare Access
+  and local-JWT flags, binding status, and `ai_provider: "not_configured"`.
 - Organisation-scoped vault routes for facts, terms, guidelines, disclaimers, and
   assets: list, create, get, create version, and approve.
 - Role checks for registry writers, disclaimer writers, and `brand_owner` approval.
@@ -106,9 +106,9 @@ provider is configured.
 ### Authentication boundary — **IMPLEMENTED (local boundary)**
 
 The local service can resolve a principal from explicitly enabled development headers or
-from a signed HS256 bearer token when `SUPABASE_JWT_SECRET` is configured. This validates
-the local authorization boundary; it does not provide Supabase Auth, membership lookup,
-session management, refresh tokens, or production identity operations.
+from a signed HS256 bearer token when `PROOFLINE_JWT_SECRET` is configured. This validates
+the local authorization boundary; it does not provide Cloudflare Access verification,
+D1 membership lookup, session management, refresh tokens, or production identity operations.
 
 ### Ingestion and deterministic verification — **IMPLEMENTED (local, dependency-gated)**
 
@@ -123,12 +123,23 @@ optional model candidates, and local evidence/span/schema validation. The separa
 `backend/app/reliability.py` engine is offline-only and reports bounded local checks;
 it does not make network calls.
 
-### SQL foundation — **STUB / PLANNED**
+### SQL foundations — **STUB / PLANNED**
 
-`supabase/migrations/` contains tenant-aware schema/RLS design and `supabase/seed.sql`
-contains fictional VoltEdge records. These files are a persistence foundation. No live
-Supabase project, Storage bucket, pgvector retrieval, or durable runtime adapter is
-verified.
+`cloudflare/migrations/` contains the target SQLite/D1 schema and `cloudflare/seed.sql`
+contains fictional VoltEdge records. `supabase/` is retained as a legacy PostgreSQL/RLS
+reference and is no longer the planned deployment target. No live D1 database, R2 bucket,
+Queue, Access policy, or durable runtime adapter is verified.
+
+### Cloudflare deployment boundary — **READY / NOT DEPLOYED**
+
+- `next.config.ts` enables a static export when `CLOUDFLARE_PAGES_BUILD=1`; the Pages
+  artifact is `out/` and does not require a Node server at runtime.
+- `backend/worker.py` exposes the existing FastAPI application through Cloudflare's
+  Python ASGI Worker adapter.
+- `wrangler.jsonc` declares the intended Worker, D1, R2, and Queue bindings. Placeholder
+  IDs are deliberate and must be replaced in private deployment configuration.
+- The current stores remain in-memory. Binding declarations do not prove that D1/R2/Queue
+  persistence or background consumers are implemented.
 
 ## Actual versus planned technical decisions
 
@@ -137,20 +148,21 @@ verified.
 | Frontend framework | Next.js 16 + React 19 + TypeScript | The PRD's alternative Vite/Tailwind/shadcn direction remains **PLANNED** unless a later migration is verified. | Preserve the runnable application and avoid a parallel frontend. |
 | UI data source | Seeded local React state | Wire the typed client to a durable API after authentication and persistence exist. | The current screen is a demonstration, not a connected workspace. |
 | API runtime | FastAPI with local health, vault, content-audit, impact, and review routes | Add durable adapters and verify external provider execution behind the contract. | Keep a small server-side boundary while persistence and hosted services remain incomplete. |
-| Vault persistence | `InMemoryVaultStore` (**IMPLEMENTED locally**) | Supabase/PostgreSQL adapter with tenant isolation and durable history (**PLANNED**). | Avoid presenting ephemeral state as production data. |
-| Authentication | Opt-in dev headers and optional HS256 verifier (**IMPLEMENTED locally**) | Supabase Auth membership/session integration (**PLANNED**). | A client-supplied organisation ID is never sufficient authorization. |
+| Vault persistence | `InMemoryVaultStore` (**IMPLEMENTED locally**) | Cloudflare D1 adapter with tenant isolation and durable history (**PLANNED**). | Avoid presenting ephemeral state as production data. |
+| Authentication | Opt-in dev headers and optional local JWT verifier (**IMPLEMENTED locally**) | Cloudflare Access JWT verification plus D1 membership/session mapping (**PLANNED**). | A client-supplied organisation ID is never sufficient authorization. |
 | Content extraction | Bounded local text/PDF/DOCX/image ingestion with explicit extraction states (**IMPLEMENTED locally, dependency-gated**) | Hosted parser/OCR service and production file storage (**PLANNED / MISSING**) | Empty or partial extraction must never look like a successful audit. |
 | Finding generation | Local lexical claims, deterministic rules, and audit-engine validation (**IMPLEMENTED locally**) | Broader production rule coverage and durable generated findings (**PLANNED**) | Findings need applicable source/version links and validation; missing evidence remains review-required. |
 | AI provider | Gemini adapter exists but is unconfigured/offline unless env values and SDK are present (**STUB**) | Verified external provider/model, redaction, schema validation, bounded retry, and disclosure (**PLANNED**) | Model output is a candidate, not proof. |
 | Audit/review persistence | UI transitions plus local in-memory content versions, findings, comments, review decisions, exports, and hash-linked events (**IMPLEMENTED locally**) | Durable immutable content versions, audits, findings, and review decisions (**PLANNED**). | Preserve traceability and human accountability beyond one process. |
-| Deployment | Local scripts and a Dockerfile exist; no hosted runtime verified (**STUB / MISSING**) | Hosted deployment with smoke checks and service disclosures (**PLANNED**). | A container definition is not a deployment. |
+| Deployment | Local scripts, Dockerfiles, Pages export, and Python Worker entrypoint exist (**READY / NOT DEPLOYED**) | Cloudflare Pages/Workers with D1, R2, Queues, Access, and smoke checks (**PLANNED**). | A config or Worker entrypoint is not a deployment. |
 
 ## Data and trust boundaries
 
 1. The browser demo contains synthetic seeded state and should not receive confidential
    customer material.
 2. The local API receives authenticated test requests only when local auth is explicitly
-   enabled; records remain in process memory.
+   enabled; records remain in process memory. The target Worker must resolve identity and
+   membership at the edge/API boundary before querying D1.
 3. Future external AI/OCR calls must be server-side, minimum-context, and disclosed before
    transfer. Confidential-tagged content must bypass external model calls as required by
    the contract.

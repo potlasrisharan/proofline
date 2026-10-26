@@ -2,8 +2,8 @@
 
 **Date:** 2026-10-25
 **Source of truth:** `Proofline_Consolidated_PRD.md`
-**Scope rule:** preserve the existing Next.js demonstration UI; add the FastAPI/Supabase
-foundation without presenting it as a connected production backend.
+**Scope rule:** preserve the existing Next.js demonstration UI; prepare the FastAPI/
+Cloudflare Pages/Workers foundation without presenting it as a connected production backend.
 
 ## Work order
 
@@ -13,12 +13,13 @@ foundation without presenting it as a connected production backend.
 2. **Shared contract and guardrails (completed):** maintain `AGENTS.md`,
    `docs/CONTRACT.md`, and `docs/AI_DISCLOSURE.md`; keep route and integration status
    explicit.
-3. **Database foundation (partially completed):** retain and review the tenant-aware
-   Supabase migration, fictional VoltEdge seed, RLS policies, and 12 golden fixtures.
+3. **Database foundation (partially completed):** retain the legacy PostgreSQL reference,
+   add the tenant-aware Cloudflare D1 migration and fictional VoltEdge seed, and preserve
+   the golden fixtures.
 4. **Backend foundation (remaining):** add a small FastAPI service with explicit health
-   semantics, optional Supabase JWT verification, role dependencies, a local
+    semantics, local JWT verification, role dependencies, a local
    non-persistent demo vault adapter, versioned draft/approval behavior, and pytest
-   coverage. Supabase persistence remains a separate integration boundary.
+    coverage. Cloudflare D1/R2/Queues persistence remains a separate integration boundary.
 5. **Frontend boundary (remaining verification):** keep the existing Next.js UI as the
    implemented demo shell. Do not create a parallel Vite app or claim auth/API
    integration that is not wired to the UI. Add only honest setup/testing notes.
@@ -32,7 +33,7 @@ foundation without presenting it as a connected production backend.
 | Area | Owner | Interface boundary |
 |---|---|---|
 | Root rules and docs | Architecture | `AGENTS.md`, `docs/CONTRACT.md`, `docs/AI_DISCLOSURE.md` |
-| `supabase/` and golden fixtures | Database | SQL schema and fixture IDs referenced by the contract |
+| `cloudflare/`, legacy `supabase/`, and golden fixtures | Database | D1 schema/seed is the target; PostgreSQL/RLS artifacts are historical reference |
 | `backend/` | Backend | FastAPI/Pydantic models and role-aware vault routes |
 | `app/` and root frontend assets | Frontend | Existing Next.js UI; no backend claims without a verified call path |
 | `scripts/`, `STATE.md`, `docs/HANDOFF.md` | QA/handoff | Executable checks and verified status only |
@@ -43,15 +44,15 @@ foundation without presenting it as a connected production backend.
 - Vault records use stable IDs, organisation scope, source/version metadata, and
   `draft` → `approved` transitions. Only `brand_owner` may approve.
 - The local FastAPI adapter returns `persistence: "in_memory_demo"` so callers cannot
-  mistake it for Supabase durability.
+  mistake it for Cloudflare D1 durability.
 - No route may fabricate evidence, model metadata, or cross-organisation access.
 
 ## Risks and mitigations
 
 - **Existing stack differs from the PRD stack:** retain Next.js because it is the
-  runnable repository application; document the planned FastAPI/Supabase boundary.
-- **No Supabase project or credentials:** make the migration/seed/RLS foundation
-  explicit and keep runtime persistence disabled unless configuration is present.
+  runnable repository application; document the planned FastAPI/Cloudflare boundary.
+- **No Cloudflare project or credentials:** make the D1/R2/Queue bindings explicit and
+  keep runtime persistence disabled unless project resources are configured.
 - **Python toolchain is not configured:** use a documented `python3`/virtualenv path;
   report missing optional dependencies rather than hiding failures.
 - **Demo data could be mistaken for customer data:** use fictional VoltEdge data in all
@@ -111,7 +112,7 @@ evidence; a module or type alone is not proof of an active integration.
 - Existing Phase 1 vault records are generic dictionaries. Matching must be conservative,
   preserve exact record/version IDs, and surface conflicts instead of silently selecting a
   value.
-- The requested endpoints are new content workflow routes. They must not imply Supabase
+- The requested endpoints are new content workflow routes. They must not imply Cloudflare
   durability or bypass the existing organisation/role authentication boundary.
 - Parallel agents must not edit one another's owned directories. Shared contract changes
   are made before integration and reconciled centrally after the swarm.
@@ -131,7 +132,7 @@ LLM/offline boundaries, evidence validation, Claim–Fact Ledger links, risk sco
 recheck, and finding actions are implemented against the local in-memory adapter. The
 52-case HTTP evaluator reports zero honest failures; the 194-case reliability report remains
 a separate synthetic deterministic measurement. Live Gemini, OCR/vision fallback, pgvector,
-Supabase/Auth/Storage, and durable persistence remain **STUB**, **PLANNED**, or **MISSING**.
+  Cloudflare Access/D1/R2/Queues, and durable persistence remain **STUB**, **PLANNED**, or **MISSING**.
 
 ## Phase 4 — improvements, hardening, deploy, and docs
 

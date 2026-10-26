@@ -25,12 +25,12 @@ repository state and remaining work; a checked item is not a claim of production
 
 ## Highest-priority next work
 
-- [ ] **PLANNED — Durable persistence.** Connect the existing Supabase migration/RLS
-  foundation to a real project, implement durable adapters, and verify organisation and
-  membership isolation with smoke tests.
-- [ ] **PLANNED — Production authentication.** Replace development headers and local JWT
-  boundary tests with a verified Auth/session/membership flow, invitations, role changes,
-  and server-side organisation authorization.
+- [ ] **PLANNED — Durable Cloudflare persistence.** Create D1/R2 resources, apply the
+  `cloudflare/migrations/` foundation, implement durable adapters, and verify organisation
+  and membership isolation with smoke tests.
+- [ ] **PLANNED — Production authentication.** Put the Worker behind Cloudflare Access,
+  verify Access JWTs, map the subject/email to D1 memberships, and add invitations, role
+  changes, and server-side organisation authorization.
 - [ ] **PLANNED — Wire the UI to the API.** Replace seeded browser-only transitions with
   authenticated API calls for content, findings, comments, review decisions, exports,
   dashboard summaries, impact, and insights while preserving loading, failed, and
@@ -39,8 +39,9 @@ repository state and remaining work; a checked item is not a claim of production
   registry/source versions, claims, evidence references, findings, reviewer decisions,
   comments, and hash-linked audit events without overwriting history.
 - [ ] **PLANNED — Secure file workflow.** Add private object storage, file malware
-  scanning, retention/deletion controls, upload consent, a confidential-material flag,
-  and verified PDF/DOCX/image processing limits.
+  scanning, retention/deletion controls, upload consent, and verified PDF/DOCX/image
+  processing limits. A browser-local confidential-material marker is now implemented,
+  but it is not a production confidentiality or deletion control.
 
 ## Verification and provider work
 
@@ -71,8 +72,9 @@ repository state and remaining work; a checked item is not a claim of production
 - [ ] **PLANNED — External integrations.** Add only explicitly scoped website, social,
   CMS, storage, or publication connectors after permissions, tenancy, rate limits, and
   failure behavior are verified.
-- [ ] **MISSING — Hosted deployment.** Choose and verify the hosting/runtime setup,
-  secrets management, domain, TLS, deployment checks, and rollback procedure.
+- [ ] **READY / NOT DEPLOYED — Cloudflare hosting.** Create Pages and Worker resources,
+  configure D1/R2/Queues/Access bindings, set secrets, verify domains/TLS, run smoke
+  checks, and document rollback.
 
 ## Definition of done for each item
 

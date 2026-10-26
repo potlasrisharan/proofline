@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:pages": "CLOUDFLARE_PAGES_BUILD=1 next build",
     "start": "next start",
+    "pages:deploy": "wrangler pages deploy out",
+    "worker:dev": "uv run pywrangler dev",
+    "worker:deploy": "uv run pywrangler deploy",
     "test": "./scripts/test.sh",
     "test:frontend": "playwright test",
     "test:e2e:api": "playwright test --config=playwright.api.config.ts",
@@ -24,6 +28,7 @@
     "@types/react-dom": "19.1.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.3",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "wrangler": "^4.152.0"
   }
 }

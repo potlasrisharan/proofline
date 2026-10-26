@@ -1,16 +1,16 @@
 # Proofline Phase 1 foundation contract
 
 **Contract status:** Proposed shared contract with a verified local FastAPI foundation;
-Supabase persistence is not verified as connected in the current repository.
+Cloudflare D1/R2/Queues persistence is not verified as connected in the current repository.
 **Contract date:** 2026-10-25
 **Product source:** `Proofline_Consolidated_PRD.md` (especially sections 7–10)
 **Example tenant:** VoltEdge (fictional)
 
 This document is the shared boundary between the existing Next.js demonstration UI and
 the API/data foundation. It defines the shape and semantics that the FastAPI/Pydantic
-service and a future Supabase/PostgreSQL persistence layer should implement. The local
-API uses an explicitly labelled in-memory adapter; it does not claim durable Supabase
-storage.
+service and a future Cloudflare Worker/D1/R2/Queues persistence layer should implement.
+The local API uses an explicitly labelled in-memory adapter; it does not claim durable
+Cloudflare storage.
 
 ## Status vocabulary
 
@@ -23,7 +23,7 @@ storage.
 
 The local FastAPI process implements the health route and vault routes against a
 non-persistent in-memory adapter. It returns `persistence: "in_memory_demo"` so this
-local behavior cannot be mistaken for Supabase durability. The current runnable
+local behavior cannot be mistaken for Cloudflare D1 durability. The current runnable
 frontend remains the Next.js UI described in the root `README.md`.
 
 ## Contract principles
@@ -48,10 +48,11 @@ frontend remains the Next.js UI described in the root `README.md`.
 - Media type: `application/json` for JSON requests and responses. Multipart upload is
   allowed for supported content files, but extraction limits and accepted MIME types
   must be configured and documented by the implementation.
-- Authentication: the local service supports a verified Supabase-compatible HS256 JWT
-  when `SUPABASE_JWT_SECRET` is configured, and opt-in development headers when
-  `PROOFLINE_DEV_AUTH=true`. Every protected route resolves the organisation and role
-  server-side. No live Supabase Auth connection is claimed.
+- Authentication: the local service supports a verified Proofline HS256 JWT when
+  `PROOFLINE_JWT_SECRET` is configured, and opt-in development headers when
+  `PROOFLINE_DEV_AUTH=true`. The target deployment is Cloudflare Access plus a D1
+  membership lookup. Every protected route resolves the organisation and role
+  server-side. No live Access or D1 membership connection is claimed.
 - IDs: opaque strings, preferably UUIDs; clients must not infer meaning from IDs.
 - Timestamps: RFC 3339/ISO 8601 UTC strings, for example
   `2026-10-25T14:30:00Z`.
@@ -313,7 +314,7 @@ the submitted claim and the approved VoltEdge registry record.
 ## Phase 1 endpoint surface
 
 The local rows below are verified against the FastAPI app and are intentionally scoped
-to the non-persistent demo adapter. They are not a claim that Supabase persistence or
+to the non-persistent demo adapter. They are not a claim that Cloudflare D1 persistence or
 production authentication is connected. The remaining rows are planned and do not
 exist merely because they appear in this document.
 
@@ -337,7 +338,7 @@ exist merely because they appear in this document.
 | `POST /v1/content-versions/{content_version_id}/audit` | **IMPLEMENTED (local)** | Run the configured local audit boundary or return an explicit review-required state. | Caller cannot forge findings/model metadata; results remain in memory. |
 | `GET /v1/audits/{audit_id}` | **IMPLEMENTED (local)** | Retrieve audit status, findings, diff, and service metadata. | Organisation and content scope enforced. |
 | `POST /v1/content-versions/{content_version_id}/review` | **IMPLEMENTED (local)** | Record an authorised submit, request-changes, approval, release, or re-review decision. | Enforces role policy, separation of duties, high-risk sign-off, reason/comment, actor, timestamp, and version. |
-| `GET /v1/dashboard/summary` | **PLANNED** | Return counts and permitted aggregates derived from stored audit/review records. | No fabricated metrics; include sample/time-window metadata where relevant. |
+| `GET /v1/dashboard/summary` | **IMPLEMENTED (local)** | Return visibility-scoped counts and permitted aggregates derived from retained in-memory audit/review records. | Includes explicit `in_memory_demo` persistence and optional trailing `window_days`; no durable analytics claim. |
 | `GET /v1/impact/revalidation` | **IMPLEMENTED (local)** | List registered content potentially affected by changed or expired fact versions. | Only scans records registered with the local in-memory impact adapter; does not imply external web/social crawling or durable persistence. |
 
 ### Phase 3 workflow endpoints (verified local)
@@ -355,12 +356,13 @@ authentication:
 | `GET /v1/audit-events` | **IMPLEMENTED (local)** | List visible hash-chained workflow events. | Review roles see organisation events; creator/agency visibility is content-scoped. |
 | `GET /v1/audit-events/verify-chain` | **IMPLEMENTED (local)** | Verify the SHA-256 event chain and detect local tampering. | Verification is process-local and not a durable integrity guarantee. |
 | `GET /v1/content/{content_id}/export` | **IMPLEMENTED (local)** | Export retained versions, audits, findings, comments, decisions, actions, and audit events as JSON. | Content and organisation scope enforced; export includes explicit `in_memory_demo` status. |
+| `GET /v1/content-versions/{content_version_id}/review-decisions` | **IMPLEMENTED (local)** | List the immutable review decisions recorded for one visible version. | Organisation/content visibility enforced; actor, role, reason, comment, and timestamp are retained in memory. |
 
 ### Endpoint behavior that must not be implied
 
 - These routes do not promise automatic publication, social/CMS integrations, legal
   advice, universal truth, or complete accessibility certification.
-- An audit response must not claim an external model, OCR library, Supabase table, or
+- An audit response must not claim an external model, OCR library, Cloudflare D1 table, or
   authentication provider is active until the deployment actually uses it and the
   disclosure is updated.
 - A `suggested_correction` never changes the content or registry without an explicit
@@ -399,7 +401,7 @@ When implementation diverges from this document:
 **Phase 2 status:** The interfaces below are the shared target for the verification engine.
 Individual integrations remain **STUB**, **PLANNED**, or **MISSING** until a running check
 proves them. The default local implementation must be offline-capable and explicitly
-labelled `in_memory_demo` when it is not connected to Supabase/Postgres.
+labelled `in_memory_demo` when it is not connected to Cloudflare D1.
 
 ### Normalised ingestion
 

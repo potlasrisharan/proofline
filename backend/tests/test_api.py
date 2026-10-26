@@ -55,7 +55,7 @@ def test_development_header_auth_is_opt_in() -> None:
     assert response.json()["organisation_id"] == "org-voltedge"
 
 
-def test_supabase_jwt_claims_are_verified_and_mapped_to_a_principal() -> None:
+def test_local_jwt_claims_are_verified_and_mapped_to_a_principal() -> None:
     secret = "phase1-test-secret-0123456789abcdef"
     app = create_app(settings=Settings(supabase_jwt_secret=secret))
     client = TestClient(app)

@@ -9,6 +9,7 @@ export type ContentScope = {
   scheduled_date: string;
   alt_text: string;
   has_image: boolean;
+  confidential: boolean;
   original_filename: string | null;
 };
 
@@ -60,6 +61,7 @@ export const defaultContentScope: ContentScope = {
   scheduled_date: "2026-11-06",
   alt_text: "",
   has_image: false,
+  confidential: false,
   original_filename: null,
 };
 

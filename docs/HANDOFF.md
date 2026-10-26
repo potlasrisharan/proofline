@@ -93,9 +93,55 @@
   backend tests; API Playwright — **4 passed**. `docs/EVAL_REPORT.md` contains the measured
   tables and offline caveats.
 - **Known gaps:** all runtime behavior remains local/in-memory. No live Gemini request,
-  Supabase/Auth/Storage/pgvector connection, hosted OCR/vision service, or deployment was
+  Cloudflare Access/D1/R2/Queues/Vectorize connection, hosted OCR/vision service, or deployment was
   exercised. The separate 194-case reliability report remains a synthetic deterministic
   measurement, not model accuracy.
 - **Next chat must know:** preserve the explicit `in_memory_demo` and offline-provider
   labels. If deployment or live provider work is requested, obtain project-dedicated access
   and update `docs/AI_DISCLOSURE.md` only from verified runtime/provider facts.
+
+## 2026-10-26 12:37 IST — Local MVP completion pass
+
+- **Completed locally:** added review-decision listing, saved-record dashboard aggregation,
+  and evidence-aware JSON audit export to the FastAPI workflow. Expanded `/privacy` into a
+  runtime transparency inventory, added a browser-local confidential marker and visible
+  badge to `/submit`/`/findings`, and changed the reliability evaluator so the test wrapper
+  checks `docs/EVAL_REPORT.md` without rewriting it. Explicit `--report` regeneration
+  preserves the hand-maintained Phase 2 section and refuses secret-like destinations.
+- **Hardening:** removed the unused `commentsForSelectedSpan` frontend variable and replaced
+  deprecated HTTP 422 constants. Added regression coverage for dashboard/export/review
+  decisions, report safety, the privacy surface, and the confidential marker.
+- **Verified:** `npm run typecheck`, `npm run lint`, and `npm test` passed; the wrapper ran
+  9 browser tests and 139 backend/report-safety tests. Standalone `python3 -m pytest -q`
+  passed 146 tests, `npm run test:e2e:api` passed 4 API workflow tests, and the correctly
+  scoped `cd backend && python3 -m app.eval` run reported 0 honest failures. The working
+  tree must remain honest about local/in-memory behavior.
+- **Still open:** the seeded browser workflow is not connected to FastAPI; Cloudflare
+  Access, D1, R2, Queues, Vectorize, external AI/OCR, durable persistence, and deployment
+  require project-dedicated configuration and runtime verification.
+
+## 2026-10-26 13:02 IST — Cloudflare deployment foundation verified
+
+- **Completed locally:** added Cloudflare Pages static-export configuration, the Python
+  Worker ASGI entrypoint, Wrangler D1/R2/Queue bindings, a fictional VoltEdge D1
+  migration/seed, `pyproject.toml`/`uv.lock`, and Cloudflare-first architecture and
+  disclosure updates. Legacy Supabase artifacts remain historical reference only.
+- **Verified:** `npm run typecheck`, `npm run lint`, `npm test`, `npm run build:pages`,
+  `npx wrangler --version`, and `uv lock --check` passed. No Cloudflare account/resource,
+  Access policy, durable adapter, hosted URL, or deployment smoke test was exercised.
+- **Still open:** the Pages/Worker foundation is **READY / NOT DEPLOYED**. D1, R2,
+  Queues, Access membership lookup, external AI/OCR, durable persistence, and the seeded
+  browser-to-API wiring require project-dedicated configuration and runtime verification.
+
+## 2026-10-26 16:48 IST — Interrupted self-check continuation
+
+- **Completed:** inspected the current staged Cloudflare foundation and preserved the
+  unstaged browser API pairing/CORS additions already present in the workspace. No code
+  rollback or duplicate side effect was needed.
+- **Verified:** `npm test` passed with lint, typecheck, build, 9 browser tests, 139
+  backend/report-safety tests, fixture validation, and the read-only evaluation-report
+  check. `cd backend && python3 -m app.eval` reported 52 cases with 0 honest failures;
+  `npm run build:pages`, `uv lock --check`, and `npx wrangler --version` passed.
+- **Still open:** no Cloudflare account/resource, Access policy, hosted URL, durable
+  adapter, external AI/OCR service, or production deployment was exercised. Keep all
+  Cloudflare and browser API configuration labels truthful and do not add credentials.

@@ -1,18 +1,21 @@
 # Proofline
 
 Proofline is an evidence-led brand-governance workspace for reviewing content before it
-is published. The repository currently contains a **seeded demonstration UI** and a
-**local FastAPI foundation**. It does not claim a production workspace, live AI/OCR,
-Supabase persistence, or deployment.
+is published. The repository currently contains a **seeded demonstration UI**, a
+**local FastAPI foundation**, and a **Cloudflare Pages/Workers deployment foundation**.
+It does not claim a production workspace, live AI/OCR, durable Cloudflare persistence,
+or a deployed service.
 
 ## Implementation status at a glance
 
 | Area | Status | What is actually available |
 |---|---|---|
 | Next.js UI under `app/` | **IMPLEMENTED (local demo)** | A seeded fictional VoltEdge workspace with local React state for the review loop, comments, role preview, and synthetic audit-log display. |
-| FastAPI health, vault, content-audit, impact, and workflow routes | **IMPLEMENTED (local)** | Health, organisation-scoped in-memory vault CRUD/version/approval, bounded local content ingestion/audit, impact routes, and review/comment/export transitions. |
+| FastAPI health, vault, content-audit, impact, workflow, dashboard, and export routes | **IMPLEMENTED (local)** | Health, organisation-scoped in-memory vault CRUD/version/approval, bounded local content ingestion/audit, saved-record dashboard summaries, review/comment/export transitions, and impact routes. |
 | Browser API client | **IMPLEMENTED (boundary only)** | Typed client in `app/lib/proofline-api.ts`; the seeded UI does not call it. |
-| Supabase migration and VoltEdge seed | **STUB / PLANNED** | Foundation SQL and fictional data; no live Supabase project or durable adapter is connected. |
+| Cloudflare Pages/Workers deployment foundation | **READY / NOT DEPLOYED** | Static Pages build, Python Worker ASGI entrypoint, D1/R2/Queue bindings, and deployment docs exist; resource IDs, auth, adapters, and smoke deployment remain unverified. |
+| Cloudflare D1/R2/Queue persistence foundation | **STUB / PLANNED** | D1 schema/seed and Wrangler bindings exist; no live resources or durable adapter are connected. |
+| Legacy Supabase migration and VoltEdge seed | **LEGACY / NOT TARGET** | Retained as historical PostgreSQL/RLS reference only; Supabase is no longer the planned deployment target. |
 | External AI/OCR and durable audit services | **STUB / PLANNED** | Local parsers/rules/validation exist; no external model/OCR call, durable storage, hosted service, or production completeness is verified. |
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md),
@@ -83,6 +86,29 @@ exercise text/file ingestion and deterministic review states, but the browser sc
 not call it. When no provider is configured, contextual/model-dependent checks remain
 `review_required`; a local audit response still reports `persistence: "in_memory_demo"`.
 
+### Cloudflare Pages + Workers preparation
+
+The hosted target is Cloudflare-first: Cloudflare Pages serves the static Next.js export,
+and a Cloudflare Python Worker exposes the FastAPI API through the ASGI adapter. D1 is the
+planned durable database, R2 the planned private file store, and Queues the planned async
+audit/re-review channel. These are deployment foundations, not proof of connected services.
+
+```bash
+npm ci
+npm run build:pages
+# output: ./out
+
+# after creating Cloudflare resources and replacing placeholders in wrangler.jsonc:
+npx wrangler pages deploy out --project-name "$CLOUDFLARE_PAGES_PROJECT"
+uv sync
+npm run worker:dev
+npm run worker:deploy
+```
+
+See [`cloudflare/README.md`](cloudflare/README.md) for resource creation, D1 migration,
+R2/Queue bindings, Cloudflare Access planning, and the explicit gaps before a live smoke
+deployment. Do not commit Cloudflare API tokens, database IDs, or private environment files.
+
 ## Truthful demo script
 
 This script demonstrates the current UI behavior. The review, findings, re-scan, and
@@ -115,6 +141,10 @@ by backend tests and is not represented by the seeded screen.
     see the explicit
     `STUB`/review-required state. No PDF, DOCX, JPG, or PNG extraction occurs in this
     build.
+
+12. On **Submit content**, use **Mark this draft confidential for local handling** when
+    testing the browser-only safety marker. It stays in the tab's review record; it is not
+    a production consent, deletion, or external-provider control.
 
 ### Phase 4 improvement demos
 
@@ -155,7 +185,7 @@ The first command installs the browser used by the local Playwright smoke tests;
 development/test dependency, separate from product AI/OCR processing. `npm test` runs
 lint, typecheck, build, Playwright smoke tests, backend pytest, the generated-fixture
 check, and the local evaluation report through [`scripts/test.sh`](scripts/test.sh). The
-checks do not prove automatic extraction, external AI/OCR, Supabase, production
+checks do not prove automatic extraction, external AI/OCR, Cloudflare D1/R2/Queues, production
 authentication, or deployment. The Playwright configuration starts a local production
 server on port 3100 and requires that port to be free.
 
@@ -165,12 +195,15 @@ server on port 3100 and requires that port to be free.
   `app.js`, and `styles.css` files remain retained prototype assets.
 - `backend/` contains the local FastAPI foundation. Its vault, content-audit, impact, and
   review stores are non-persistent and return `persistence: "in_memory_demo"`.
-- `supabase/` contains a tenant-aware migration and fictional VoltEdge seed as a
-  persistence foundation. It is not evidence of a connected Supabase project.
+- `cloudflare/` contains the target D1 migration/seed and deployment notes. It is not
+  evidence of a connected Cloudflare account or durable runtime.
+- `supabase/` contains a retained legacy PostgreSQL/RLS migration and fictional VoltEdge
+  seed for historical reference; it is no longer the planned deployment target.
 - `app/lib/proofline-api.ts` defines a typed boundary for future API wiring; the current
   seeded screen intentionally does not invoke it.
-- `backend/Dockerfile` is a local image definition. No deployment or hosted runtime is
-  claimed by this repository.
+- `backend/Dockerfile` remains a local/container fallback. `wrangler.jsonc` and
+  `backend/worker.py` define the Cloudflare Worker pairing, but no hosted runtime is
+  claimed until a project is created and smoke-tested.
 
 Further documentation:
 

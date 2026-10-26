@@ -1194,6 +1194,7 @@ def offline_boundary(*, configured_provider: bool = False) -> Iterator[list[dict
         for name in (
             "GEMINI_API_KEY", "GEMINI_MODEL", "GOOGLE_API_KEY", "DATABASE_URL",
             "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_JWT_SECRET",
+            "PROOFLINE_JWT_SECRET", "CLOUDFLARE_API_TOKEN",
         ):
             os.environ.pop(name, None)
         os.environ["PROOFLINE_DEV_AUTH"] = "false"

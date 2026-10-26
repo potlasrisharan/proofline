@@ -37,7 +37,7 @@ class Principal(BaseModel):
     user_id: str = Field(min_length=1)
     organisation_id: str = Field(min_length=1)
     role: Role
-    auth_source: Literal["supabase_jwt", "development_header", "test_override"]
+    auth_source: Literal["proofline_jwt", "supabase_jwt", "development_header", "test_override"]
     agency_id: str | None = Field(default=None, min_length=1)
 
 

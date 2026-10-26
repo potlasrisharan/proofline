@@ -19,7 +19,7 @@ class VaultStateError(ValueError):
 class InMemoryVaultStore:
     """A deliberately non-persistent adapter for local development and tests.
 
-    This adapter is not a substitute for Supabase. It exists so the API contract,
+    This adapter is not a substitute for Cloudflare D1. It exists so the API contract,
     role checks, and version transitions can be exercised without credentials.
     """
 

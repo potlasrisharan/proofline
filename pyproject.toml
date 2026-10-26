@@ -1,0 +1,22 @@
+[project]
+name = "proofline-cloudflare-worker"
+version = "0.1.0"
+description = "Cloudflare Python Worker entrypoint for the Proofline API"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "httpx>=0.27,<1",
+  "PyJWT>=2.8,<3",
+  "uvicorn[standard]>=0.30,<1",
+  "workers-py>=1,<2",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8,<10",
+]
+
+[tool.pywrangler]
+main = "backend/worker.py"
+compatibility_date = "2026-10-26"
+compatibility_flags = ["python_workers"]

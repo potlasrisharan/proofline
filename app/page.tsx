@@ -656,7 +656,6 @@ export default function Home() {
   };
 
   const navViews = (Object.keys(pageTitles) as View[]).filter((view) => view !== "audit-log" || permissions.canViewAuditLog).filter((view) => view !== "insights" || permissions.canViewInsights);
-  const commentsForSelectedSpan = comments.filter((comment) => comment.findingId === selectedFinding.id);
   const openReviewCount = reviewItems.filter((item) => (item.id === "novabook-launch" ? queueStatusForAudit[auditState] : item.status) !== "approved").length;
 
   return (

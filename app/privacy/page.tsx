@@ -24,7 +24,7 @@ const transparencyEntries: TransparencyEntry[] = [
     status: "IMPLEMENTED",
     data: "Synthetic VoltEdge records, user-entered drafts and publication context, and explicit local clicks, edits, comments, and review actions.",
     retention: "Overview and review-queue state stays in React memory. The /submit and /findings flow uses sessionStorage for this tab when available, with an in-memory fallback.",
-    note: "No runtime model, hosted OCR service, Supabase project, or durable database is called by these frontend routes.",
+    note: "No runtime model, hosted OCR service, Cloudflare project, or durable database is called by these frontend routes.",
   },
   {
     name: "FastAPI local foundation",
@@ -51,20 +51,20 @@ const transparencyEntries: TransparencyEntry[] = [
     note: "Local backend parsers and a hosted OCR service are separate boundaries; one does not prove the other is active.",
   },
   {
-    name: "Supabase Auth, database, and storage",
+    name: "Cloudflare Access, D1, R2, and Queues",
     scope: "Planned durable foundation",
     status: "STUB",
-    data: "None in this build. SQL/RLS/seed artifacts exist, but no live project, membership lookup, storage bucket, or durable adapter is connected.",
-    retention: "Not applicable because no live project receives data. Retention and deletion rules remain to be configured and verified.",
+    data: "None in this build. Wrangler bindings and D1 schema/seed artifacts exist, but no live Access policy, membership lookup, D1 database, R2 bucket, or Queue consumer is connected.",
+    retention: "Not applicable because no live Cloudflare resource receives data. Retention and deletion rules remain to be configured and verified.",
     note: "The planned foundation does not turn the seeded browser demo into an authenticated tenant workspace.",
   },
   {
     name: "Confidential-material flag",
     scope: "User control · current demo",
-    status: "MISSING",
-    data: "This build has no in-app confidentiality selector, consent flow, or operator workflow for marking sensitive content.",
-    retention: "There is no server-side deletion guarantee. Use fictional VoltEdge material only; clear this site’s session storage and close the tab if sensitive text was entered, while remembering browser session restore is outside the app’s control.",
-    note: "Do not treat the local-only boundary as permission to submit customer, credential, private-key, or confidential brand material.",
+    status: "IMPLEMENTED",
+    data: "A browser-local checkbox records that a draft is confidential in the current review record; it is a safety marker, not an identity or consent system.",
+    retention: "The marker and draft remain in this tab's sessionStorage when available, with no server-side deletion guarantee. Clear this site's session storage and close the tab if sensitive text was entered.",
+    note: "The local demo makes no external request, but the control does not make this a production-safe confidential workspace. Use fictional VoltEdge material only.",
   },
   {
     name: "Hosting, analytics, and deployment services",
@@ -148,6 +148,7 @@ export default function PrivacyPage() {
               <li>Seeded review, registry, and activity records included in the application bundle.</li>
               <li>Button clicks, tab changes, suggestion actions, and other interactions held in React memory while the page is open.</li>
               <li>Text and publication context entered on the /submit route, including locally read UTF-8 .txt files, if a user chooses to run the bounded demo checks.</li>
+              <li>An optional confidential marker selected on /submit, which stays with the browser-local review record and does not authorize external processing.</li>
             </ul>
           </section>
 
@@ -165,7 +166,7 @@ export default function PrivacyPage() {
             <p className="eyebrow">03 · External processing</p>
             <h2 id="privacy-external-heading">What leaves the app</h2>
             <p>
-              The current frontend routes do not send draft content to an external model, hosted OCR/PDF service, Supabase project, or storage provider. A backend Gemini adapter and local document-extraction modules are separate integration boundaries; their existence does not prove a live model call from the UI. Provider model, region, retention, and training-use terms must be verified for any connected deployment.
+              The current frontend routes do not send draft content to an external model, hosted OCR/PDF service, Cloudflare project, or storage provider. A backend Gemini adapter and local document-extraction modules are separate integration boundaries; their existence does not prove a live model call from the UI. Provider model, region, retention, and training-use terms must be verified for any connected deployment.
             </p>
           </section>
 
@@ -173,7 +174,7 @@ export default function PrivacyPage() {
             <p className="eyebrow">04 · Retention</p>
             <h2 id="privacy-retention-heading">Retention and deletion</h2>
             <p>
-              React-only state is discarded on refresh or close. The /submit and /findings sessionStorage record remains for the browser tab session; close the tab or clear this site&apos;s browser session storage to remove it. Browser session-restore behavior is controlled by the browser, so this is not a guaranteed timed-deletion policy. Retention rules for a future hosted model, OCR provider, Supabase project, or production storage system are <strong>PLANNED</strong> and must be verified before confidential content is accepted.
+              React-only state is discarded on refresh or close. The /submit and /findings sessionStorage record remains for the browser tab session; close the tab or clear this site&apos;s browser session storage to remove it. Browser session-restore behavior is controlled by the browser, so this is not a guaranteed timed-deletion policy. Retention rules for a future hosted model, OCR provider, Cloudflare D1/R2 deployment, or production storage system are <strong>PLANNED</strong> and must be verified before confidential content is accepted.
             </p>
           </section>
         </div>
@@ -195,7 +196,7 @@ export default function PrivacyPage() {
           <div className="privacy-callout">
             <strong>Use synthetic or fictional material only.</strong>
             <p>
-              The demo and documentation use fictional VoltEdge records. This build has no in-app confidential-material flag or server-side deletion workflow. Do not paste customer information, confidential brand sources, credentials, private keys, or other sensitive material into this demonstration.
+              The demo and documentation use fictional VoltEdge records. The confidential-material checkbox is only a browser-local safety marker; there is still no server-side deletion workflow or production confidentiality guarantee. Do not paste customer information, confidential brand sources, credentials, private keys, or other sensitive material into this demonstration.
             </p>
           </div>
           <p>

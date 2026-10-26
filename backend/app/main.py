@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .auth import get_current_principal, require_roles
@@ -80,7 +81,7 @@ def create_app(
         version="0.3.0-local",
         description=(
             "Local vault and content workflow. Default storage is in-memory and is not a "
-            "replacement for configured Supabase persistence."
+            "replacement for configured Cloudflare D1 persistence."
         ),
     )
     app.state.vault_store = store or InMemoryVaultStore()
@@ -90,6 +91,15 @@ def create_app(
     app.state.impact_store = impact_store or ImpactRadarStore()
     app.state.settings = settings or get_settings()
     app.dependency_overrides[get_settings] = lambda: app.state.settings
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=list(app.state.settings.allowed_origins),
+        # Cloudflare Access authenticates browser requests with its cookie/header
+        # boundary. Origins remain explicit; credentials are never allowed for `*`.
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     # Register before generic vault paths such as /v1/{resource}/{record_id}.
     app.include_router(impact_router)
     app.include_router(audit_router)
@@ -102,8 +112,11 @@ def create_app(
             "service": "proofline-api",
             "environment": runtime.environment,
             "persistence": "in_memory_demo",
-            "supabase_url_configured": runtime.has_supabase_url,
-            "supabase_jwt_verifier_configured": runtime.has_supabase_jwt_verifier,
+            "cloudflare_access_configured": runtime.cloudflare_access_configured,
+            "jwt_verifier_configured": runtime.has_jwt_verifier,
+            "d1_persistence": "not_configured",
+            "r2_storage": "not_configured",
+            "audit_queue": "not_configured",
             "ai_provider": "not_configured",
         }
 
@@ -327,7 +340,7 @@ def create_app(
         try:
             summary = _workflow(request).dashboard_summary(principal, window_days=window_days)
         except WorkflowStateError as exc:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
         return DashboardSummaryResponse(**summary)
 
     @app.get("/v1/{resource}", response_model=VaultListResponse)

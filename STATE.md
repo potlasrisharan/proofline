@@ -1,6 +1,6 @@
 # Proofline verified state
 
-**Last verified:** 2026-10-26 01:53 IST
+**Last verified:** 2026-10-26 13:02 IST
 **Phase:** 4 — improvements, hardening, deploy, docs
 **Rule:** statuses below describe what was actually inspected or run, not what the PRD
 proposes.
@@ -12,16 +12,20 @@ proposes.
 - `npm run typecheck`: **WORKING** — passed after the Phase 1 changes.
 - `npm run build`: **WORKING** — Next.js production build completed after the Phase 1
   changes.
-- `npm test`: **WORKING** — the combined script passed frontend lint/typecheck/build and
-  11 backend pytest tests; one Starlette/httpx deprecation warning remains.
+- `npm test`: **WORKING** — the combined script passed frontend lint/typecheck/build, 9
+  browser tests, 139 backend/report-safety tests, generated-fixture validation, and the
+  read-only evaluation-report check. No lint errors or test failures remain.
 - `python3 -m pip install -r backend/requirements.txt`: **WORKING** — FastAPI, Uvicorn,
   PyJWT, HTTPX, and pytest installed in the local environment.
 - FastAPI local runtime: **WORKING (local only)** — `/health`, opt-in dev-header auth,
   HS256 JWT verification, organisation-scoped in-memory vault CRUD, versioning, and
   brand-owner approval were exercised with HTTP smoke calls.
-- Supabase runtime: **STUB** — no project URL, Auth connection, or durable adapter was
-  configured. The migration and seed were applied successfully to a temporary local
-  PostgreSQL database with the required auth schema shim, then the database was dropped.
+- Legacy PostgreSQL runtime: **LEGACY / NOT TARGET** — no hosted Supabase project or
+  durable adapter is configured. The old migration and seed were applied successfully to
+  a temporary local PostgreSQL database with the required auth schema shim, then dropped.
+- Cloudflare runtime: **READY / NOT DEPLOYED** — Pages export, Python Worker entrypoint,
+  D1 migration/seed, R2/Queue bindings, and Wrangler configuration exist; no Cloudflare
+  resources, Access policy, or durable adapter has been smoke-tested.
 - Docker foundation: **WORKING (image smoke test)** — `backend/Dockerfile` built and the
   container `/health` endpoint returned 200 JSON.
 
@@ -29,24 +33,24 @@ proposes.
 
 | PRD capability | Status | Verification / boundary |
 |---|---|---|
-| F-01 Brand workspace and role-based access | PARTIAL | Local FastAPI role checks and organisation-scoped store isolation are covered by pytest and HTTP smoke calls; JWT verification is optional/configuration-gated. Supabase Auth/RLS is not connected to a live project. |
-| F-02 Brand Truth Registry | PARTIAL | Local API supports draft create, version, list, get, and brand-owner approval for facts/terms/guidelines/disclaimers/assets. SQL migration/RLS/VoltEdge seed applied in temporary PostgreSQL; durable Supabase CRUD is not connected. |
+| F-01 Brand workspace and role-based access | PARTIAL | Local FastAPI role checks and organisation-scoped store isolation are covered by pytest and HTTP smoke calls; JWT verification is optional/configuration-gated. Cloudflare Access/D1 membership is not connected. |
+| F-02 Brand Truth Registry | PARTIAL | Local API supports draft create, version, list, get, and brand-owner approval for facts/terms/guidelines/disclaimers/assets. D1 migration/VoltEdge seed exists; durable D1 CRUD is not connected. |
 | F-03 Content intake and extraction | IMPLEMENTED (local) | Text, bounded PDF/DOCX/image ingestion adapters preserve normalized offsets, provenance, metadata, and explicit failure states. Optional parser/OCR and external vision dependencies remain fail-soft and are not claimed as hosted services. |
 | F-04 Multi-layer content audit | IMPLEMENTED (local) | The FastAPI content route runs deterministic claims/rules, evidence validation, optional provider checks, verification, dedupe, and transparent risk scoring. No-key model-dependent checks become `needs_human`; no live model/OCR integration is claimed. |
 | F-05 Evidence-linked findings and risk categories | IMPLEMENTED (local) | Findings and Claim–Fact Ledger links are validated and retained in the in-memory content store with source/version evidence, risk breakdown, and explicit unsupported/conflict states. |
 | F-06 Intent-preserving corrections | IMPLEMENTED (local) | Suggestions use values from approved records, finding actions are auditable, and recheck creates immutable content versions without silent mutation or publication. |
 | F-07 Revision-aware audit history | IMPLEMENTED (local) | Content versions, audits, finding diffs, claims, links, actions, and workflow events are retained for the process lifetime; no durable database is connected. |
-| F-08 Human review and approval | PARTIAL | Local API restricts vault approval to `brand_owner` and retains actor/time; content review/approval persistence is still planned. |
-| F-09 Dashboard and audit export | STUB | Existing dashboard/insights values are seeded UI data; no saved-record aggregation or export path is verified. |
-| F-10 Privacy and AI-transparency panel | PARTIAL | `docs/AI_DISCLOSURE.md`, `/health`, and the demo-state UI labels disclose unconfigured AI and local state. A full user-facing provider/data panel is not implemented. |
+| F-08 Human review and approval | IMPLEMENTED (local) | Local API restricts review actions to authorised roles, records actor/time/reason/comment decisions, blocks unresolved high-risk manager approval, and preserves an in-memory decision history; durable persistence remains unverified. |
+| F-09 Dashboard and audit export | PARTIAL | Local API now aggregates saved, visibility-scoped workflow records and exports content/version/audit/finding/evidence/review data; the seeded dashboard UI is not connected to the API and no durable export path is verified. |
+| F-10 Privacy and AI-transparency panel | IMPLEMENTED (local bounded) | `/privacy` exposes the verified runtime inventory and retention boundary; `/submit` records a browser-local confidential marker. No external provider or production deletion/consent workflow is verified. |
 | F-11 Basic accessibility checks | IMPLEMENTED (local bounded) | Deterministic contrast, missing-alt-text, palette-distance, and hashtag-readability checks run only when measurable metadata is supplied; they do not certify full accessibility. |
 
 ## Foundation status after Phase 1 work
 
 ## Remaining gaps
 
-- No real Supabase project, Auth membership lookup, Storage adapter, pgvector retrieval,
-  live Gemini request, hosted OCR/vision fallback, or durable persistence was verified.
+- No Cloudflare D1/R2/Queue resources, Access membership lookup, Vectorize retrieval,
+  live Gemini/Workers AI request, hosted OCR/vision fallback, or durable persistence was verified.
 - The existing Next.js screen remains a seeded demonstration UI. It is not a logged-in
   production workspace, and its dashboard counts are not persisted backend metrics.
 - The FastAPI in-memory adapter is useful for contract/RBAC tests only; it must not be
@@ -143,17 +147,60 @@ proposes.
 - **Regression checks:** `backend/tests/test_phase2_integration.py` adds three API-level
   checks for critical evidence-linked corrections, expired offers, and term/disclaimer/
   contrast rules. Full `python3 -m pytest -q` reports **140 passed**.
-- **Boundary:** all of this remains local/in-memory. No live Gemini request, Supabase
+- **Boundary:** all of this remains local/in-memory. No live Gemini request, Cloudflare
   persistence, hosted OCR/vision service, or production authentication was exercised.
 
 ## Deployment and external-service status
 
 - Hosted frontend URL: **MISSING / not deployed**.
 - Hosted backend URL: **MISSING / not deployed**.
-- Supabase project, Auth membership lookup, Storage, external AI/OCR provider, and durable
-  runtime persistence: **STUB / PLANNED**; no credentials or live project were available
+- Cloudflare D1/R2/Queues, Access membership lookup, external AI/OCR provider, and durable
+  runtime persistence: **STUB / PLANNED**; no credentials or live resources were available
   for verification.
-- A real deployment requires the project owner to provide access to a project-dedicated
-  Vercel/Cloudflare account and a Docker-capable backend host, plus the selected project
-  identifiers and server-side environment variables. Do not put those values in this
-  repository or chat.
+- A real deployment requires project-dedicated Cloudflare access, Pages/Worker project
+  identifiers, binding IDs, domains, and server-side environment variables. Do not put
+  those values in this repository or chat.
+
+## 2026-10-26 16:48 IST — Continuation verification
+
+- **Verified:** `npm test` passed sequentially: lint, typecheck, production build, 9 browser
+  tests, 139 backend/report-safety tests, generated-fixture validation, and the read-only
+  evaluation-report check. One Starlette/httpx deprecation warning remains.
+- **Verified:** `cd backend && python3 -m app.eval` completed with 52 cases and 0 honest
+  failures; `npm run build:pages`, `uv lock --check`, and `npx wrangler --version` also
+  passed.
+- **Boundary unchanged:** Cloudflare resources, Access policy, D1/R2/Queues, hosted URLs,
+  external AI/OCR, and durable persistence were not exercised. The deployment foundation
+  remains **READY / NOT DEPLOYED**.
+
+## 2026-10-26 12:37 IST — Local MVP completion pass
+
+- **Completed locally:** added saved-record review-decision listing, visibility-scoped
+  dashboard aggregation, and evidence-aware JSON audit export to the FastAPI workflow;
+  expanded the `/privacy` transparency inventory; added a browser-local confidential
+  marker and visible confidentiality badge to `/submit`/`/findings`; removed the stale
+  frontend variable and deprecated HTTP constants; and made the reliability report check
+  read-only by default while preserving explicit report regeneration.
+- **Checks:** `npm run typecheck`, `npm run lint`, and `npm test` passed. The full wrapper
+  ran 9 browser tests and 139 backend/report-safety tests; standalone `python3 -m pytest
+  -q` passed 146 tests; `npm run test:e2e:api` passed 4 API workflow tests. The evaluator
+  matched the tracked report without rewriting it, and the correctly scoped `cd backend &&
+  python3 -m app.eval` run had 0 honest failures.
+- **Boundary:** the browser flow remains a seeded local/sessionStorage demo and is not
+  wired to the FastAPI service. Cloudflare Access/D1/R2/Queues/Vectorize, external AI/OCR,
+  durable persistence, and deployment remain **STUB**, **PLANNED**, or **MISSING**. The
+  Pages/Worker foundation is **READY / NOT DEPLOYED**; `npm run build:pages` and `uv lock
+  --check` pass locally.
+
+## 2026-10-26 13:02 IST — Cloudflare deployment foundation verified
+
+- **Added locally:** Cloudflare Pages static-export configuration, a Python Worker ASGI
+  entrypoint, Wrangler D1/R2/Queue bindings, a fictional VoltEdge D1 migration/seed,
+  `pyproject.toml`/`uv.lock`, and Cloudflare-first architecture/disclosure updates. Legacy
+  Supabase artifacts remain historical reference only.
+- **Verified:** `npm run typecheck`, `npm run lint`, `npm test`, `npm run build:pages`,
+  `npx wrangler --version`, and `uv lock --check` passed. No Cloudflare account, resource,
+  Access policy, durable adapter, hosted URL, or deployment smoke test was exercised.
+- **Boundary:** the Pages/Worker configuration is **READY / NOT DEPLOYED**. D1, R2,
+  Queues, Access membership lookup, external AI/OCR, and durable persistence remain
+  **STUB**, **PLANNED**, or **MISSING**.
