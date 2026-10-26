@@ -25,6 +25,20 @@ test("opens the review intake dialog", async ({ page }) => {
   await expect(page.getByRole("button", { name: /Upload a document/ })).toBeVisible();
 });
 
+test("walks a user through the guided review tour", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Take the guided tour" }).click();
+
+  await expect(page.getByRole("heading", { name: "Start with the workspace overview" })).toBeVisible();
+  await page.getByRole("button", { name: "Open overview" }).click();
+  await expect(page).toHaveURL(/\/submit$/);
+  await expect(page.getByRole("heading", { name: "Submit one draft" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Open submit" }).click();
+  await expect(page).toHaveURL(/\/findings$/);
+  await expect(page.getByRole("heading", { name: "Read the evidence before changing anything" })).toBeVisible();
+});
+
 test("shows the verified local privacy and AI boundary", async ({ page }) => {
   await page.goto("/privacy");
 

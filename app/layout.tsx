@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ModalAccessibility } from "./components/modal-accessibility";
+import { ProductTour } from "./components/product-tour";
 import "./globals.css";
 import "./trust.css";
 
@@ -15,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}<ModalAccessibility /></body>
+      <body>{children}<ModalAccessibility /><ProductTour /></body>
     </html>
   );
 }

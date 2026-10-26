@@ -195,6 +195,48 @@ button:disabled { opacity: 1; }
 .state-error .state-icon { color: #fff; background: #a84436; }
 .state-error .state-label { color: #8b382d; }
 
+.overview-actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
+.workflow-progress { display: flex; align-items: center; gap: 8px; margin: -8px 0 18px; padding: 10px 13px; border: 1px solid #d6e6df; border-radius: 9px; color: #52665f; background: #f6fbf8; font-size: 10px; font-weight: 750; }
+.workflow-progress a { display: inline-flex; align-items: center; gap: 6px; color: #52665f; text-decoration: none; white-space: nowrap; }
+.workflow-progress a:hover, .workflow-progress a.active { color: var(--blue); }
+.workflow-progress a.completed { color: var(--mint); }
+.workflow-progress a span { display: grid; place-items: center; width: 21px; height: 21px; border: 1px solid #9fb8ad; border-radius: 50%; color: #52665f; background: #fff; font-size: 9px; }
+.workflow-progress a.active span { border-color: var(--blue); color: #fff; background: var(--blue); }
+.workflow-progress a.completed span { border-color: var(--mint); color: var(--mint); background: var(--mint-soft); }
+.workflow-progress-line { flex: 1; min-width: 20px; height: 1px; background: #c9dbd3; }
+.tour-launcher { position: fixed; right: 22px; bottom: 22px; z-index: 28; min-height: 38px; padding: 0 13px; border: 1px solid #9dbeb0; border-radius: 20px; color: #fff; background: var(--navy); box-shadow: 0 10px 24px rgba(16, 44, 42, .2); font-size: 11px; font-weight: 800; }
+.tour-launcher:hover { background: #294844; transform: translateY(-1px); }
+.tour-backdrop { position: fixed; z-index: 40; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(16, 44, 42, .54); }
+.tour-card { width: min(540px, 100%); padding: 27px; border: 1px solid rgba(255, 255, 255, .75); border-radius: 15px; color: var(--ink); background: #fffefa; box-shadow: 0 24px 80px rgba(16, 44, 42, .3); }
+.tour-card-top, .tour-progress, .tour-actions, .tour-actions-right { display: flex; align-items: center; }
+.tour-card-top, .tour-actions { justify-content: space-between; gap: 15px; }
+.tour-kicker, .tour-step-label { color: var(--mint); font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.tour-close { width: 34px; height: 34px; border: 0; border-radius: 50%; color: #52665f; background: transparent; font-size: 22px; }
+.tour-close:hover { background: #edf3f0; }
+.tour-progress { gap: 12px; margin-top: 19px; color: #52665f; font-size: 10px; font-weight: 750; }
+.tour-progress-track { height: 5px; flex: 1; overflow: hidden; border-radius: 4px; background: #e5efeb; }
+.tour-progress-track span { display: block; height: 100%; border-radius: inherit; background: var(--aqua-deep); transition: width .2s ease; }
+.tour-step-label { margin: 28px 0 8px; }
+.tour-card h2 { margin-bottom: 10px; font-family: Georgia, "Times New Roman", serif; font-size: 29px; font-weight: 500; letter-spacing: -.04em; }
+.tour-description { max-width: 62ch; margin: 0; color: #52665f; font-size: 13px; line-height: 1.65; }
+.tour-location { margin: 16px 0 0; color: #7d9188; font-size: 10px; }
+.tour-location strong { color: #52665f; }
+.tour-dots { display: flex; gap: 6px; margin: 22px 0; }
+.tour-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: #c8d8d1; }
+.tour-dots button.active { width: 22px; border-radius: 5px; background: var(--blue); }
+.tour-actions { padding-top: 17px; border-top: 1px solid #dfe9e4; }
+.tour-actions-right { gap: 8px; }
+
+@media (max-width: 720px) {
+  .overview-actions { justify-content: flex-start; margin-top: 18px; }
+  .workflow-progress { overflow-x: auto; }
+  .workflow-progress-line { min-width: 15px; }
+  .tour-launcher { right: 14px; bottom: 14px; }
+  .tour-card { padding: 22px; }
+  .tour-actions { align-items: flex-end; flex-direction: column; }
+  .tour-actions-right { width: 100%; justify-content: flex-end; }
+}
+
 .disclosure-backdrop { align-items: start; padding-top: clamp(18px, 5vh, 54px); }
 .disclosure-card { width: min(860px, 100%); padding: 34px; background: #fffefa; }
 .disclosure-card > h2 { padding-right: 32px; font-size: 32px; line-height: 1.15; }

@@ -726,7 +726,7 @@ export default function Home() {
                   <h1 id="overview-heading">Good morning, Maya.</h1>
                   <p className="lede">Your workspace has <strong>{openReviewCount} items</strong> waiting for a human decision.</p>
                 </div>
-                {permissions.canStartReview ? <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}><span>＋</span> Start a review</button> : <span className="permission-note heading-permission">Read-only reviewer view</span>}
+                 <div className="overview-actions"><button className="ghost-button" type="button" onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}>Take the guided tour</button>{permissions.canStartReview ? <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}><span>＋</span> Start a review</button> : <span className="permission-note heading-permission">Read-only reviewer view</span>}</div>
               </div>
 
               <div className="signal-grid" aria-label="Workspace signals">

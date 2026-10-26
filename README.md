@@ -41,6 +41,10 @@ not require an account, API key, database, or external service.
 
 The local UI has a guided review path and direct links for each major surface:
 
+On the Overview page, select **Take the guided tour** to walk through the workflow. The
+tour can also be reopened from the floating **Guided tour** button on any page. It explains
+what to do on each screen and opens the next real route for you.
+
 1. **Overview** — see the workspace summary and choose a review role.
 2. **Review queue** — filter the seeded queue, open the NovaBook S1 review, inspect findings,
    comments, revisions, and approval actions.
