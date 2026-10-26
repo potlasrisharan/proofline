@@ -14,7 +14,7 @@ proposals, not commitments or evidence of completed work.
 | FastAPI health endpoint | **IMPLEMENTED (local)** | Reports explicit in-memory and unconfigured-AI state. |
 | Vault CRUD/version/approval | **IMPLEMENTED (local)** | In-memory, organisation-scoped, role-checked foundation. |
 | Development auth headers / local HS256 verifier | **IMPLEMENTED (local boundary)** | Configuration-gated test paths; Cloudflare Access JWT and D1 membership integration remain unverified. |
-| Typed browser API client | **IMPLEMENTED (unused boundary)** | Defines vault/content/recheck/finding-action calls; current UI is not wired to it. |
+| Typed browser API client | **IMPLEMENTED (opt-in local boundary)** | Defines vault/content/recheck/finding-action calls; the content review UI uses it only with the explicit local development-header configuration. |
 | Local content/review workflow API | **IMPLEMENTED (local)** | Stores text/metadata versions, caller-supplied findings, finding actions, comments, review decisions, exports, and hash-linked events in memory. |
 | Cloudflare D1/R2/Queue schema and bindings | **STUB / PLANNED** | D1 foundation SQL, fictional seed, R2/Queue bindings, and Worker config exist; no live resources or durable adapter. |
 | Local content audit engine | **IMPLEMENTED (local, dependency-gated)** | Bounded ingestion, lexical claims, deterministic checks, evidence/span/schema validation, risk metadata, and explicit failure/review-required states run in memory. |

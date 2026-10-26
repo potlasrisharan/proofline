@@ -81,10 +81,29 @@ This returns `items: []` for a fresh process. The SQL seed and browser fixtures 
 automatically loaded into the API's in-memory store. API settings are read from the
 process environment; copying `.env.example` alone does not enable development auth.
 
-The local audit boundary is separate from the seeded UI. A direct `POST /contents` can
-exercise text/file ingestion and deterministic review states, but the browser screen does
-not call it. When no provider is configured, contextual/model-dependent checks remain
+The local audit boundary is separate from the seeded UI by default. A direct `POST /contents`
+can exercise text/file ingestion and deterministic review states; the browser screen calls
+it only in the explicit opt-in mode below. When no provider is configured, contextual/model-dependent checks remain
 `review_required`; a local audit response still reports `persistence: "in_memory_demo"`.
+
+### Optional browser-to-local-API mode
+
+The `/submit` and `/findings` flow can opt into the local FastAPI boundary without changing
+the default seeded demo. Copy `.env.example` to `.env.local`, set
+`NEXT_PUBLIC_PROOFLINE_LOCAL_API=true` and `NEXT_PUBLIC_PROOFLINE_API_AUTH=development_headers`,
+keep the fictional VoltEdge identity values, and start the API with development headers:
+
+```bash
+export PROOFLINE_DEV_AUTH=true
+./scripts/dev.sh
+```
+
+With this opt-in, submit, recheck, and finding actions call the local API, retain the
+returned `in_memory_demo` audit in the browser tab, and show an explicit API-backed label.
+If the API is unavailable, the UI shows an error rather than silently falling back to a
+successful-looking local result. This remains a development-header path, not production
+authentication or durable persistence. Cloudflare Access cookie mode remains a deployment
+boundary and is intentionally not enabled by the local browser adapter.
 
 ### Cloudflare Pages + Workers preparation
 
