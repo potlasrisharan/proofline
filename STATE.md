@@ -82,8 +82,8 @@ proposes.
 - **Evaluation:** `python3 -m app.eval` now runs the 52-case HTTP contract evaluator with
   **0 honest failures**. Its category projections are recorded in `docs/EVAL_REPORT.md`;
   they remain synthetic local measurements, not model accuracy.
-- **Remaining gaps:** the browser demo is not wired to the FastAPI API; durable Supabase,
-  live Auth, external AI/OCR, hosted deployment, and production persistence remain
+- **Remaining gaps:** the browser demo is not wired to the FastAPI API; durable Cloudflare
+  D1/R2/Queues, live Access membership, external AI/OCR, hosted deployment, and production persistence remain
   **STUB**, **PLANNED**, or **MISSING** as documented.
 
 ## Phase 4 verified local work
@@ -172,6 +172,13 @@ proposes.
 - **Boundary unchanged:** Cloudflare resources, Access policy, D1/R2/Queues, hosted URLs,
   external AI/OCR, and durable persistence were not exercised. The deployment foundation
   remains **READY / NOT DEPLOYED**.
+
+## 2026-10-26 16:51 IST — Final post-change verification
+
+- **Verified after the browser API auth-mode change:** `npm test` passed with lint,
+  typecheck, production build, 9 browser tests, 139 backend/report-safety tests, fixture
+  validation, and the read-only evaluation-report check. One Starlette/httpx deprecation
+  warning remains; no test failures or lint errors were reported.
 
 ## 2026-10-26 12:37 IST — Local MVP completion pass
 

@@ -145,3 +145,14 @@
 - **Still open:** no Cloudflare account/resource, Access policy, hosted URL, durable
   adapter, external AI/OCR service, or production deployment was exercised. Keep all
   Cloudflare and browser API configuration labels truthful and do not add credentials.
+
+## 2026-10-26 16:51 IST — Final verification after auth-mode fix
+
+- **Completed:** committed the browser API pairing change so `cloudflare_access` uses
+  credentialed requests while `local_headers` retains development-header authentication.
+- **Verified:** `npm test` passed after that change: 9 browser tests, 139 backend/report-
+  safety tests, lint, typecheck, build, fixture validation, and read-only evaluation-report
+  checking. The remaining deprecation warning is from Starlette/httpx.
+- **Next chat must know:** the working tree is intended to be clean and the Cloudflare
+  foundation remains local/ready but not deployed; no external credentials or live service
+  claims were added.
