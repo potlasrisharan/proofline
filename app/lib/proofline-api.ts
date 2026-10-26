@@ -263,6 +263,9 @@ export function getLocalApiConfig(): LocalApiConfig | null {
     organisation: process.env.NEXT_PUBLIC_PROOFLINE_API_ORGANISATION?.trim() || "org-voltedge-ui",
     role,
     agency: process.env.NEXT_PUBLIC_PROOFLINE_API_AGENCY?.trim() || undefined,
+    auth: process.env.NEXT_PUBLIC_PROOFLINE_API_AUTH?.trim() === "local_headers"
+      ? "local_headers"
+      : "cloudflare_access",
   };
 }
 
@@ -272,12 +275,15 @@ export function createLocalApiClient() {
   return {
     config,
     client: createProoflineApiClient(config.baseUrl, {
-      headers: {
-        "X-Proofline-User": config.user,
-        "X-Proofline-Organisation": config.organisation,
-        "X-Proofline-Role": config.role,
-        ...(config.agency ? { "X-Proofline-Agency": config.agency } : {}),
-      },
+      credentials: config.auth === "cloudflare_access" ? "include" : undefined,
+      headers: config.auth === "local_headers"
+        ? {
+            "X-Proofline-User": config.user,
+            "X-Proofline-Organisation": config.organisation,
+            "X-Proofline-Role": config.role,
+            ...(config.agency ? { "X-Proofline-Agency": config.agency } : {}),
+          }
+        : undefined,
     }),
   };
 }
