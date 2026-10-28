@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -134,7 +135,10 @@ export function ProductTour() {
         <div className="tour-backdrop" role="presentation" onClick={closeTour}>
           <section className="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title" onClick={(event) => event.stopPropagation()}>
             <div className="tour-card-top">
-              <span className="tour-kicker">Proofline quick tour</span>
+              <span className="tour-kicker" style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+                <Image src="/logo.png" alt="Proofline" width={16} height={16} style={{ borderRadius: 3, border: "1px solid rgba(0,0,0,0.1)" }} />
+                Proofline quick tour
+              </span>
               <button className="tour-close" type="button" onClick={closeTour} aria-label="Close guided tour">×</button>
             </div>
             <div className="tour-progress" aria-label={`Step ${stepIndex + 1} of ${steps.length}`}>

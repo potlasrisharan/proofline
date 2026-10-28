@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 type DisclosureStatus = "IMPLEMENTED" | "STUB" | "PLANNED" | "MISSING";
@@ -133,7 +134,10 @@ export function DisclosurePanel({ open, onClose }: DisclosurePanelProps) {
         <button className="modal-close" type="button" aria-label="Close AI and services disclosure" onClick={onClose}>
           ×
         </button>
-        <p className="eyebrow">Trust center</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 6 }}>
+          <Image src="/logo.png" alt="Proofline" width={22} height={22} style={{ borderRadius: 5, border: "1px solid rgba(0,0,0,0.1)" }} />
+          <p className="eyebrow" style={{ margin: 0 }}>Trust center</p>
+        </div>
         <h2 id="disclosure-title">AI and services disclosure</h2>
         <p id="disclosure-description" className="modal-copy">
           This panel describes the services and models that are actually connected to this build. A status of STUB or PLANNED means the service is not receiving data.

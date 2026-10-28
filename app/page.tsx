@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useSyncExternalStore, type KeyboardEvent as ReactKeyboardEvent } from "react";
@@ -1112,6 +1113,7 @@ export default function Home() {
           >
             <button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsPublishModalOpen(false)}>×</button>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <Image src="/logo.png" alt="Proofline" width={22} height={22} style={{ borderRadius: 5, border: "1px solid rgba(0,0,0,0.1)" }} />
               <p className="eyebrow" style={{ margin: 0 }}>Gated Multi-Platform Dispatch</p>
               <span className="badge-pill pill-risk" style={{ fontSize: 9 }}>SIMULATED · Zernio Sandbox Mock</span>
             </div>

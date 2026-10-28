@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -67,7 +68,14 @@ export function AppSidebar({
   return (
     <aside className="sidebar" aria-label="VoltEdge workspace navigation">
       <Link className="brand-lockup pl-brand-link" href="/" prefetch={false} aria-label="Proofline Home">
-        <span className="brand-mark" aria-hidden="true">P</span>
+        <Image
+          src="/logo.png"
+          alt="Proofline logo"
+          className="brand-logo-img"
+          width={36}
+          height={36}
+          priority
+        />
         <span className="brand-text-col">
           <span className="brand-name">Proofline</span>
           <span className="brand-caption">Brand truth, before publish.</span>
