@@ -66,7 +66,7 @@ export function AppSidebar({
 
   return (
     <aside className="sidebar" aria-label="VoltEdge workspace navigation">
-      <Link className="brand-lockup pl-brand-link" href="/" aria-label="Proofline Home">
+      <Link className="brand-lockup pl-brand-link" href="/" prefetch={false} aria-label="Proofline Home">
         <span className="brand-mark" aria-hidden="true">P</span>
         <span className="brand-text-col">
           <span className="brand-name">Proofline</span>
@@ -83,6 +83,7 @@ export function AppSidebar({
       <Link
         className={`nav-action-btn ${activeKey === "submit" ? "active" : ""}`}
         href="/submit"
+        prefetch={false}
         aria-current={activeKey === "submit" ? "page" : undefined}
       >
         <span aria-hidden="true">＋</span>
@@ -112,6 +113,7 @@ export function AppSidebar({
             <Link
               key={item.key}
               href={item.href}
+              prefetch={false}
               className={`nav-item ${isActive ? "active" : ""}`}
               aria-current={isActive ? "page" : undefined}
             >

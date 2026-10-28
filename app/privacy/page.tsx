@@ -233,7 +233,7 @@ export default function PrivacyPage() {
 
         <footer className="privacy-footer">
           <span>Proofline Truth Engine · Last reviewed October 26, 2026</span>
-          <Link href="/">Return to the demo</Link>
+          <Link href="/" prefetch={false}>Return to the demo</Link>
         </footer>
           </div>
         </div>

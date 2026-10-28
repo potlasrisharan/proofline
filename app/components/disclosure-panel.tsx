@@ -174,7 +174,7 @@ export function DisclosurePanel({ open, onClose }: DisclosurePanelProps) {
 
         <div className="disclosure-footer">
           <span>Last reviewed October 26, 2026 · Local boundary</span>
-          <Link href="/privacy" onClick={onClose}>Read privacy and data handling</Link>
+          <Link href="/privacy" prefetch={false} onClick={onClose}>Read privacy and data handling</Link>
         </div>
       </section>
     </div>

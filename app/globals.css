@@ -27,8 +27,17 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; min-width: 320px; background: var(--paper); }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(85, 121, 215, 0.38); outline-offset: 2px; }
@@ -417,5 +426,12 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 .alt-text-review { display: flex; align-items: flex-start; gap: 9px; margin-top: 16px; padding: 11px; border: 1px solid #eadab7; border-radius: 8px; background: #fffaf0; }.alt-text-review .verdict-icon { width: 22px; height: 22px; }.alt-text-review strong { display: block; color: #69553b; font-size: 10px; }.alt-text-review p { margin: 4px 0 0; color: #8c795d; font-size: 9px; line-height: 1.45; }.alt-text-review .ai-badge { margin-left: auto; color: #8c6c34; background: #ffedc7; }
 .history-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 20px; }.history-header h2 { font-size: 18px; }.history-copy small { display: block; margin-top: 6px; color: #a0ada8; font-size: 8px; }
 
-@media (max-width: 1000px) { .submit-layout { grid-template-columns: 1fr; }.findings-workspace { grid-template-columns: 1fr; }.findings-sidebar { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }.audit-context { min-width: 0; } }
+@media (max-width: 1150px) {
+  .submit-layout { grid-template-columns: 1fr; }
+  .findings-workspace { grid-template-columns: 1fr; }
+  .findings-sidebar { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .audit-context { min-width: 0; }
+  .pl-review-layout { grid-template-columns: 1fr; }
+  .pl-demo-label { display: none; }
+}
 @media (max-width: 720px) { .submit-form-heading, .submit-form-footer { align-items: flex-start; flex-direction: column; }.submit-form-footer .primary-button { width: 100%; }.form-grid { grid-template-columns: 1fr; }.findings-sidebar { grid-template-columns: 1fr; }.finding-method-row { align-items: flex-start; }.confidence-note { width: 100%; margin-left: 0; }.risk-summary-foot { flex-direction: column; }.highlight-legend { align-items: flex-start; flex-direction: column; gap: 7px; }.legend-helper { margin-left: 0; }.alt-text-review { flex-wrap: wrap; }.alt-text-review .ai-badge { margin-left: 31px; }.enhanced-finding-actions { justify-content: flex-start; }.enhanced-finding-actions .small-button { flex: 1; } }

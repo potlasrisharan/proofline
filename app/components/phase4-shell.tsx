@@ -33,7 +33,7 @@ export function Phase4Shell({ current, eyebrow, title, description, children }: 
             <span className="review-summary-chip"><span className="status-dot blue" /> VoltEdge demo state</span>
           </div>
           {children}
-          <footer className="footer"><span>Proofline · local Phase 4 improvement demo · fictional data</span><span><Link href="/privacy">Privacy and AI disclosure</Link> · No automatic approval or publication.</span></footer>
+          <footer className="footer"><span>Proofline · local Phase 4 improvement demo · fictional data</span><span><Link href="/privacy" prefetch={false}>Privacy and AI disclosure</Link> · No automatic approval or publication.</span></footer>
         </div>
       </section>
     </main>

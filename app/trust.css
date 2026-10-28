@@ -289,9 +289,10 @@ button:disabled { opacity: 1; }
 .privacy-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 25px 0 0; color: #52665f; font-size: 11px; line-height: 1.6; }
 .privacy-footer a { color: #2c554b; font-weight: 750; text-underline-offset: 3px; }
 
-@media (max-width: 1100px) {
-  .topbar { flex-wrap: wrap; gap: 12px; padding-top: 16px; padding-bottom: 16px; }
-  .top-actions { flex-wrap: wrap; }
+@media (max-width: 1150px) {
+  .topbar { flex-wrap: wrap; gap: 12px; padding-top: 14px; padding-bottom: 14px; }
+  .top-actions { flex-wrap: wrap; gap: 8px; }
+  .pl-demo-label { display: none; }
 }
 @media (max-width: 720px) {
   .nav-list { grid-template-columns: repeat(auto-fit, minmax(82px, 1fr)); }
