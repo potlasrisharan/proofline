@@ -74,7 +74,7 @@ export function AppSidebar({
         </span>
       </Link>
 
-      <div className="workspace-switcher" role="status">
+      <div className="workspace-switcher">
         <span className="workspace-dot" />
         <span>VoltEdge workspace</span>
         <span className="chevron" aria-hidden="true">⌄</span>
