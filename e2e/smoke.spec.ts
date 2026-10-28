@@ -4,7 +4,7 @@ test("loads the seeded workspace and navigates to the review queue", async ({ pa
   await page.goto("/");
 
   await expect(page).toHaveTitle(/Proofline/);
-  await expect(page.getByRole("heading", { name: "Good morning, Maya." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Good (morning|afternoon|evening), Maya\./ })).toBeVisible();
   await expect(page.getByText("Demo state only")).toBeVisible();
 
   await page.getByRole("button", { name: /Review queue/ }).click();

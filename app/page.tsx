@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { AppSidebar } from "./components/app-sidebar";
 import { DisclosurePanel } from "./components/disclosure-panel";
 import { StatePanel } from "./components/status-state";
@@ -459,6 +459,28 @@ function initialDashboardView(): View {
   return requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log" ? requestedView : "overview";
 }
 
+const emptySubscribe = () => () => {};
+
+function getClientGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function getClientDateString(): string {
+  try {
+    return new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return "Sunday, October 25, 2026";
+  }
+}
+
 export default function Home() {
   const router = useRouter();
   const [activeView, setActiveView] = useState<View>(initialDashboardView);
@@ -515,6 +537,8 @@ export default function Home() {
   const [submittedContent, setSubmittedContent] = useState(defaultSubmitForm.content);
   const [localRegistryRecords, setLocalRegistryRecords] = useState<RegistryRecord[]>(registryRecords);
   const [sourceDraft, setSourceDraft] = useState({ title: "Campaign claims policy", scope: "VoltEdge Labs", validity: "Current · reviewed October 25, 2026" });
+  const greeting = useSyncExternalStore(emptySubscribe, getClientGreeting, () => "Good morning");
+  const currentDateStr = useSyncExternalStore(emptySubscribe, getClientDateString, () => "Sunday, October 25, 2026");
 
   const permissions = rolePermissions[currentRole];
   const openFindings = useMemo(() => findings.filter((finding) => !finding.resolved), [findings]);
@@ -908,8 +932,8 @@ export default function Home() {
             <section className="view-panel" aria-labelledby="overview-heading">
               <div className="page-heading">
                 <div>
-                  <p className="eyebrow">Sunday, October 25, 2026 <span className="eyebrow-dot" /> Week at a glance</p>
-                  <h1 id="overview-heading">Good morning, Maya.</h1>
+                  <p className="eyebrow" suppressHydrationWarning>{currentDateStr} <span className="eyebrow-dot" /> Week at a glance</p>
+                  <h1 id="overview-heading" suppressHydrationWarning>{greeting}, Maya.</h1>
                   <p className="lede">Your workspace has <strong>{openReviewCount} items</strong> waiting for a human decision.</p>
                 </div>
                  <div className="overview-actions"><button className="ghost-button" type="button" onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}>Take the guided tour</button>{permissions.canStartReview ? <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}><span>＋</span> Start a review</button> : <span className="permission-note heading-permission">Read-only reviewer view</span>}</div>
