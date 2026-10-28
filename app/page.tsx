@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { AppSidebar } from "./components/app-sidebar";
 import { DisclosurePanel } from "./components/disclosure-panel";
 import { StatePanel } from "./components/status-state";
 import { useLocalAuditLog } from "./components/use-local-audit-log";
@@ -461,6 +462,21 @@ function initialDashboardView(): View {
 export default function Home() {
   const router = useRouter();
   const [activeView, setActiveView] = useState<View>(initialDashboardView);
+
+  useEffect(() => {
+    const handleUrlView = () => {
+      const requestedView = new URLSearchParams(window.location.search).get("view");
+      if (requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log") {
+        setActiveView(requestedView);
+      } else if (!requestedView && window.location.pathname === "/") {
+        setActiveView("overview");
+      }
+    };
+    handleUrlView();
+    window.addEventListener("popstate", handleUrlView);
+    return () => window.removeEventListener("popstate", handleUrlView);
+  }, []);
+
   const [detailTab, setDetailTab] = useState<DetailTab>("findings");
   const [auditState, setAuditState] = useState<AuditState>("needs-changes");
   const [findings, setFindings] = useState<Finding[]>(initialFindings);
@@ -733,49 +749,17 @@ export default function Home() {
     "audit-log": "Audit log",
   };
 
-  const navViews = (Object.keys(pageTitles) as View[]).filter((view) => view !== "audit-log" || permissions.canViewAuditLog).filter((view) => view !== "insights" || permissions.canViewInsights);
   const openReviewCount = reviewItems.filter((item) => (item.id === "novabook-launch" ? queueStatusForAudit[auditState] : item.status) !== "approved").length;
 
   return (
     <main className="app-shell">
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      <aside className="sidebar" aria-label="Workspace navigation">
-        <div className="brand-lockup">
-          <div className="brand-mark" aria-hidden="true">P</div>
-          <div>
-            <div className="brand-name">Proofline</div>
-            <div className="brand-caption">Brand truth, before publish.</div>
-          </div>
-        </div>
-
-        <button className="workspace-switcher" type="button" onClick={() => notify("Workspace switching is scoped to the VoltEdge demo workspace.")}>
-          <span className="workspace-dot" />
-          <span>VoltEdge workspace</span>
-          <span className="chevron" aria-hidden="true">⌄</span>
-        </button>
-
-        <nav className="nav-list" aria-label="Primary">
-          <Link className="nav-item" href="/submit"><span aria-hidden="true">＋</span>Submit content</Link>
-          <Link className="nav-item" href="/impact"><span aria-hidden="true">!</span>Impact radar</Link>
-          {navViews.map((view) => (
-              <button className={`nav-item ${activeView === view ? "active" : ""}`} key={view} type="button" aria-current={activeView === view ? "page" : undefined} onClick={() => navigate(view)}>
-              <span aria-hidden="true">{view === "overview" ? "◈" : view === "reviews" ? "◇" : view === "registry" ? "▦" : view === "insights" ? "⌁" : "≋"}</span>
-              {pageTitles[view]}
-              {view === "reviews" ? <b>{openReviewCount}</b> : null}
-            </button>
-          ))}
-        </nav>
-
-        <div className="sidebar-bottom">
-          {permissions.canManageRegistry ? <button className="nav-item muted" type="button" onClick={() => navigate("registry")}><span aria-hidden="true">⚙</span> Workspace settings</button> : null}
-          <div className="registry-health"><span className="health-dot" /><div><strong>Seeded registry</strong><small>VoltEdge demo · local state only</small></div></div>
-          <div className="profile-card">
-            <div className="avatar">{roleInitials(currentRole)}</div>
-            <div><strong>Maya Chen</strong><small>{roleLabels[currentRole]}</small></div>
-            <span className="more" aria-hidden="true">•••</span>
-          </div>
-        </div>
-      </aside>
+      <AppSidebar
+        activeKey={activeView}
+        onNavigateView={navigate}
+        openReviewCount={openReviewCount}
+        currentRole={roleLabels[currentRole]}
+      />
 
       <section id="main-content" className="main-content" tabIndex={-1}>
         <header className="topbar">

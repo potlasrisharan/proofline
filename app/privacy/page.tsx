@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { AppSidebar } from "../components/app-sidebar";
 
 export const metadata: Metadata = {
   title: "Privacy and AI transparency · Proofline",
@@ -107,18 +108,23 @@ function TransparencyEntry({ entry }: { entry: TransparencyEntry }) {
 
 export default function PrivacyPage() {
   return (
-    <main className="privacy-page">
-      <div className="privacy-shell">
-        <header className="privacy-header">
-          <Link className="privacy-back-link" href="/">
-            <span aria-hidden="true">←</span> Back to Proofline
-          </Link>
-          <p className="eyebrow">Trust center · Verified local boundary</p>
-          <h1>Privacy and AI transparency</h1>
-          <p className="privacy-lede">
-            This page records the verified behavior of the current seeded demonstration UI and its separate local API foundation. It is a product disclosure, not a complete production privacy policy or a legal commitment about services that are not configured.
-          </p>
+    <main className="app-shell pl-workspace">
+      <a className="pl-skip-link" href="#privacy-main">Skip to content</a>
+      <AppSidebar activeKey="privacy" />
+      <section className="main-content" id="privacy-main" tabIndex={-1}>
+        <header className="topbar">
+          <div className="breadcrumb"><span>VoltEdge Labs</span><i>/</i><strong>Privacy &amp; AI disclosure</strong></div>
+          <span className="pl-demo-label">Verified boundary</span>
         </header>
+        <div className="content-wrap" style={{ paddingTop: 32 }}>
+          <div className="privacy-shell">
+            <header className="privacy-header">
+              <p className="eyebrow">Trust center · Verified local boundary</p>
+              <h1>Privacy and AI transparency</h1>
+              <p className="privacy-lede">
+                This page records the verified behavior of the current seeded demonstration UI and its separate local API foundation. It is a product disclosure, not a complete production privacy policy or a legal commitment about services that are not configured.
+              </p>
+            </header>
 
         <section className="privacy-status" aria-labelledby="privacy-status-heading">
           <span className="status-dot blue" aria-hidden="true" />
@@ -229,7 +235,9 @@ export default function PrivacyPage() {
           <span>Proofline local demo · Last reviewed October 26, 2026</span>
           <Link href="/">Return to the demo</Link>
         </footer>
-      </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

@@ -44,6 +44,11 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 .workspace-switcher:hover { border-color: #5e8179; background: rgba(255, 255, 255, .04); }
 .workspace-dot, .health-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--aqua-deep); box-shadow: 0 0 0 3px rgba(92, 199, 185, .13); }
 .chevron { margin-left: auto; color: #7d9c96; font-size: 16px; }
+.nav-action-btn { display: flex; align-items: center; gap: 10px; min-height: 42px; width: 100%; margin: 0 0 14px; padding: 0 13px; border: 1px solid #385d56; border-radius: 8px; color: #f0fdf9; background: rgba(92, 199, 185, .12); font-size: 12px; font-weight: 650; text-decoration: none; transition: all .2s; cursor: pointer; }
+.nav-action-btn:hover { border-color: var(--aqua); background: rgba(92, 199, 185, .22); color: #fff; }
+.nav-action-btn.active { border-color: var(--aqua); background: var(--aqua); color: var(--navy); }
+.nav-action-btn.active span { color: var(--navy); }
+.nav-action-btn span { display: grid; width: 18px; place-items: center; color: var(--aqua); font-size: 16px; font-weight: 700; }
 .nav-list { display: grid; gap: 4px; }
 .nav-item { display: flex; align-items: center; gap: 12px; min-height: 40px; width: 100%; padding: 0 13px; border: 0; border-radius: 8px; color: #93aca7; background: transparent; font-size: 12px; text-align: left; transition: background .2s, color .2s; }
 .nav-item span { display: grid; width: 17px; place-items: center; color: #80a39b; font-size: 16px; }
