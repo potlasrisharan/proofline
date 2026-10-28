@@ -498,6 +498,10 @@ export default function Home() {
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(false);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [selectedChannels, setSelectedChannels] = useState<string[]>(["LinkedIn", "Instagram", "X"]);
+  const [isDispatching, setIsDispatching] = useState(false);
+  const [dispatchReceipts, setDispatchReceipts] = useState<{ channel: string; platformPostId: string; status: string }[] | null>(null);
   const [documentIntakeError, setDocumentIntakeError] = useState(false);
   const [submittedContent, setSubmittedContent] = useState(defaultSubmitForm.content);
   const [localRegistryRecords, setLocalRegistryRecords] = useState<RegistryRecord[]>(registryRecords);
@@ -659,6 +663,38 @@ export default function Home() {
     addActivity({ icon: "✓", title: `${contentVersion} approved`, detail: "Approval, actor, timestamp, and evidence links are retained.", time: "Just now", tone: "good" });
     appendAuditEvent({ kind: "revision_approved", actor: "Maya Chen", role: currentRole, summary: `${contentVersion} approved. Note: ${note}`, contentVersion });
     notify("Approved. The decision and evidence links are now part of the audit history.");
+  }
+
+  function handleDispatch() {
+    if (selectedChannels.length === 0) {
+      notify("Select at least one channel to dispatch.");
+      return;
+    }
+    setIsDispatching(true);
+    window.setTimeout(() => {
+      const receipts = selectedChannels.map((ch) => ({
+        channel: ch,
+        platformPostId: `${ch.toLowerCase()}_sim_${Math.random().toString(36).substring(2, 9)}`,
+        status: "published_simulated",
+      }));
+      setDispatchReceipts(receipts);
+      setIsDispatching(false);
+      appendAuditEvent({
+        kind: "revision_approved",
+        actor: "Maya Chen",
+        role: currentRole,
+        summary: `Dispatched to ${selectedChannels.join(", ")} via Zernio Sandbox (Simulated).`,
+        contentVersion,
+      });
+      addActivity({
+        icon: "↗",
+        title: `Dispatched to ${selectedChannels.length} channels`,
+        detail: `Zernio sandbox mock: ${selectedChannels.join(", ")}.`,
+        time: "Just now",
+        tone: "good",
+      });
+      notify("Simulated multi-platform dispatch complete!");
+    }, 900);
   }
 
   function requestChanges() {
@@ -907,6 +943,27 @@ export default function Home() {
                   </> : <div className="preview-placeholder"><strong>No revision history loaded for this seeded preview.</strong><p>The active VoltEdge launch email retains every revision and decision in its audit trail.</p></div>}</div> : null}
 
                   {selectedIsInteractive ? <section className="review-decision-panel" aria-labelledby="decision-heading"><div className="decision-panel-heading"><div><p className="eyebrow">Decision record</p><h3 id="decision-heading">Leave the next action easy to audit.</h3></div><span className="decision-role"><span className="status-dot blue" /> {roleLabels[currentRole]}</span></div><label className="decision-note-label" htmlFor="decision-note">Decision note{permissions.canRequestChanges ? <span>Required for a change request</span> : null}<textarea id="decision-note" value={decisionNote} onChange={(event) => setDecisionNote(event.target.value)} placeholder="Add context for the creator or future reviewer…" rows={3} /></label><div className="decision-actions">{permissions.canRequestChanges && auditState !== "approved" ? <button className="ghost-button wide-button" type="button" onClick={requestChanges}>Request changes</button> : null}{permissions.canApprove && canApprove ? <button className="primary-button wide-button" type="button" onClick={approveReview}>Approve revision</button> : null}{permissions.canSubmit && canSubmit ? <button className="primary-button wide-button" type="button" onClick={submitForApproval}>Send for approval</button> : null}{!permissions.canApprove && !permissions.canRequestChanges && !permissions.canSubmit ? <span className="permission-note">This role can inspect evidence and comments. Approval actions are hidden.</span> : null}</div></section> : null}
+                  {selectedIsInteractive && auditState === "approved" ? (
+                    <section className="publish-dispatch-banner" aria-label="Gated publication dispatch">
+                      <div className="dispatch-badge">
+                        <span className="dispatch-check" aria-hidden="true">✓</span>
+                        <div>
+                          <strong>Compliance verified · Ready for 1-click dispatch</strong>
+                          <p className="micro-helper" style={{ margin: 0 }}>All claims substantiated against VoltEdge truth registry.</p>
+                        </div>
+                      </div>
+                      <button
+                        className="dispatch-btn"
+                        type="button"
+                        onClick={() => {
+                          setDispatchReceipts(null);
+                          setIsPublishModalOpen(true);
+                        }}
+                      >
+                        Dispatch to Channels (Zernio) ↗
+                      </button>
+                    </section>
+                  ) : null}
                 </section>
               </div>
             </section>
@@ -923,6 +980,107 @@ export default function Home() {
         {isStartModalOpen ? <div className="modal-backdrop" role="presentation" onClick={() => setIsStartModalOpen(false)}><section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="start-review-title" onKeyDown={(event) => event.key === "Escape" && setIsStartModalOpen(false)} onClick={(event) => event.stopPropagation()}><button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsStartModalOpen(false)}>×</button><p className="eyebrow">New review</p><h2 id="start-review-title">Bring a draft into Proofline.</h2><p className="modal-copy">Choose a supported intake path. The demo keeps the original submission intact while you inspect its evidence trail.</p>{documentIntakeError ? <StatePanel kind="error" title="Document intake is unavailable" description="The configured intake path could not be opened. Use paste text or the explicit local API mode." actionLabel="Dismiss message" onAction={() => setDocumentIntakeError(false)} /> : null}<div className="intake-options"><button className="intake-option" type="button" onClick={() => startNewReview("text")}><span className="intake-icon">T</span><span><strong>Paste text</strong><small>Best for a quick claim check</small></span><span>→</span></button><button className="intake-option" type="button" onClick={() => startNewReview("document")}><span className="intake-icon">▧</span><span><strong>Upload a document</strong><small>Text locally · PDF/DOCX/image in local API mode</small></span><span>→</span></button></div></section></div> : null}
 
       {isSourceModalOpen ? <div className="modal-backdrop" role="presentation" onClick={() => setIsSourceModalOpen(false)}><section className="modal-card source-modal" role="dialog" aria-modal="true" aria-labelledby="source-title" onClick={(event) => event.stopPropagation()}><button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsSourceModalOpen(false)}>×</button><p className="eyebrow">Registry intake</p><h2 id="source-title">Add a source draft.</h2><p className="modal-copy">This demo keeps source intake intentionally explicit: an authorised owner supplies the source, scope, and validity before it can inform a review.</p><div className="source-form"><label>Source name<input value={sourceDraft.title} maxLength={200} onChange={(event) => setSourceDraft((current) => ({ ...current, title: event.target.value }))} /></label><label>Applies to<select value={sourceDraft.scope} onChange={(event) => setSourceDraft((current) => ({ ...current, scope: event.target.value }))}><option>VoltEdge Labs</option><option>VoltEdge NovaBook S1</option></select></label><label>Validity<input value={sourceDraft.validity} maxLength={200} onChange={(event) => setSourceDraft((current) => ({ ...current, validity: event.target.value }))} /></label></div><button className="primary-button modal-save" type="button" onClick={saveSourceDraft}>Save source draft</button></section></div> : null}
+
+      {isPublishModalOpen ? (
+        <div className="modal-backdrop" role="presentation" onClick={() => setIsPublishModalOpen(false)}>
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dispatch-modal-title"
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.key === "Escape" && setIsPublishModalOpen(false)}
+          >
+            <button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsPublishModalOpen(false)}>×</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <p className="eyebrow" style={{ margin: 0 }}>Gated Multi-Platform Dispatch</p>
+              <span className="badge-pill pill-risk" style={{ fontSize: 9 }}>SIMULATED · Zernio Sandbox Mock</span>
+            </div>
+            <h2 id="dispatch-modal-title">Publish approved revision</h2>
+            <p className="modal-copy">
+              Dispatches verified content across connected social channels and CMS via Zernio API. 
+              Unverified claims are strictly blocked from distribution.
+            </p>
+
+            <div className="dispatch-payload-preview">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <small>Verified Payload · {contentVersion}</small>
+                <span className="asset-type-badge">Email &amp; Social Copy</span>
+              </div>
+              <p>{submittedContent.length > 220 ? `${submittedContent.slice(0, 220)}…` : submittedContent}</p>
+            </div>
+
+            <label style={{ fontSize: 11, fontWeight: 750, color: "var(--navy)" }}>Select Target Channels</label>
+            <div className="channel-selector-grid">
+              {[
+                { id: "LinkedIn", name: "LinkedIn Post / Article", icon: "in", cls: "linkedin" },
+                { id: "Instagram", name: "Instagram (Carousel / Reel)", icon: "ig", cls: "instagram" },
+                { id: "X", name: "X (Twitter) Thread", icon: "𝕏", cls: "x" },
+                { id: "Facebook", name: "Facebook Page", icon: "fb", cls: "facebook" },
+              ].map((ch) => {
+                const checked = selectedChannels.includes(ch.id);
+                return (
+                  <label key={ch.id} className={`channel-checkbox ${checked ? "selected" : ""}`}>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => {
+                        setSelectedChannels((prev) =>
+                          checked ? prev.filter((c) => c !== ch.id) : [...prev, ch.id]
+                        );
+                      }}
+                    />
+                    <span className={`channel-icon ${ch.cls}`}>{ch.icon}</span>
+                    <span style={{ fontSize: 11 }}>{ch.name}</span>
+                  </label>
+                );
+              })}
+            </div>
+
+            {dispatchReceipts ? (
+              <div className="dispatch-receipt-box">
+                <strong>✓ Dispatch Successful (Simulated Sandbox)</strong>
+                {dispatchReceipts.map((r) => (
+                  <div key={r.platformPostId} className="receipt-item">
+                    <span><strong>{r.channel}</strong> · {r.status}</span>
+                    <code>{r.platformPostId}</code>
+                  </div>
+                ))}
+                <p style={{ margin: "8px 0 0", fontSize: 9, color: "#4f756b" }}>
+                  Audit event recorded: Dispatched by Maya Chen ({roleLabels[currentRole]}).
+                </p>
+              </div>
+            ) : null}
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+              <button className="ghost-button" type="button" onClick={() => setIsPublishModalOpen(false)}>
+                {dispatchReceipts ? "Close" : "Cancel"}
+              </button>
+              {!dispatchReceipts ? (
+                <button
+                  className="primary-button"
+                  type="button"
+                  disabled={isDispatching || selectedChannels.length === 0}
+                  onClick={handleDispatch}
+                >
+                  {isDispatching ? "Dispatching…" : `Simulate Multi-Platform Dispatch (${selectedChannels.length})`}
+                </button>
+              ) : (
+                <button
+                  className="primary-button"
+                  type="button"
+                  onClick={() => {
+                    setDispatchReceipts(null);
+                    setIsPublishModalOpen(false);
+                  }}
+                >
+                  Done
+                </button>
+              )}
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       {toast ? <div className="toast" role="status" aria-live="polite">{toast}</div> : null}
       <DisclosurePanel open={isDisclosureOpen} onClose={() => setIsDisclosureOpen(false)} />
