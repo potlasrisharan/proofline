@@ -301,7 +301,13 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
           {stage === "submit" ? (
             <div className="submit-layout">
               <form className="panel submit-form" onSubmit={submit}>
-                <div className="submit-form-heading"><div><h2>Content to review</h2><p className="micro-helper">Original and corrections stay available for comparison.</p></div><button className="small-button" type="button" onClick={() => { setText(sampleVoltEdgeText); setScope(defaultContentScope); setUploadStatus(""); }}>Load VoltEdge sample</button></div>
+                <div className="submit-form-heading">
+                  <div><h2>Content to review</h2><p className="micro-helper">Original and corrections stay available for comparison.</p></div>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    <button className="small-button" type="button" onClick={() => { setText(sampleVoltEdgeText); setScope(defaultContentScope); setUploadStatus(""); }}>Load Flagged Sample</button>
+                    <button className="small-button" type="button" onClick={() => { setText("VoltEdge NovaBook S1 offers up to 24 hours of battery life and includes a 30-day return guarantee. Full details apply at voltedge.com/terms."); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Clean Draft" })); setUploadStatus(""); }}>Load Clean Sample</button>
+                  </div>
+                </div>
                 <label className="field-label" htmlFor="pl-title">Review name<input id="pl-title" value={scope.title} maxLength={200} onChange={(event) => updateScope("title", event.target.value)} /></label>
                 <label className="field-label" htmlFor="pl-text">Paste content<textarea id="pl-text" rows={9} value={text} maxLength={100000} onChange={(event) => setText(event.target.value)} aria-describedby="pl-text-help" /></label><p id="pl-text-help" className="micro-helper">US English checks cover the synthetic NovaBook S1 battery fact, comparative claims & voice.</p>
                  <div className="pl-upload-box"><label className="field-label" htmlFor="pl-upload">Upload supported content<input id="pl-upload" type="file" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg" onChange={upload} disabled={uploading} aria-describedby="pl-upload-help" /></label><p id="pl-upload-help" className="micro-helper">Accepts .txt locally, or PDF/DOCX/images in local API mode.</p>{uploadStatus ? <p className="pl-upload-status" role="status">{uploadStatus}</p> : null}</div>

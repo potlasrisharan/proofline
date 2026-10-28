@@ -499,6 +499,8 @@ export default function Home() {
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [isIndicModalOpen, setIsIndicModalOpen] = useState(false);
+  const [indicLang, setIndicLang] = useState<"te" | "hi">("te");
   const [selectedChannels, setSelectedChannels] = useState<string[]>(["LinkedIn", "Instagram", "X"]);
   const [isDispatching, setIsDispatching] = useState(false);
   const [dispatchReceipts, setDispatchReceipts] = useState<{ channel: string; platformPostId: string; status: string }[] | null>(null);
@@ -809,6 +811,61 @@ export default function Home() {
         </header>
 
         <div className="content-wrap">
+          <div className="judge-demo-bar" role="region" aria-label="Judge Quick-Demo Scenarios">
+            <div className="judge-demo-title">
+              <span>⚖️</span>
+              <span>Judge Quick-Demo</span>
+              <span className="judge-demo-badge">1-Click Scenarios</span>
+            </div>
+            <div className="judge-preset-buttons">
+              <button
+                className="judge-preset-btn"
+                type="button"
+                onClick={() => {
+                  navigate("reviews");
+                  setSelectedReviewId("novabook-launch");
+                  setDetailTab("findings");
+                  notify("Demo 1: Inspecting NovaBook S1 claim findings with visual diffs and evidence trace.");
+                }}
+              >
+                <span>①</span> Claim Audit &amp; Visual Diff
+              </button>
+              <button
+                className="judge-preset-btn"
+                type="button"
+                onClick={() => setIsIndicModalOpen(true)}
+              >
+                <span>②</span> Indic Verification (Sarvam AI)
+              </button>
+              <button
+                className="judge-preset-btn"
+                type="button"
+                onClick={() => {
+                  navigate("reviews");
+                  setSelectedReviewId("novabook-launch");
+                  setFindings((current) => current.map((f) => ({ ...f, resolved: true, actionStatus: "accepted" as const })));
+                  setAuditState("approved");
+                  setDispatchReceipts(null);
+                  setIsPublishModalOpen(true);
+                  notify("Demo 3: Compliance verified! Gated dispatch unlocked for multi-platform publishing.");
+                }}
+              >
+                <span>③</span> 1-Click Gated Dispatch (Zernio)
+              </button>
+              <button
+                className="judge-preset-btn"
+                type="button"
+                onClick={() => {
+                  setCurrentRole("legal_reviewer");
+                  navigate("audit-log");
+                  notify("Demo 4: Cryptographic SHA-256 audit log loaded with verified hash chain.");
+                }}
+              >
+                <span>④</span> Cryptographic Audit Chain
+              </button>
+            </div>
+          </div>
+
           {activeView === "overview" ? (
             <section className="view-panel" aria-labelledby="overview-heading">
               <div className="page-heading">
@@ -1077,6 +1134,91 @@ export default function Home() {
                   Done
                 </button>
               )}
+            </div>
+          </section>
+        </div>
+      ) : null}
+
+      {isIndicModalOpen ? (
+        <div className="modal-backdrop" role="presentation" onClick={() => setIsIndicModalOpen(false)}>
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="indic-modal-title"
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.key === "Escape" && setIsIndicModalOpen(false)}
+            style={{ maxWidth: 620 }}
+          >
+            <button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsIndicModalOpen(false)}>×</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <p className="eyebrow" style={{ margin: 0 }}>Indic Regional Verification</p>
+              <span className="badge-pill pill-pass" style={{ fontSize: 9 }}>Powered by Sarvam AI</span>
+              <span className="badge-pill pill-pass" style={{ fontSize: 9 }}>PII Masked</span>
+            </div>
+            <h2 id="indic-modal-title">Cross-Lingual Brand Compliance</h2>
+            <p className="modal-copy">
+              Verifies regional market copy against registered brand truth. Detects factual contradictions, 
+              unsupported claims, and unapproved translations across Indian languages via <code>sarvam-105b</code>.
+            </p>
+
+            <div className="indic-tabs">
+              <button
+                className={`indic-tab-btn ${indicLang === "te" ? "active" : ""}`}
+                type="button"
+                onClick={() => setIndicLang("te")}
+              >
+                Telugu (తెలుగు)
+              </button>
+              <button
+                className={`indic-tab-btn ${indicLang === "hi" ? "active" : ""}`}
+                type="button"
+                onClick={() => setIndicLang("hi")}
+              >
+                Hindi (हिन्दी)
+              </button>
+            </div>
+
+            <div className="indic-preview-box">
+              <small style={{ color: "#7f938c", textTransform: "uppercase", fontSize: 9, fontWeight: 750 }}>
+                Source Copy (English)
+              </small>
+              <p className="indic-source-quote">
+                “VoltEdge NovaBook S1 delivers 36 hours of battery life and is twice as fast as all competitors.”
+              </p>
+              
+              <small style={{ color: "#7f938c", textTransform: "uppercase", fontSize: 9, fontWeight: 750 }}>
+                {indicLang === "te" ? "Telugu Translation (Sarvam Translate)" : "Hindi Translation (Sarvam Translate)"}
+              </small>
+              <p className="indic-quote">
+                {indicLang === "te"
+                  ? "“వోల్ట్‌ఎడ్జ్ నోవాబుక్ S1 36 గంటల బ్యాటరీ లైఫ్‌ను అందిస్తుంది మరియు మార్కెట్‌లోని అన్ని ల్యాప్‌టాప్‌ల కంటే రెండు రెట్లు వేగవంతమైనది.”"
+                  : "“वोल्टएज नोवाबुक S1 36 घंटे की बैटरी लाइफ प्रदान करता है और सभी प्रतिस्पर्धियों की तुलना में दोगुना तेज है।”"}
+              </p>
+            </div>
+
+            <div style={{ display: "grid", gap: 8, marginBottom: 16 }}>
+              <div className="approved-fact-pill" style={{ background: "#fff5f5", borderColor: "#f9d2d2" }}>
+                <span style={{ color: "var(--coral)" }}>✗</span>
+                <span>
+                  <strong style={{ color: "var(--coral)" }}>Fact Mismatch:</strong>{" "}
+                  {indicLang === "te" ? "36 గంటలు (36 hours)" : "36 घंटे (36 hours)"} contradicts Truth Registry spec (<strong>Up to 24 hours</strong>).
+                </span>
+              </div>
+              <div className="approved-fact-pill" style={{ background: "#fffaf0", borderColor: "#fae6b8" }}>
+                <span style={{ color: "var(--amber)" }}>!</span>
+                <span>
+                  <strong style={{ color: "#8a6d42" }}>Evidence Gap:</strong>{" "}
+                  {indicLang === "te" ? "రెండు రెట్లు వేగవంతమైనది (Twice as fast)" : "दोगुना तेज (Twice as fast)"} lacks comparative benchmark documentation.
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 10, color: "#7a918a" }}>Model: sarvam-105b · saaras:v2</span>
+              <button className="primary-button" type="button" onClick={() => setIsIndicModalOpen(false)}>
+                Done
+              </button>
             </div>
           </section>
         </div>
