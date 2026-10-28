@@ -9,6 +9,7 @@ review-required state when it cannot be completed safely.
 from .backoff import RetryPolicy, call_with_backoff
 from .cache import ResponseCache
 from .gemini import GeminiConfig, GeminiProvider
+from .sarvam import SarvamConfig, SarvamProvider
 from .evidence import (
     eligible_records,
     find_evidence_record,
@@ -87,6 +88,8 @@ __all__ = [
     "FindingSpan",
     "GeminiConfig",
     "GeminiProvider",
+    "SarvamConfig",
+    "SarvamProvider",
     "GeminiAdapter",
     "HighSeverityVerifier",
     "InMemoryRetriever",
