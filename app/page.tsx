@@ -501,6 +501,13 @@ export default function Home() {
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isIndicModalOpen, setIsIndicModalOpen] = useState(false);
   const [indicLang, setIndicLang] = useState<"te" | "hi">("te");
+  const [engineMode, setEngineMode] = useState<"api" | "browser">(() => {
+    if (typeof window !== "undefined") {
+      const saved = window.localStorage.getItem("proofline.execution_mode");
+      if (saved === "api" || saved === "browser") return saved;
+    }
+    return "api";
+  });
   const [selectedChannels, setSelectedChannels] = useState<string[]>(["LinkedIn", "Instagram", "X"]);
   const [isDispatching, setIsDispatching] = useState(false);
   const [dispatchReceipts, setDispatchReceipts] = useState<{ channel: string; platformPostId: string; status: string }[] | null>(null);
@@ -803,6 +810,37 @@ export default function Home() {
         <header className="topbar">
           <div className="breadcrumb"><span>VoltEdge Labs</span><i>/</i><strong>{pageTitles[activeView]}</strong></div>
           <div className="top-actions">
+            <div className="backend-mode-toggle" role="radiogroup" aria-label="Backend Execution Engine">
+              <span className="backend-toggle-label">Engine:</span>
+              <button
+                type="button"
+                className={`backend-toggle-option ${engineMode === "api" ? "active" : ""}`}
+                onClick={() => {
+                  setEngineMode("api");
+                  if (typeof window !== "undefined") window.localStorage.setItem("proofline.execution_mode", "api");
+                  notify("Connected to live Cloudflare Edge API (Python Worker + D1 SQL).");
+                }}
+                aria-checked={engineMode === "api"}
+                role="radio"
+                title="Live Cloudflare Python Worker + D1 Database"
+              >
+                <span className="engine-dot live" /> ⚡ Cloudflare API (Default)
+              </button>
+              <button
+                type="button"
+                className={`backend-toggle-option ${engineMode === "browser" ? "active" : ""}`}
+                onClick={() => {
+                  setEngineMode("browser");
+                  if (typeof window !== "undefined") window.localStorage.setItem("proofline.execution_mode", "browser");
+                  notify("Switched to Local Demo mode (In-memory browser session).");
+                }}
+                aria-checked={engineMode === "browser"}
+                role="radio"
+                title="Client-side JavaScript only (offline demo)"
+              >
+                <span className="engine-dot local" /> 💻 Local Demo
+              </button>
+            </div>
             <span className="save-state"><span className="health-dot" /> Demo state only</span>
             <label className="role-preview"><span>Role preview</span><select aria-label="Role preview" value={currentRole} onChange={(event) => changeRole(event.target.value as ProoflineRole)}>{(Object.keys(roleLabels) as ProoflineRole[]).map((role) => <option value={role} key={role}>{roleLabels[role]}</option>)}</select></label>
             <button className="icon-button" type="button" aria-label="Open AI and services disclosure" onClick={() => setIsDisclosureOpen(true)}>?</button>

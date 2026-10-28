@@ -84,7 +84,25 @@ function Preview({ text, findings, selected, onSelect }: { text: string; finding
 
 export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   const router = useRouter();
-  const localApi = useMemo(() => createLocalApiClient(), []);
+  const [executionMode, setExecutionMode] = useState<"api" | "browser">(() => {
+    if (typeof window !== "undefined") {
+      const saved = window.localStorage.getItem("proofline.execution_mode");
+      if (saved === "api" || saved === "browser") return saved;
+    }
+    return "api"; // Default to live Cloudflare API!
+  });
+
+  const localApiBase = useMemo(() => createLocalApiClient(), []);
+  const localApi = executionMode === "api" ? localApiBase : null;
+
+  function handleModeChange(mode: "api" | "browser") {
+    setExecutionMode(mode);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("proofline.execution_mode", mode);
+    }
+    setMessage(mode === "api" ? "Active Engine: Cloudflare Edge API (Python Worker + D1 Database)" : "Active Engine: Local Browser Demo (Offline session)");
+  }
+
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => null);
   const review = useMemo(() => parseReview(snapshot), [snapshot]);
   const [scope, setScope] = useState<ContentScope>(defaultContentScope);
@@ -291,7 +309,35 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
       <a className="pl-skip-link" href="#pl-main">Skip to content</a>
       <AppSidebar activeKey={stage} />
       <section className="main-content" id="pl-main" tabIndex={-1}>
-        <header className="topbar"><div className="breadcrumb"><span>VoltEdge</span><i>/</i><strong>{stage === "submit" ? "Submit content" : "Evidence review"}</strong></div><span className="pl-demo-label">{review?.api_content_id ? "IMPLEMENTED · local API" : localApi ? "IMPLEMENTED · local API opt-in" : "IMPLEMENTED · local demo"}</span></header>
+        <header className="topbar">
+          <div className="breadcrumb"><span>VoltEdge</span><i>/</i><strong>{stage === "submit" ? "Submit content" : "Evidence review"}</strong></div>
+          <div className="top-actions">
+            <div className="backend-mode-toggle" role="radiogroup" aria-label="Backend Execution Engine">
+              <span className="backend-toggle-label">Engine:</span>
+              <button
+                type="button"
+                className={`backend-toggle-option ${executionMode === "api" ? "active" : ""}`}
+                onClick={() => handleModeChange("api")}
+                aria-checked={executionMode === "api"}
+                role="radio"
+                title="Connected to live Cloudflare Python Worker & D1 Database"
+              >
+                <span className="engine-dot live" /> ⚡ Cloudflare API (Default)
+              </button>
+              <button
+                type="button"
+                className={`backend-toggle-option ${executionMode === "browser" ? "active" : ""}`}
+                onClick={() => handleModeChange("browser")}
+                aria-checked={executionMode === "browser"}
+                role="radio"
+                title="Runs client-side in browser session only (offline demo)"
+              >
+                <span className="engine-dot local" /> 💻 Local Demo
+              </button>
+            </div>
+            <span className="pl-demo-label">{review?.api_content_id ? "IMPLEMENTED · local API" : localApi ? "IMPLEMENTED · local API opt-in" : "IMPLEMENTED · local demo"}</span>
+          </div>
+        </header>
         <div className="content-wrap pl-content-wrap">
            <div className="page-heading compact-heading"><div><p className="eyebrow">{stage === "submit" ? "Content intake" : "Findings & corrections"}</p><h1>{stage === "submit" ? "Bring the context with the draft." : "Every flag has an explanation."}</h1><p className="lede">{stage === "submit" ? "Paste or upload text, set its publication context, and run bounded checks against fictional VoltEdge sources." : "Inspect the exact span, its source version, and the limits of the check before choosing a correction."}</p></div>{stage === "findings" ? <Link className="ghost-button pl-link-button" href="/submit">Submit another draft</Link> : null}</div>
            <nav className="workflow-progress" aria-label="Review workflow"><Link className={stage === "submit" ? "active" : "completed"} href="/submit"><span>1</span>Submit</Link><span className="workflow-progress-line" /><Link className={stage === "findings" ? "active" : "completed"} href="/findings"><span>2</span>Fix findings</Link><span className="workflow-progress-line" /><Link href="/?view=reviews"><span>3</span>Human approval</Link></nav>
@@ -319,7 +365,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                  <label className="field-label" htmlFor="pl-alt">Image alt text<textarea id="pl-alt" rows={3} value={scope.alt_text} maxLength={2000} onChange={(event) => updateScope("alt_text", event.target.value)} placeholder="Describe the actual image in the context of this message." /></label>
                 <div className="submit-form-footer">
                   <div className="submit-badge-bar">
-                    <span className="badge-pill pill-pass">● {localApi ? "Local API mode" : "Local browser state"}</span>
+                    <span className={`badge-pill ${localApi ? "pill-pass" : ""}`}>● {localApi ? "Cloudflare API mode (Default)" : "Local browser state"}</span>
                     <span className="badge-pill">● Human review required</span>
                   </div>
                   <button className="primary-button" type="submit" disabled={uploading || apiBusy}>{uploading ? "Reading file…" : apiBusy ? "Running local API check…" : "Run local evidence check"}</button>

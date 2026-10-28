@@ -48,4 +48,22 @@ test.describe("Judge Quick-Demo Scenarios", () => {
     await expect(page.getByRole("heading", { name: "Every decision has a link." })).toBeVisible();
     await expect(page.getByText("Chain verified", { exact: true })).toBeVisible();
   });
+
+  test("allows switching execution engine between Cloudflare API and Local Demo", async ({ page }) => {
+    await page.goto("/submit");
+    const apiBtn = page.getByRole("radio", { name: /⚡ Cloudflare API/ }).first();
+    const demoBtn = page.getByRole("radio", { name: /💻 Local Demo/ }).first();
+
+    await expect(apiBtn).toHaveAttribute("aria-checked", "true");
+    await expect(demoBtn).toHaveAttribute("aria-checked", "false");
+
+    await demoBtn.click();
+    await expect(demoBtn).toHaveAttribute("aria-checked", "true");
+    await expect(apiBtn).toHaveAttribute("aria-checked", "false");
+    await expect(page.getByText("IMPLEMENTED · local demo")).toBeVisible();
+
+    await apiBtn.click();
+    await expect(apiBtn).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByText("IMPLEMENTED · local API opt-in")).toBeVisible();
+  });
 });
