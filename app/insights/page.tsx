@@ -5,7 +5,7 @@ import { InsightsDemo } from "./insights-demo";
 
 export const metadata: Metadata = {
   title: "Governance insights · Proofline",
-  description: "A local, synthetic VoltEdge demonstration of aggregate review insights and guideline-gap signals.",
+  description: "A synthetic VoltEdge demonstration of aggregate review insights and guideline-gap signals.",
 };
 
 export default function InsightsPage() {

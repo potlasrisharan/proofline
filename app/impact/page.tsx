@@ -5,7 +5,7 @@ import { ImpactDemo } from "./impact-demo";
 
 export const metadata: Metadata = {
   title: "Fact-change impact radar · Proofline",
-  description: "A local, synthetic VoltEdge demonstration of version-aware content re-review.",
+  description: "A synthetic VoltEdge demonstration of version-aware content re-review.",
 };
 
 export default function ImpactPage() {

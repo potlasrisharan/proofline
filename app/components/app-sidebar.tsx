@@ -143,7 +143,7 @@ export function AppSidebar({
           <span className="health-dot" />
           <div>
             <strong>VoltEdge demo</strong>
-            <small>Seeded registry · local state</small>
+            <small>Truth registry · Active</small>
           </div>
         </div>
 

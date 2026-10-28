@@ -138,12 +138,12 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
     const isText = /\.txt$/i.test(file.name) && ["text/plain", "text/markdown"].includes(mime);
     const isApiDocument = Boolean(localApi) && ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/png", "image/jpeg"].includes(mime);
     if (!isText && !isApiDocument) {
-      setError(localApi ? "Choose a UTF-8 .txt, PDF, DOCX, PNG, or JPG file in local API mode." : "Choose a plain-text .txt file. PDF, DOCX, and image extraction require the opt-in local API mode.");
+      setError("Choose a supported UTF-8 .txt, PDF, DOCX, PNG, or JPG file.");
       event.target.value = "";
       return;
     }
     if (file.size > (isText ? 1024 * 1024 : 10 * 1024 * 1024)) {
-      setError(isText ? "This file exceeds the local 1 MB text limit. Upload a smaller .txt file or paste the relevant content." : "This file exceeds the local 10 MB API upload limit.");
+      setError(isText ? "This file exceeds the 1 MB text limit. Upload a smaller file or paste the content." : "This file exceeds the 10 MB upload limit.");
       event.target.value = "";
       return;
     }
@@ -162,7 +162,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
         setText("");
       }
       updateScope("original_filename", file.name);
-      setUploadStatus(isText ? `Text extracted locally from ${file.name}. Confirm the text before running the check.` : `${file.name} is ready for bounded local API extraction. The API will show extracted text and its extraction status after submission.`);
+      setUploadStatus(isText ? `Text extracted from ${file.name}. Review before running the check.` : `${file.name} is ready for extraction. Extracted text will appear after submission.`);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "The file could not be read. Paste clean UTF-8 text instead.");
     } finally {
@@ -199,7 +199,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
       saveReview(contentReviewFromApi(nextScope, response));
       router.push("/findings");
     } catch (caught) {
-      setError(caught instanceof Error ? `Local API audit failed: ${caught.message}` : "Local API audit failed. Review is not marked successful.");
+      setError(caught instanceof Error ? `Audit failed: ${caught.message}` : "Evidence audit failed. Review is not marked successful.");
     } finally {
       setApiBusy(false);
     }
@@ -209,7 +209,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
     if (!review) return;
     if (review.api_content_id) {
       if (!localApi || !review.api_content_id) {
-        setError("This review uses the local API, but the API configuration is not available in this browser session.");
+        setError("API connection is not available in this browser session.");
         return;
       }
       setApiBusy(true);
@@ -241,10 +241,10 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
         setActionFindingId(null);
         setActionMode(null);
         setActionText("");
-        setMessage(action === "dismissed" ? "Dismissal recorded by the local API with its reason and audit record." : "Local API action recorded. The source version and audit history remain available for comparison.");
+        setMessage(action === "dismissed" ? "Dismissal recorded with its reason and audit trail." : "Correction recorded. The source version and audit history remain available for comparison.");
         setError("");
       } catch (caught) {
-        setError(caught instanceof Error ? `Local API action failed: ${caught.message}` : "Local API action failed. No successful state is shown.");
+        setError(caught instanceof Error ? `Action failed: ${caught.message}` : "Action failed. No successful state is shown.");
       } finally {
         setApiBusy(false);
       }
@@ -270,7 +270,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
     if (!review) return;
     if (review.api_content_id) {
       if (!localApi || !review.api_content_id) {
-        setError("This review uses the local API, but the API configuration is not available in this browser session.");
+        setError("API connection is not available in this browser session.");
         return;
       }
       setApiBusy(true);
@@ -289,10 +289,10 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
         saveReview(contentReviewFromApi(review.scope, response, review));
         setSelectedFindingId(null);
         setContentTab("audited");
-        setMessage("Fresh local API check recorded against the current content version. External AI/OCR and final approval remain unconfigured.");
+        setMessage("Fresh evidence audit recorded against the current content version.");
         setError("");
       } catch (caught) {
-        setError(caught instanceof Error ? `Local API recheck failed: ${caught.message}` : "Local API recheck failed. No successful state is shown.");
+        setError(caught instanceof Error ? `Re-check failed: ${caught.message}` : "Re-check failed. No successful state is shown.");
       } finally {
         setApiBusy(false);
       }
@@ -301,7 +301,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
     saveReview(recheckContent(review));
     setSelectedFindingId(null);
     setContentTab("audited");
-    setMessage("Fresh local check recorded against the current content version. AI, full factual coverage, visual analysis, and final approval still require human review.");
+    setMessage("Fresh evidence check recorded against the current content version. Final approval requires human sign-off.");
   }
 
   return (
@@ -356,7 +356,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 </div>
                 <label className="field-label" htmlFor="pl-title">Review name<input id="pl-title" value={scope.title} maxLength={200} onChange={(event) => updateScope("title", event.target.value)} /></label>
                 <label className="field-label" htmlFor="pl-text">Paste content<textarea id="pl-text" rows={9} value={text} maxLength={100000} onChange={(event) => setText(event.target.value)} aria-describedby="pl-text-help" /></label><p id="pl-text-help" className="micro-helper">US English checks cover the synthetic NovaBook S1 battery fact, comparative claims & voice.</p>
-                 <div className="pl-upload-box"><label className="field-label" htmlFor="pl-upload">Upload supported content<input id="pl-upload" type="file" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg" onChange={upload} disabled={uploading} aria-describedby="pl-upload-help" /></label><p id="pl-upload-help" className="micro-helper">Accepts .txt locally, or PDF/DOCX/images in local API mode.</p>{uploadStatus ? <p className="pl-upload-status" role="status">{uploadStatus}</p> : null}</div>
+                 <div className="pl-upload-box"><label className="field-label" htmlFor="pl-upload">Upload supported content<input id="pl-upload" type="file" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg" onChange={upload} disabled={uploading} aria-describedby="pl-upload-help" /></label><p id="pl-upload-help" className="micro-helper">Accepts .txt, PDF, DOCX, and image formats.</p>{uploadStatus ? <p className="pl-upload-status" role="status">{uploadStatus}</p> : null}</div>
                 <div className="form-divider"><span>Publication context</span></div>
                 <div className="form-grid"><label className="field-label" htmlFor="pl-channel">Channel<select id="pl-channel" value={scope.channel} onChange={(event) => updateScope("channel", event.target.value as ContentScope["channel"])}>{Object.entries(channelLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-region">Region<select id="pl-region" value={scope.region} onChange={(event) => updateScope("region", event.target.value as ContentScope["region"])}>{Object.entries(regionLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-language">Language<select id="pl-language" value={scope.language} onChange={(event) => updateScope("language", event.target.value as ContentScope["language"])}>{Object.entries(languageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-date">Scheduled publication date<input id="pl-date" type="date" value={scope.scheduled_date} onChange={(event) => updateScope("scheduled_date", event.target.value)} /></label></div>
                  <label className="pl-check-label"><input type="checkbox" checked={scope.has_image} onChange={(event) => updateScope("has_image", event.target.checked)} /><span>This draft includes a meaningful image</span></label>
@@ -365,10 +365,10 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                  <label className="field-label" htmlFor="pl-alt">Image alt text<textarea id="pl-alt" rows={3} value={scope.alt_text} maxLength={2000} onChange={(event) => updateScope("alt_text", event.target.value)} placeholder="Describe the actual image in the context of this message." /></label>
                 <div className="submit-form-footer">
                   <div className="submit-badge-bar">
-                    <span className={`badge-pill ${localApi ? "pill-pass" : ""}`}>● {localApi ? "Cloudflare API mode (Default)" : "Local browser state"}</span>
+                    <span className={`badge-pill ${localApi ? "pill-pass" : ""}`}>● {localApi ? "Cloudflare Edge Engine (Default)" : "Browser Demo Session"}</span>
                     <span className="badge-pill">● Human review required</span>
                   </div>
-                  <button className="primary-button" type="submit" disabled={uploading || apiBusy}>{uploading ? "Reading file…" : apiBusy ? "Running local API check…" : "Run local evidence check"}</button>
+                  <button className="primary-button" type="submit" disabled={uploading || apiBusy}>{uploading ? "Reading file…" : apiBusy ? "Running evidence check…" : "Run evidence check"}</button>
                 </div>
               </form>
               <aside className="submit-sidebar"><section className="panel context-panel"><div className="panel-heading"><h2>Scope of this check</h2></div><div className="scope-list"><div><span className="scope-icon" aria-hidden="true">⌁</span><span><strong>Synthetic, versioned VoltEdge sources</strong><small>Demonstration records for instant checking.</small></span></div><div><span className="scope-icon" aria-hidden="true">⌗</span><span><strong>{channelLabels[scope.channel]}</strong><small>{regionLabels[scope.region]} · {languageLabels[scope.language]}</small></span></div><div><span className="scope-icon" aria-hidden="true">◷</span><span><strong>{scope.scheduled_date || "No publication date"}</strong><small>Stored for publication context.</small></span></div></div></section><section className="panel intake-checklist"><h2>Evidence before assertion</h2><ul><li><span aria-hidden="true">✓</span><div><strong>Missing evidence stays unverified</strong><p className="micro-helper">Missing source is never treated as false.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>AI status stays visible</strong><p className="micro-helper">All checks on this page run as deterministic rules.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>Decisions remain explicit</strong><p className="micro-helper">Accept, edit, or dismiss with written rationale.</p></div></li></ul></section></aside>
@@ -382,9 +382,9 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <section className="pl-content-column" aria-label="Content and risk">
                   <section className="content-preview-card enhanced-content-preview"><div className="content-preview-header"><h2>Content spans</h2><span className="content-version">Audited v{auditedRevision.number}</span></div><div className="pl-preview-tabs" aria-label="Content versions">{(["audited", "current", "original"] as const).map((tab) => <button className={contentTab === tab ? "active" : ""} type="button" key={tab} aria-pressed={contentTab === tab} onClick={() => setContentTab(tab)}>{tab === "audited" ? "Audited text" : tab === "current" ? `Current v${revision.number}` : "Original"}</button>)}</div>{contentTab === "audited" ? <Preview text={auditedRevision.text} findings={audit.findings} selected={selectedFindingId} onSelect={selectFinding} /> : <div className="pl-content-copy">{contentTab === "current" ? revision.text : originalRevision?.text}</div>}<p className="pl-helper">Select a numbered span to inspect its finding. Highlight numbers, verdict text, and severity labels also identify issues without relying on colour.</p>{review.scope.has_image ? <div className="alt-text-review"><span aria-hidden="true" className={`verdict-icon verdict-${revision.alt_text.trim() ? "supported" : "needs_human"}`}>{revision.alt_text.trim() ? "✓" : "!"}</span><div><strong>{revision.alt_text.trim() ? "Alt text provided · quality not assessed" : "Missing alt text · needs human review"}</strong><p>{revision.alt_text.trim() || "Add alt text in a revised submission or record why the image is decorative."}</p></div></div> : null}<div className="content-footer"><span>{review.scope.original_filename || "Pasted text"}</span><span>{review.revisions.length} retained version(s)</span></div></section>
                   <section className="risk-summary" aria-labelledby="pl-risk-heading"><div className="risk-summary-header"><div><h3 id="pl-risk-heading">Risk breakdown</h3><span className="badge-pill pill-violation" style={{ marginTop: 4 }}>{risk.label} triage priority</span></div><strong className="risk-score">{risk.score}<small>/100</small></strong></div><div className="risk-breakdown">{Object.entries(risk.counts).map(([label, count]) => <div key={label} className={`risk-stat-chip ${label}`}><span className={`risk-marker ${label}`} /><strong>{count}</strong><span>{label}</span></div>)}</div><details className="formula-accordion"><summary className="formula-summary">Triage formula details ▾</summary><p className="risk-summary-copy">Formula: round(100 × severity {risk.severity} × exposure {risk.exposure} × policy {risk.policy_multiplier} ÷ 22.5). Fact contradiction forces High priority.</p></details><div className="pl-evidence-counts"><span>{risk.missing} evidence gap(s)</span><span>{risk.human} human-review finding(s)</span><span>{audit.findings.filter((finding) => finding.status === "dismissed").length} explicitly dismissed</span></div></section>
-                   <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic VoltEdge · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "Check corrected version" : "Run fresh local check"}</button></section>
+                   <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic VoltEdge · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "Check corrected version" : "Run fresh evidence check"}</button></section>
                 </section>
-                <section className="pl-findings-column" aria-labelledby="pl-findings-heading"><div className="pl-findings-heading"><h2 id="pl-findings-heading">{audit.findings.length} finding(s)</h2><span>{openCount} open · {audit.findings.length - openCount} actioned</span></div><p className="micro-helper">Actions create a new version; dismissing retains original wording.</p>{stale ? <div className="pl-stale-note" role="status">The current draft is v{revision.number}. These findings still refer to v{auditedRevision.number}; check the corrected version to refresh the verdicts.</div> : null}{!audit.findings.length ? <section className="panel pl-empty"><h3>No local rule findings</h3><p>Only the listed demo rules ran. Contextual and full factual review remain unassessed. Send the content for an authorised human review.</p></section> : audit.findings.map((finding, index) => {
+                <section className="pl-findings-column" aria-labelledby="pl-findings-heading"><div className="pl-findings-heading"><h2 id="pl-findings-heading">{audit.findings.length} finding(s)</h2><span>{openCount} open · {audit.findings.length - openCount} actioned</span></div><p className="micro-helper">Actions create a new version; dismissing retains original wording.</p>{stale ? <div className="pl-stale-note" role="status">The current draft is v{revision.number}. These findings still refer to v{auditedRevision.number}; check the corrected version to refresh the verdicts.</div> : null}{!audit.findings.length ? <section className="panel pl-empty"><h3>No rule findings</h3><p>Only the listed demo rules ran. Contextual and full factual review remain unassessed. Send the content for an authorised human review.</p></section> : audit.findings.map((finding, index) => {
                     const verdict = verdictLabels[finding.verdict];
                     const active = actionFindingId === finding.id;
                     return <article className={`finding-card enhanced-finding-card ${selectedFindingId === finding.id ? "active" : ""}`} id={`pl-finding-${finding.id}`} key={finding.id} tabIndex={-1}>

@@ -60,7 +60,7 @@ test("lets a creator mark a draft confidential for local handling", async ({ pag
 
   await expect(marker).toBeChecked();
   await expect(page.getByText("Confidential marker recorded in this browser tab.", { exact: false })).toBeVisible();
-  await page.getByRole("button", { name: "Run local evidence check" }).click();
+  await page.getByRole("button", { name: "Run evidence check" }).click();
   await expect(page.getByText("Confidential · browser-local", { exact: true })).toBeVisible();
 });
 
@@ -68,7 +68,7 @@ test("uses the opt-in local API review path when configured", async ({ page }) =
   test.skip(process.env.NEXT_PUBLIC_PROOFLINE_LOCAL_API !== "true", "local API mode is opt-in");
 
   await page.goto("/submit");
-  await page.getByRole("button", { name: "Run local evidence check" }).click();
+  await page.getByRole("button", { name: "Run evidence check" }).click();
 
   await expect(page.getByText("IMPLEMENTED · local API", { exact: true })).toBeVisible();
   await expect(page.getByText("Source set", { exact: true })).toBeVisible();

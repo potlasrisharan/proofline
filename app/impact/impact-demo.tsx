@@ -10,7 +10,7 @@ export function ImpactDemo() {
 
   async function recheckAll() {
     const result = createDemoImpactRecheck();
-    setNotice("The local re-check completed. The two records remain routed to human review.");
+    setNotice("The impact re-check completed. The two records remain routed to human review.");
     return result;
   }
 

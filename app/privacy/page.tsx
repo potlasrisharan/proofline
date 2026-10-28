@@ -212,7 +212,7 @@ export default function PrivacyPage() {
 
         <section className="privacy-section privacy-wide" aria-labelledby="privacy-verification-heading">
           <p className="eyebrow">07 · Verification provenance</p>
-          <h2 id="privacy-verification-heading">What the local checks actually prove</h2>
+          <h2 id="privacy-verification-heading">What the evidence checks actually prove</h2>
           <ul>
             <li>The Evidence-or-Abstain report measures 194 synthetic VoltEdge cases through a local deterministic engine and records <code>external_calls=0</code>.</li>
             <li>Those measurements are reproducible implementation checks, not model accuracy, real-world truth, legal compliance, accessibility certification, or production reliability.</li>
@@ -232,7 +232,7 @@ export default function PrivacyPage() {
         </section>
 
         <footer className="privacy-footer">
-          <span>Proofline local demo · Last reviewed October 26, 2026</span>
+          <span>Proofline Truth Engine · Last reviewed October 26, 2026</span>
           <Link href="/">Return to the demo</Link>
         </footer>
           </div>

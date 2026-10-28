@@ -188,7 +188,7 @@ function replaceExactSpan(text: string, start: number, end: number, expected: st
 }
 
 export function createContentReview(text: string, scope: ContentScope): ContentReview {
-  if (!text.trim()) throw new Error("Add content before running the local check.");
+  if (!text.trim()) throw new Error("Add content before running the evidence check.");
   const timestamp = new Date().toISOString();
   const revision: ContentRevision = { id: uid("version"), number: 1, text, alt_text: scope.alt_text, created_at: timestamp, based_on: null };
   const audit = auditRevision(revision, scope);

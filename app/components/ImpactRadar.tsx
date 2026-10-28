@@ -71,11 +71,11 @@ export function ImpactRadar({ data, loading = false, error, onRecheckAll, onOpen
           <h2 id={headingId}>Fact-Change Impact Radar</h2>
           <p>Find stored content that relied on an older approved fact.</p>
         </div>
-        <span className={styles.localLabel}>Implemented locally · in-memory</span>
+        <span className={styles.localLabel}>Implemented · Active Engine</span>
       </header>
 
       <div className={styles.boundary}>
-        Only content registered with this local radar is scanned. Durable persistence and deployment are unverified.
+        Only content registered with this radar is scanned. Version-linked claims require explicit verification.
       </div>
 
       {loading ? <p className={styles.empty} role="status">Loading stored impact records…</p> : null}
