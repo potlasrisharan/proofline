@@ -1184,6 +1184,31 @@ class InMemoryWorkflowStore:
         self._event_id_snapshots[principal.organisation_id].append(event_id)
         return event
 
+    def record_event(
+        self,
+        principal: Principal,
+        *,
+        event_type: str,
+        object_type: str,
+        object_id: str | None,
+        metadata: dict[str, Any],
+    ) -> AuditEvent:
+        """Append a non-content event through the same verified local hash chain.
+
+        Registry actions share the workflow audit stream so approvals, imports, and
+        retirements remain visible beside content decisions without storing source text
+        in ordinary event metadata.
+        """
+
+        with self._lock:
+            return self._append_event(
+                principal,
+                event_type=event_type,
+                object_type=object_type,
+                object_id=object_id,
+                metadata=metadata,
+            )
+
     def list_events(self, principal: Principal) -> list[AuditEvent]:
         with self._lock:
             if principal.role in (Role.BRAND_OWNER, Role.MANAGER, Role.LEGAL_REVIEWER):

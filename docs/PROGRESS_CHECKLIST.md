@@ -11,9 +11,9 @@ repository state and remaining work; a checked item is not a claim of production
   corrections, re-scan, comments, role preview, approval transitions, history, impact,
   insights, and privacy/disclosure surfaces run with local state.
 - [x] **IMPLEMENTED — Local FastAPI foundation.** Health, organisation-scoped vault,
-  content/version/audit workflow, finding actions, comments, review decisions, exports,
-  audit-chain verification, impact routes, and dashboard summary routes are available in
-  the in-memory adapter.
+  registry search/import/import-file/retirement, content/version/audit workflow, finding
+  actions, comments, review decisions, exports, audit-chain verification, impact routes,
+  and dashboard summary routes are available in the in-memory adapter.
 - [x] **IMPLEMENTED — Deterministic verification boundary.** Bounded ingestion,
   lexical claims, evidence/span/schema validation, deterministic checks, risk metadata,
   explicit abstention, and failed/review-required states are covered by local tests.
@@ -31,10 +31,10 @@ repository state and remaining work; a checked item is not a claim of production
 - [ ] **PLANNED — Production authentication.** Put the Worker behind Cloudflare Access,
   verify Access JWTs, map the subject/email to D1 memberships, and add invitations, role
   changes, and server-side organisation authorization.
-- [ ] **PLANNED — Wire the UI to the API.** Replace seeded browser-only transitions with
-  authenticated API calls for content, findings, comments, review decisions, exports,
-  dashboard summaries, impact, and insights while preserving loading, failed, and
-  `review_required` states.
+- [ ] **PARTIAL — Wire the UI to the API.** `/submit` and `/findings` support the explicit
+  local API path for text, bounded PDF/DOCX/image intake, findings, corrections, and
+  rechecks. The seeded dashboard, impact, insights, comments, decisions, and exports still
+  need authenticated API wiring.
 - [ ] **PLANNED — Durable content and audit history.** Persist immutable content versions,
   registry/source versions, claims, evidence references, findings, reviewer decisions,
   comments, and hash-linked audit events without overwriting history.

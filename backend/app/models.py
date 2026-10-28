@@ -50,6 +50,26 @@ class VaultCreateRequest(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class VaultImportRequest(BaseModel):
+    """A bounded, already-parsed registry import.
+
+    Parsing belongs at the upload boundary. The local API stores each imported row as
+    a draft and retains non-sensitive source metadata so an owner can review it before
+    approval. It never turns an import directly into active policy.
+    """
+
+    records: list[VaultCreateRequest] = Field(min_length=1, max_length=1000)
+    source_filename: str = Field(min_length=1, max_length=255)
+    source_type: Literal["csv", "text", "pdf", "docx", "manual"] = "manual"
+    extraction_status: Literal["complete", "partial", "review_required"] = "complete"
+
+
+class VaultImportFileRequest(BaseModel):
+    file_base64: str = Field(min_length=1)
+    filename: str = Field(min_length=1, max_length=255)
+    mime_type: str | None = Field(default=None, max_length=120)
+
+
 class VaultRecord(BaseModel):
     id: str
     organisation_id: str
@@ -78,6 +98,13 @@ class VaultListResponse(BaseModel):
 class VaultRecordResponse(BaseModel):
     persistence: Literal["in_memory_demo"]
     item: VaultRecord
+
+
+class VaultImportResponse(BaseModel):
+    persistence: Literal["in_memory_demo"]
+    resource: VaultResource
+    imported_count: int = Field(ge=0)
+    items: list[VaultRecord]
 
 
 class ContentType(StrEnum):

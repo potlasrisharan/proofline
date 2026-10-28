@@ -120,8 +120,35 @@ class InMemoryVaultStore:
                 }
             )
             records = self._records[organisation_id][resource]
-            records[records.index(current)] = approved
+            current_index = records.index(current)
+            # A newly approved version becomes the active version for its logical
+            # record. Keep the previous rows for audit/history, but do not leave
+            # multiple approved versions competing in the verification source set.
+            for index, record in enumerate(records):
+                if (
+                    index != current_index
+                    and record.status is RegistryStatus.APPROVED
+                    and self._same_logical_record(record, current)
+                ):
+                    records[index] = record.model_copy(update={"status": RegistryStatus.SUPERSEDED})
+            records[current_index] = approved
             return approved
+
+    def retire(
+        self,
+        organisation_id: str,
+        resource: VaultResource,
+        record_id: str,
+        principal: Principal,
+    ) -> VaultRecord:
+        with self._lock:
+            current = self.get(organisation_id, resource, record_id)
+            if current.status is RegistryStatus.RETIRED:
+                return current
+            retired = current.model_copy(update={"status": RegistryStatus.RETIRED})
+            records = self._records[organisation_id][resource]
+            records[records.index(current)] = retired
+            return retired
 
     @staticmethod
     def _same_logical_record(left: VaultRecord, right: VaultRecord) -> bool:

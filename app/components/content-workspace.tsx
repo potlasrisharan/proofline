@@ -91,6 +91,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   const [error, setError] = useState("");
   const [uploadStatus, setUploadStatus] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [apiFile, setApiFile] = useState<{ data: string; filename: string; mime_type: string; content_type: "pdf" | "docx" | "image" } | null>(null);
   const [selectedFindingId, setSelectedFindingId] = useState<string | null>(null);
   const [actionFindingId, setActionFindingId] = useState<string | null>(null);
   const [actionMode, setActionMode] = useState<"edit" | "dismiss" | null>(null);
@@ -114,24 +115,35 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
     const file = event.target.files?.[0];
     if (!file) return;
     setError("");
-    if (!/\.txt$/i.test(file.name) || (file.type && !["text/plain", "text/markdown"].includes(file.type))) {
-      setError("Choose a plain-text .txt file. PDF, DOCX, and image extraction are STUB; paste a verified transcription instead.");
+    const mime = file.type || ({ ".pdf": "application/pdf", ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".txt": "text/plain" }[file.name.slice(file.name.lastIndexOf(".")).toLowerCase()] ?? "");
+    const isText = /\.txt$/i.test(file.name) && ["text/plain", "text/markdown"].includes(mime);
+    const isApiDocument = Boolean(localApi) && ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/png", "image/jpeg"].includes(mime);
+    if (!isText && !isApiDocument) {
+      setError(localApi ? "Choose a UTF-8 .txt, PDF, DOCX, PNG, or JPG file in local API mode." : "Choose a plain-text .txt file. PDF, DOCX, and image extraction require the opt-in local API mode.");
       event.target.value = "";
       return;
     }
-    if (file.size > 1024 * 1024) {
-      setError("This file exceeds the local 1 MB text limit. Upload a smaller .txt file or paste the relevant content.");
+    if (file.size > (isText ? 1024 * 1024 : 10 * 1024 * 1024)) {
+      setError(isText ? "This file exceeds the local 1 MB text limit. Upload a smaller .txt file or paste the relevant content." : "This file exceeds the local 10 MB API upload limit.");
       event.target.value = "";
       return;
     }
     setUploading(true);
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
-      const extracted = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
-      if (!extracted.trim() || extracted.includes("\0")) throw new Error("The text file is empty or contains unreadable binary data. Paste clean UTF-8 text instead.");
-      setText(extracted);
+      if (isText) {
+        const extracted = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+        if (!extracted.trim() || extracted.includes("\0")) throw new Error("The text file is empty or contains unreadable binary data. Paste clean UTF-8 text instead.");
+        setText(extracted);
+        setApiFile(null);
+      } else {
+        let binary = "";
+        bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+        setApiFile({ data: btoa(binary), filename: file.name, mime_type: mime, content_type: mime === "application/pdf" ? "pdf" : mime.includes("wordprocessing") ? "docx" : "image" });
+        setText("");
+      }
       updateScope("original_filename", file.name);
-      setUploadStatus(`Text extracted locally from ${file.name}. Confirm the text before running the check.`);
+      setUploadStatus(isText ? `Text extracted locally from ${file.name}. Confirm the text before running the check.` : `${file.name} is ready for bounded local API extraction. The API will show extracted text and its extraction status after submission.`);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "The file could not be read. Paste clean UTF-8 text instead.");
     } finally {
@@ -143,7 +155,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    if (!text.trim()) { setError("Paste content or upload a readable .txt file before running the check."); return; }
+    if (!text.trim() && !apiFile) { setError("Paste content or upload a readable supported file before running the check."); return; }
     if (!scope.title.trim()) { setError("Give this content a review name."); return; }
     const nextScope = { ...scope, title: scope.title.trim() };
     if (!localApi) {
@@ -155,8 +167,8 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
     try {
       const response = await localApi.client.createContent({
         title: nextScope.title,
-        content_type: "text",
-        text,
+        content_type: apiFile?.content_type ?? "text",
+        ...(apiFile ? { file_base64: apiFile.data, filename: apiFile.filename, mime_type: apiFile.mime_type } : { text }),
         confidential: nextScope.confidential,
         exposure: exposureForChannel(nextScope.channel),
         product: "VoltEdge NovaBook S1",
@@ -296,7 +308,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <div className="submit-form-heading"><div><h2>Content to review</h2><p className="pl-helper">The original and each explicit correction stay available for comparison.</p></div><button className="small-button" type="button" onClick={() => { setText(sampleVoltEdgeText); setScope(defaultContentScope); setUploadStatus(""); }}>Load VoltEdge sample</button></div>
                 <label className="field-label" htmlFor="pl-title">Review name<input id="pl-title" value={scope.title} maxLength={200} onChange={(event) => updateScope("title", event.target.value)} /></label>
                 <label className="field-label" htmlFor="pl-text">Paste content<textarea id="pl-text" rows={9} value={text} maxLength={100000} onChange={(event) => setText(event.target.value)} aria-describedby="pl-text-help" /></label><p id="pl-text-help" className="pl-helper">English US checks cover the synthetic NovaBook S1 battery fact, comparative wording, and a voice-review phrase. Other context remains review-required.</p>
-                <div className="pl-upload-box"><label className="field-label" htmlFor="pl-upload">Upload text<input id="pl-upload" type="file" accept=".txt,text/plain" onChange={upload} disabled={uploading} aria-describedby="pl-upload-help" /></label><p id="pl-upload-help" className="pl-helper">UTF-8 .txt · up to 1 MB. PDF, DOCX, JPG, and PNG extraction: <strong>STUB</strong>. Paste a human-confirmed transcription for those formats.</p>{uploadStatus ? <p className="pl-upload-status" role="status">{uploadStatus}</p> : null}</div>
+                 <div className="pl-upload-box"><label className="field-label" htmlFor="pl-upload">Upload supported content<input id="pl-upload" type="file" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg" onChange={upload} disabled={uploading} aria-describedby="pl-upload-help" /></label><p id="pl-upload-help" className="pl-helper">UTF-8 .txt is checked in the browser. In opt-in local API mode, bounded PDF, DOCX, PNG, and JPG extraction preserves provenance and reports partial/failed extraction instead of claiming success.</p>{uploadStatus ? <p className="pl-upload-status" role="status">{uploadStatus}</p> : null}</div>
                 <div className="form-divider"><span>Publication context</span></div>
                 <div className="form-grid"><label className="field-label" htmlFor="pl-channel">Channel<select id="pl-channel" value={scope.channel} onChange={(event) => updateScope("channel", event.target.value as ContentScope["channel"])}>{Object.entries(channelLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-region">Region<select id="pl-region" value={scope.region} onChange={(event) => updateScope("region", event.target.value as ContentScope["region"])}>{Object.entries(regionLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-language">Language<select id="pl-language" value={scope.language} onChange={(event) => updateScope("language", event.target.value as ContentScope["language"])}>{Object.entries(languageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-date">Scheduled publication date<input id="pl-date" type="date" value={scope.scheduled_date} onChange={(event) => updateScope("scheduled_date", event.target.value)} /></label></div>
                  <label className="pl-check-label"><input type="checkbox" checked={scope.has_image} onChange={(event) => updateScope("has_image", event.target.checked)} /><span>This draft includes a meaningful image</span></label>

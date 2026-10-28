@@ -148,8 +148,8 @@ uv lock --check
 npx wrangler --version
 ```
 
-The current checkout has been verified with `npm test` (**10 browser tests passed, 1
-opt-in test skipped, 139 backend tests passed**) and `npm run test:e2e:api` (**4 tests
+The current checkout has been verified with `npm test` (**11 browser tests passed, 1
+opt-in test skipped, 142 backend tests passed**) and `npm run test:e2e:api` (**4 tests
 passed**). One Starlette/httpx deprecation warning remains; it does not fail the suite.
 These checks prove local behavior only. They do not prove production security, model
 accuracy, Cloudflare connectivity, persistence, or deployment readiness.

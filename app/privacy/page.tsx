@@ -46,7 +46,7 @@ const transparencyEntries: TransparencyEntry[] = [
     name: "Hosted OCR, PDF, or DOCX service",
     scope: "Document intake · not connected",
     status: "MISSING",
-    data: "No hosted extraction service receives data. The frontend only reads supported UTF-8 .txt files locally; PDF, DOCX, and image/OCR intake remains a STUB in this path.",
+    data: "No hosted extraction service receives data. Default browser-only mode reads UTF-8 .txt locally; explicit local API mode can send bounded PDF, DOCX, PNG, and JPG bytes to the local FastAPI process for dependency-gated extraction.",
     retention: "No hosted extraction retention exists for this build. Future parser/provider behavior must be documented before use.",
     note: "Local backend parsers and a hosted OCR service are separate boundaries; one does not prove the other is active.",
   },
@@ -200,7 +200,7 @@ export default function PrivacyPage() {
             </p>
           </div>
           <p>
-            The /submit route reads supported plain-text files locally. PDF, DOCX, and image/OCR intake remain a <strong>STUB</strong> in this frontend path. If sensitive material was entered, clear this site&apos;s session storage and close the tab; browser session restore is outside the app&apos;s control. If an audit dependency fails, Proofline should show a failed or review-required state rather than a successful-looking result.
+              The default /submit route reads plain-text files locally. With the explicit local API configuration, it can submit bounded PDF, DOCX, and image files to the local FastAPI process; no hosted extraction or durable storage is connected. If sensitive material was entered, clear this site&apos;s session storage and close the tab; browser session restore is outside the app&apos;s control. If an audit dependency fails, Proofline should show a failed or review-required state rather than a successful-looking result.
           </p>
         </section>
 

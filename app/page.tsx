@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { DisclosurePanel } from "./components/disclosure-panel";
 import { StatePanel } from "./components/status-state";
@@ -256,7 +257,17 @@ const reviewItems: ReviewItem[] = [
   },
 ];
 
-const registryRecords = [
+type RegistryRecord = {
+  type: string;
+  title: string;
+  value: string;
+  source: string;
+  owner: string;
+  version: string;
+  status?: "draft" | "approved";
+};
+
+const registryRecords: RegistryRecord[] = [
   { type: "Product specification", title: "NovaBook S1 · Battery life", value: "Up to 12 hours", source: "VoltEdge product specification v3", owner: "Priya Nair · Product info", version: "Current · reviewed Oct 24" },
   { type: "Voice rule", title: "Tone · Product launches", value: "Clear, capable, never exaggerated", source: "VoltEdge voice guide v2", owner: "Lena Ortiz · Brand", version: "Current · reviewed Oct 20" },
   { type: "Terminology", title: "Preferred product name", value: "VoltEdge NovaBook S1", source: "VoltEdge naming system v2", owner: "Maya Chen · Content", version: "Current · reviewed Oct 18" },
@@ -268,6 +279,24 @@ const registryRecords = [
 function contentSpan(text: string) {
   const start = defaultSubmitForm.content.indexOf(text);
   return { start, end: start + text.length, text };
+}
+
+function replaceFindingText(content: string, finding: Finding, replacement: string) {
+  const exactAtOriginalOffset = content.slice(finding.span.start, finding.span.end) === finding.span.text;
+  if (exactAtOriginalOffset) {
+    return `${content.slice(0, finding.span.start)}${replacement}${content.slice(finding.span.end)}`;
+  }
+  const matches: number[] = [];
+  let cursor = content.indexOf(finding.span.text);
+  while (cursor >= 0) {
+    matches.push(cursor);
+    cursor = content.indexOf(finding.span.text, cursor + finding.span.text.length);
+  }
+  if (matches.length !== 1) {
+    throw new Error("The finding no longer identifies one exact span. Run a fresh check before editing it.");
+  }
+  const start = matches[0];
+  return `${content.slice(0, start)}${replacement}${content.slice(start + finding.span.text.length)}`;
 }
 
 const initialFindings: Finding[] = [
@@ -430,6 +459,7 @@ function initialDashboardView(): View {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [activeView, setActiveView] = useState<View>(initialDashboardView);
   const [detailTab, setDetailTab] = useState<DetailTab>("findings");
   const [auditState, setAuditState] = useState<AuditState>("needs-changes");
@@ -454,6 +484,8 @@ export default function Home() {
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(false);
   const [documentIntakeError, setDocumentIntakeError] = useState(false);
   const [submittedContent, setSubmittedContent] = useState(defaultSubmitForm.content);
+  const [localRegistryRecords, setLocalRegistryRecords] = useState<RegistryRecord[]>(registryRecords);
+  const [sourceDraft, setSourceDraft] = useState({ title: "Campaign claims policy", scope: "VoltEdge Labs", validity: "Current · reviewed October 25, 2026" });
 
   const permissions = rolePermissions[currentRole];
   const openFindings = useMemo(() => findings.filter((finding) => !finding.resolved), [findings]);
@@ -544,7 +576,13 @@ export default function Home() {
     if (!finding || finding.resolved) return;
 
     const replacement = suggestionReplacement(finding.suggestion);
-    const revisedContent = submittedContent.replace(finding.span.text, replacement);
+    let revisedContent: string;
+    try {
+      revisedContent = replaceFindingText(submittedContent, finding, replacement);
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "The finding no longer matches this revision.");
+      return;
+    }
     const nextLabel = createRevision(`Applied the suggested correction for ${finding.category.toLowerCase()}.`, [revisedContent]);
     setSubmittedContent(revisedContent);
     setAuditState("needs-changes");
@@ -558,7 +596,13 @@ export default function Home() {
     if (!permissions.canApplySuggestion) return;
     const finding = findings.find((item) => item.id === findingId);
     if (!finding) return;
-    const revisedContent = submittedContent.replace(suggestionReplacement(finding.suggestion), finding.span.text);
+    const correctedText = suggestionReplacement(finding.suggestion);
+    const correctedStart = submittedContent.indexOf(correctedText);
+    if (correctedStart < 0 || submittedContent.indexOf(correctedText, correctedStart + correctedText.length) >= 0) {
+      notify("The corrected wording is no longer unique in this revision. Run a fresh scan before undoing it.");
+      return;
+    }
+    const revisedContent = `${submittedContent.slice(0, correctedStart)}${finding.span.text}${submittedContent.slice(correctedStart + correctedText.length)}`;
     const nextLabel = createRevision(`Reopened the ${finding.category.toLowerCase()} finding for review.`, [revisedContent]);
     setSubmittedContent(revisedContent);
     setFindings((current) => current.map((item) => (item.id === findingId ? { ...item, resolved: false, actionStatus: "open" } : item)));
@@ -644,14 +688,41 @@ export default function Home() {
   function startNewReview(source: "text" | "document") {
     if (!permissions.canStartReview) return;
     if (source === "document") {
-      setDocumentIntakeError(true);
-      notify("Document intake is unavailable in this demo because extraction is a STUB.");
+      setIsStartModalOpen(false);
+      router.push("/submit");
       return;
     }
     setIsStartModalOpen(false);
     setDocumentIntakeError(false);
     navigate("reviews");
     notify("Text intake opened. The seeded VoltEdge review is ready to inspect.");
+  }
+
+  function saveSourceDraft() {
+    const title = sourceDraft.title.trim();
+    const validity = sourceDraft.validity.trim();
+    if (!title || !validity) {
+      notify("Add a source name and validity before saving the draft.");
+      return;
+    }
+    if (localRegistryRecords.some((record) => record.title.localeCompare(title, undefined, { sensitivity: "accent" }) === 0)) {
+      notify("A registry entry with this name already exists in the local workspace.");
+      return;
+    }
+    setLocalRegistryRecords((current) => [
+      ...current,
+      {
+        type: "Claim policy",
+        title,
+        value: `Scoped to ${sourceDraft.scope}`,
+        source: `${title} · draft`,
+        owner: "Maya Chen · Brand owner",
+        version: `Draft · ${validity}`,
+        status: "draft",
+      },
+    ]);
+    setIsSourceModalOpen(false);
+    notify(`Source draft “${title}” saved to the local registry view. It is not active until approved.`);
   }
 
   const pageTitles: Record<View, string> = {
@@ -804,7 +875,7 @@ export default function Home() {
             </section>
           ) : null}
 
-          {activeView === "registry" ? <section className="view-panel" aria-labelledby="registry-heading"><div className="page-heading compact-heading"><div><p className="eyebrow">Brand truth registry</p><h1 id="registry-heading">The sources behind every decision.</h1><p className="lede">Current approved facts and rules are versioned, scoped, and visible to reviewers.</p></div>{permissions.canManageRegistry ? <button className="primary-button" type="button" onClick={() => setIsSourceModalOpen(true)}><span>＋</span> Add source</button> : <span className="permission-note heading-permission">Read-only registry view</span>}</div><div className="registry-grid">{registryRecords.filter((record) => currentRole !== "agency" || record.title === "NovaBook S1 · Battery life").map((record) => <article className="registry-card" key={record.title}><div className="registry-card-top"><span className="registry-type">{record.type}</span><span className="registry-status"><span className="health-dot" /> Active</span></div><h3>{record.title}</h3><p className="registry-value">{record.value}</p><div className="registry-meta"><span><strong>Source</strong> {record.source}</span><span><strong>Owner</strong> {record.owner}</span><span>{record.version}</span></div>{permissions.canManageRegistry && record.title === "NovaBook S1 · Battery life" ? <button className="small-button" type="button" onClick={() => notify("Battery fact is already approved in this synthetic registry.")}>Approve</button> : null}</article>)}</div><div className="registry-footer"><span className="health-dot" /><strong>All 18 active records have an owner and source.</strong><span>Last reviewed October 24, 2026</span></div></section> : null}
+          {activeView === "registry" ? <section className="view-panel" aria-labelledby="registry-heading"><div className="page-heading compact-heading"><div><p className="eyebrow">Brand truth registry</p><h1 id="registry-heading">The sources behind every decision.</h1><p className="lede">Current approved facts and rules are versioned, scoped, and visible to reviewers.</p></div>{permissions.canManageRegistry ? <button className="primary-button" type="button" onClick={() => setIsSourceModalOpen(true)}><span>＋</span> Add source</button> : <span className="permission-note heading-permission">Read-only registry view</span>}</div><div className="registry-grid">{localRegistryRecords.filter((record) => currentRole !== "agency" || record.title === "NovaBook S1 · Battery life").map((record) => <article className="registry-card" key={`${record.title}-${record.version}`}><div className="registry-card-top"><span className="registry-type">{record.type}</span><span className="registry-status"><span className="health-dot" /> {record.status === "draft" ? "Draft · not active" : "Active"}</span></div><h3>{record.title}</h3><p className="registry-value">{record.value}</p><div className="registry-meta"><span><strong>Source</strong> {record.source}</span><span><strong>Owner</strong> {record.owner}</span><span>{record.version}</span></div>{permissions.canManageRegistry && record.title === "NovaBook S1 · Battery life" ? <button className="small-button" type="button" onClick={() => notify("Battery fact is already approved in this synthetic registry.")}>Approve</button> : null}</article>)}</div><div className="registry-footer"><span className="health-dot" /><strong>{localRegistryRecords.filter((record) => record.status !== "draft").length} active records shown; every source keeps an owner and status.</strong><span>Last reviewed October 24, 2026</span></div></section> : null}
 
           {activeView === "insights" ? <section className="view-panel" aria-labelledby="insights-heading"><div className="page-heading compact-heading"><div><p className="eyebrow">Governance insights</p><h1 id="insights-heading">See where your guidelines need help.</h1><p className="lede">Patterns come from saved findings and reviewer decisions, not model confidence scores.</p></div><div className="heading-actions"><span className="review-summary-chip"><span className="status-dot blue" /> Last 30 days</span><Link className="ghost-button pl-link-button" href="/insights">Open insights dashboard</Link></div></div><div className="insights-grid"><section className="panel insight-chart-card"><div className="panel-heading"><div><p className="eyebrow">Issue mix</p><h2>What keeps surfacing</h2></div></div><div className="bar-chart">{issueMix.map((item) => <div className="bar-row" key={item.label}><label>{item.label}</label><div className="bar-track"><span className={item.tone} style={{ width: `${item.value}%` }} /></div><strong>{item.count}</strong></div>)}</div></section><section className="panel insight-list-card"><div className="panel-heading"><div><p className="eyebrow">Guideline health</p><h2>Clarity opportunities</h2></div></div><div className="clarity-list">{clarityOpportunities.map(([title, copy]) => <div className="clarity-item" key={title}><span className="clarity-marker" /><div><strong>{title}</strong><p>{copy}</p></div></div>)}</div></section></div><div className="privacy-note"><span>◌</span><p><strong>Human review stays in the loop.</strong> Insights suggest where a rule may need clarification; only an authorised brand owner can update the registry.</p></div></section> : null}
 
@@ -812,9 +883,9 @@ export default function Home() {
         </div>
       </section>
 
-        {isStartModalOpen ? <div className="modal-backdrop" role="presentation" onClick={() => setIsStartModalOpen(false)}><section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="start-review-title" onKeyDown={(event) => event.key === "Escape" && setIsStartModalOpen(false)} onClick={(event) => event.stopPropagation()}><button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsStartModalOpen(false)}>×</button><p className="eyebrow">New review</p><h2 id="start-review-title">Bring a draft into Proofline.</h2><p className="modal-copy">Choose a supported intake path. The demo keeps the original submission intact while you inspect its evidence trail.</p>{documentIntakeError ? <StatePanel kind="error" title="Document intake is unavailable" description="PDF, DOCX, JPG, and PNG extraction is a STUB in this build. Use the seeded text review instead." actionLabel="Dismiss message" onAction={() => setDocumentIntakeError(false)} /> : null}<div className="intake-options"><button className="intake-option" type="button" onClick={() => startNewReview("text")}><span className="intake-icon">T</span><span><strong>Paste text</strong><small>Best for a quick claim check</small></span><span>→</span></button><button className="intake-option" type="button" onClick={() => startNewReview("document")}><span className="intake-icon">▧</span><span><strong>Upload a document</strong><small>Unavailable · extraction is a STUB</small></span><span>→</span></button></div></section></div> : null}
+        {isStartModalOpen ? <div className="modal-backdrop" role="presentation" onClick={() => setIsStartModalOpen(false)}><section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="start-review-title" onKeyDown={(event) => event.key === "Escape" && setIsStartModalOpen(false)} onClick={(event) => event.stopPropagation()}><button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsStartModalOpen(false)}>×</button><p className="eyebrow">New review</p><h2 id="start-review-title">Bring a draft into Proofline.</h2><p className="modal-copy">Choose a supported intake path. The demo keeps the original submission intact while you inspect its evidence trail.</p>{documentIntakeError ? <StatePanel kind="error" title="Document intake is unavailable" description="The configured intake path could not be opened. Use paste text or the explicit local API mode." actionLabel="Dismiss message" onAction={() => setDocumentIntakeError(false)} /> : null}<div className="intake-options"><button className="intake-option" type="button" onClick={() => startNewReview("text")}><span className="intake-icon">T</span><span><strong>Paste text</strong><small>Best for a quick claim check</small></span><span>→</span></button><button className="intake-option" type="button" onClick={() => startNewReview("document")}><span className="intake-icon">▧</span><span><strong>Upload a document</strong><small>Text locally · PDF/DOCX/image in local API mode</small></span><span>→</span></button></div></section></div> : null}
 
-      {isSourceModalOpen ? <div className="modal-backdrop" role="presentation" onClick={() => setIsSourceModalOpen(false)}><section className="modal-card source-modal" role="dialog" aria-modal="true" aria-labelledby="source-title" onClick={(event) => event.stopPropagation()}><button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsSourceModalOpen(false)}>×</button><p className="eyebrow">Registry intake</p><h2 id="source-title">Add an approved source.</h2><p className="modal-copy">This demo keeps source intake intentionally explicit: an authorised owner supplies the source, scope, and validity before it can inform a review.</p><div className="source-form"><label>Source name<input defaultValue="Campaign claims policy" /></label><label>Applies to<select defaultValue="VoltEdge Labs"><option>VoltEdge Labs</option><option>VoltEdge NovaBook S1</option></select></label><label>Validity<input defaultValue="Current · reviewed October 25, 2026" /></label></div><button className="primary-button modal-save" type="button" onClick={() => { setIsSourceModalOpen(false); notify("Source draft saved for authorised review."); }}>Save source draft</button></section></div> : null}
+      {isSourceModalOpen ? <div className="modal-backdrop" role="presentation" onClick={() => setIsSourceModalOpen(false)}><section className="modal-card source-modal" role="dialog" aria-modal="true" aria-labelledby="source-title" onClick={(event) => event.stopPropagation()}><button className="modal-close" type="button" aria-label="Close dialog" onClick={() => setIsSourceModalOpen(false)}>×</button><p className="eyebrow">Registry intake</p><h2 id="source-title">Add a source draft.</h2><p className="modal-copy">This demo keeps source intake intentionally explicit: an authorised owner supplies the source, scope, and validity before it can inform a review.</p><div className="source-form"><label>Source name<input value={sourceDraft.title} maxLength={200} onChange={(event) => setSourceDraft((current) => ({ ...current, title: event.target.value }))} /></label><label>Applies to<select value={sourceDraft.scope} onChange={(event) => setSourceDraft((current) => ({ ...current, scope: event.target.value }))}><option>VoltEdge Labs</option><option>VoltEdge NovaBook S1</option></select></label><label>Validity<input value={sourceDraft.validity} maxLength={200} onChange={(event) => setSourceDraft((current) => ({ ...current, validity: event.target.value }))} /></label></div><button className="primary-button modal-save" type="button" onClick={saveSourceDraft}>Save source draft</button></section></div> : null}
 
       {toast ? <div className="toast" role="status" aria-live="polite">{toast}</div> : null}
       <DisclosurePanel open={isDisclosureOpen} onClose={() => setIsDisclosureOpen(false)} />

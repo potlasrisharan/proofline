@@ -14,3 +14,7 @@ test-results/
 .venv/
 .vercel/
 .wrangler/
+ACCOUNTS.md
+.opencode/
+python_modules/
+

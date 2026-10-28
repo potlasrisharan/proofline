@@ -171,3 +171,26 @@
 - **Still open:** Cloudflare Access, D1/R2/Queues, external AI/OCR, hosted deployment,
   durable persistence, and production authentication remain unverified. Do not claim the
   optional local API mode is production authentication or durable storage.
+
+## 2026-10-26 — Robustness verification pass
+
+- **Completed locally:** registry version approval now supersedes the prior approved
+  version without deleting history; exact audited spans are required for browser corrections;
+  and the seeded registry retains saved source drafts as explicitly inactive records.
+- **Verified:** `npm test` passed with 11 browser tests, 1 opt-in skip, and 140
+  backend/report-safety tests. Standalone pytest passed 147 tests, API E2E passed 4 tests,
+  and the Pages/lockfile/Wrangler and reliability/evaluation checks passed.
+- **Still open:** the Cloudflare, durable persistence, production authentication, hosted
+  OCR/AI, and deployment boundaries remain unverified and must not be described as live.
+
+## 2026-10-27 — PRD coverage and local intake pass
+
+- **Completed locally:** added `docs/PRD_IMPLEMENTATION_MATRIX.md`; registry search, CSV/
+  text-extractable import, source metadata, owner-only retirement, and active-version handling;
+  and explicit local API browser intake for bounded PDF, DOCX, PNG, and JPG files.
+- **Verified:** `npm test` passed with 11 browser tests, 1 opt-in skip, and 142 backend/
+  report-safety tests. Standalone pytest passed 149 tests, API E2E passed 4 tests, and the
+  Pages/lockfile/Wrangler, golden-fixture, reliability, and evaluation checks passed.
+- **Boundary:** the matrix distinguishes local implementation from unavailable Cloudflare,
+  production identity, live AI/OCR, video, external integrations, multilingual comparison,
+  and enterprise retention capabilities.

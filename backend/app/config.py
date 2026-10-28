@@ -59,7 +59,6 @@ class Settings:
         return False
 
 
-@lru_cache(maxsize=1)
 def get_settings() -> Settings:
     return Settings(
         environment=os.getenv("PROOFLINE_ENV", "development"),

@@ -55,9 +55,9 @@ const runtimeServices: DisclosureEntry[] = [
     name: "OCR / PDF / DOCX extraction service",
     scope: "Planned content intake",
     status: "STUB",
-    data: "No PDF, DOCX, image, or hosted OCR data is sent by these frontend routes. The /submit page reads supported UTF-8 .txt files locally in the browser.",
+    data: "Default browser-only mode reads UTF-8 .txt locally. Explicit opt-in local API mode can send bounded PDF, DOCX, PNG, and JPG bytes to the local FastAPI process; no hosted OCR or extraction service receives data.",
     retention: "Local text enters the browser-tab review record. No external extraction-service retention is established. Backend extraction modules are separate from this UI path.",
-    note: "PDF/DOCX/image intake remains labelled STUB in the frontend. A local parser and a hosted OCR service have different data-transfer boundaries.",
+    note: "Local API extraction is dependency-gated and reports partial/failed states. A local parser and a hosted OCR service have different data-transfer boundaries; hosted OCR remains STUB.",
   },
   {
     name: "Cloudflare Access, D1, R2, and Queues",
