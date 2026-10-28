@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import base64
+import binascii
+import csv
+import io
+import json
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
@@ -11,6 +16,7 @@ from .audit import AuditEngine
 from .audit.routes import router as audit_router
 from .config import Settings, get_settings
 from .content_store import ContentStore
+from .ingestion import ingest_document
 from .impact import ImpactRadarStore
 from .impact_routes import router as impact_router
 from .models import (
@@ -34,6 +40,9 @@ from .models import (
     ReviewDecisionResponse,
     ReviewDecisionsResponse,
     VaultCreateRequest,
+    VaultImportRequest,
+    VaultImportFileRequest,
+    VaultImportResponse,
     VaultListResponse,
     VaultRecordResponse,
     VaultResource,
@@ -61,6 +70,23 @@ def _settings(request: Request) -> Settings:
 
 def _workflow(request: Request) -> InMemoryWorkflowStore:
     return request.app.state.workflow_store
+
+
+def _record_registry_event(
+    request: Request,
+    principal: Principal,
+    *,
+    event_type: str,
+    object_id: str | None,
+    metadata: dict[str, object],
+) -> None:
+    request.app.state.workflow_store.record_event(
+        principal,
+        event_type=event_type,
+        object_type="vault_record",
+        object_id=object_id,
+        metadata=metadata,
+    )
 
 
 def _not_found() -> HTTPException:
@@ -107,15 +133,16 @@ def create_app(
     @app.get("/health")
     async def health(request: Request) -> dict[str, object]:
         runtime = _settings(request)
+        has_d1 = getattr(request.app.state, "d1", None) is not None
         return {
             "status": "ok",
             "service": "proofline-api",
             "environment": runtime.environment,
-            "persistence": "in_memory_demo",
+            "persistence": "d1_backed" if has_d1 else "in_memory_demo",
             "cloudflare_access_configured": runtime.cloudflare_access_configured,
             "jwt_verifier_configured": runtime.has_jwt_verifier,
-            "d1_persistence": "not_configured",
-            "r2_storage": "not_configured",
+            "d1_persistence": "connected" if has_d1 else "not_configured",
+            "r2_storage": "d1_file_artifacts",
             "audit_queue": "not_configured",
             "ai_provider": "not_configured",
         }
@@ -348,13 +375,143 @@ def create_app(
         resource: VaultResource,
         principal: Annotated[Principal, Depends(get_current_principal)],
         request: Request,
+        q: str | None = Query(default=None, min_length=1, max_length=200),
+        record_status: str | None = Query(default=None, alias="status"),
     ) -> VaultListResponse:
+        items = _store(request).list(principal.organisation_id, resource)
+        if q:
+            needle = q.casefold()
+            items = [
+                item for item in items
+                if needle in str(item.value).casefold()
+                or needle in (item.source_id or "").casefold()
+                or needle in item.id.casefold()
+            ]
+        if record_status:
+            try:
+                desired_status = record_status.casefold()
+                items = [item for item in items if item.status.value == desired_status]
+            except AttributeError:
+                items = []
         return VaultListResponse(
             resource=resource,
             organisation_id=principal.organisation_id,
             persistence="in_memory_demo",
-            items=_store(request).list(principal.organisation_id, resource),
+            items=items,
         )
+
+    @app.post("/v1/{resource}/import", response_model=VaultImportResponse, status_code=status.HTTP_201_CREATED)
+    async def import_vault_records(
+        resource: VaultResource,
+        payload: VaultImportRequest,
+        principal: Annotated[Principal, Depends(get_current_principal)],
+        request: Request,
+    ) -> VaultImportResponse:
+        if principal.role not in (
+            DISCLAIMER_WRITERS if resource is VaultResource.DISCLAIMERS else REGISTRY_WRITERS
+        ):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"role {principal.role.value} cannot import {resource.value} records")
+        imported: list = []
+        for row in payload.records:
+            record = _store(request).create(
+                principal.organisation_id,
+                resource,
+                row.model_copy(update={
+                    "metadata": {
+                        **row.metadata,
+                        "import": {
+                            "filename": payload.source_filename,
+                            "source_type": payload.source_type,
+                            "extraction_status": payload.extraction_status,
+                        },
+                    },
+                }),
+                principal,
+            )
+            imported.append(record)
+        _record_registry_event(
+            request,
+            principal,
+            event_type="registry_imported",
+            object_id=None,
+            metadata={"resource": resource.value, "count": len(imported), "source_filename": payload.source_filename},
+        )
+        return VaultImportResponse(
+            persistence="in_memory_demo",
+            resource=resource,
+            imported_count=len(imported),
+            items=imported,
+        )
+
+    @app.post("/v1/{resource}/import-file", response_model=VaultImportResponse, status_code=status.HTTP_201_CREATED)
+    async def import_vault_file(
+        resource: VaultResource,
+        payload: VaultImportFileRequest,
+        principal: Annotated[Principal, Depends(get_current_principal)],
+        request: Request,
+    ) -> VaultImportResponse:
+        if principal.role not in (
+            DISCLAIMER_WRITERS if resource is VaultResource.DISCLAIMERS else REGISTRY_WRITERS
+        ):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"role {principal.role.value} cannot import {resource.value} records")
+        try:
+            data = base64.b64decode(payload.file_base64, validate=True)
+        except (ValueError, binascii.Error) as exc:
+            raise HTTPException(status_code=422, detail={"code": "invalid_file", "message": "file_base64 must contain valid base64"}) from exc
+        if len(data) > 10 * 1024 * 1024:
+            raise HTTPException(status_code=413, detail={"code": "file_too_large", "message": "registry import files are limited to 10 MiB"})
+        filename = payload.filename.replace("\\", "/").rsplit("/", 1)[-1].strip()
+        if not filename:
+            raise HTTPException(status_code=422, detail={"code": "invalid_file", "message": "filename must contain a file name"})
+        mime = payload.mime_type or ""
+        extension = filename.rsplit(".", 1)[-1].casefold() if "." in filename else ""
+        if extension == "csv" or mime.casefold() in {"text/csv", "application/csv"}:
+            try:
+                rows = list(csv.DictReader(io.StringIO(data.decode("utf-8-sig"))))
+            except (UnicodeDecodeError, csv.Error) as exc:
+                raise HTTPException(status_code=422, detail={"code": "invalid_file", "message": "CSV import must be valid UTF-8 with a header row"}) from exc
+            if not rows:
+                raise HTTPException(status_code=422, detail={"code": "empty_file", "message": "CSV import contains no records"})
+            inputs: list[dict[str, object]] = []
+            for row in rows[:1000]:
+                cleaned = {str(key).strip(): value.strip() for key, value in row.items() if key and value and value.strip()}
+                raw_value = cleaned.pop("value", None)
+                if raw_value:
+                    try:
+                        parsed = json.loads(raw_value)
+                        value = parsed if isinstance(parsed, dict) else {"value": parsed}
+                    except json.JSONDecodeError:
+                        value = {"value": raw_value}
+                    value.update(cleaned)
+                else:
+                    value = cleaned
+                inputs.append({
+                    "value": value,
+                    "source_id": value.pop("source_id", None),
+                    "source_version": value.pop("source_version", None),
+                })
+            import_request = VaultImportRequest(records=inputs, source_filename=filename, source_type="csv")
+        else:
+            document = ingest_document(data, filename=filename, mime_type=mime or None)
+            extraction_status = document["extraction_status"]
+            if extraction_status in {"failed", "unsupported"} or not document["text"].strip():
+                raise HTTPException(status_code=422, detail={"code": "extraction_failed", "message": document.get("extraction_message") or "no importable text was extracted"})
+            rows = []
+            for line in document["text"].splitlines():
+                if ":" not in line:
+                    continue
+                key, value = (part.strip() for part in line.split(":", 1))
+                if key and value:
+                    rows.append({"value": {"key": key, "value": value}})
+            if not rows:
+                raise HTTPException(status_code=422, detail={"code": "no_records", "message": "extracted text must contain records in key: value form"})
+            import_request = VaultImportRequest(
+                records=rows[:1000],
+                source_filename=filename,
+                source_type="pdf" if document["source_type"] == "pdf" else "docx" if document["source_type"] == "docx" else "text",
+                extraction_status="complete" if extraction_status == "complete" else "partial",
+            )
+        return await import_vault_records(resource, import_request, principal, request)
 
     @app.post("/v1/{resource}", response_model=VaultRecordResponse, status_code=status.HTTP_201_CREATED)
     async def create_vault_record(
@@ -371,6 +528,7 @@ def create_app(
                 detail=f"role {principal.role.value} cannot create {resource.value} records",
             )
         record = _store(request).create(principal.organisation_id, resource, payload, principal)
+        _record_registry_event(request, principal, event_type="registry_record_created", object_id=record.id, metadata={"resource": resource.value, "version": record.version})
         return VaultRecordResponse(persistence="in_memory_demo", item=record)
 
     @app.get("/v1/{resource}/{record_id}", response_model=VaultRecordResponse)
@@ -407,6 +565,7 @@ def create_app(
             )
         except VaultNotFoundError as exc:
             raise _not_found() from exc
+        _record_registry_event(request, principal, event_type="registry_record_versioned", object_id=record.id, metadata={"resource": resource.value, "version": record.version})
         return VaultRecordResponse(persistence="in_memory_demo", item=record)
 
     @app.post("/v1/{resource}/{record_id}/approve", response_model=VaultRecordResponse)
@@ -422,6 +581,21 @@ def create_app(
             raise _not_found() from exc
         except VaultStateError as exc:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+        _record_registry_event(request, principal, event_type="registry_record_approved", object_id=record.id, metadata={"resource": resource.value, "version": record.version})
+        return VaultRecordResponse(persistence="in_memory_demo", item=record)
+
+    @app.post("/v1/{resource}/{record_id}/retire", response_model=VaultRecordResponse)
+    async def retire_vault_record(
+        resource: VaultResource,
+        record_id: str,
+        principal: Annotated[Principal, Depends(require_roles(Role.BRAND_OWNER))],
+        request: Request,
+    ) -> VaultRecordResponse:
+        try:
+            record = _store(request).retire(principal.organisation_id, resource, record_id, principal)
+        except VaultNotFoundError as exc:
+            raise _not_found() from exc
+        _record_registry_event(request, principal, event_type="registry_record_retired", object_id=record.id, metadata={"resource": resource.value, "version": record.version})
         return VaultRecordResponse(persistence="in_memory_demo", item=record)
 
     return app

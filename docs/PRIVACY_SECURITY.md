@@ -17,7 +17,7 @@ compliance, production readiness, or protection of real customer data.
 | Local vault and workflow API | **IMPLEMENTED (local)** | Stores organisation-scoped vault records plus text/metadata content versions, caller-supplied findings, comments, decisions, exports, and audit events in process memory. Data disappears when the process stops. |
 | External AI/OCR transfer | **STUB / not observed** | Local deterministic and ingestion paths can run without a network provider. Optional Gemini/OCR seams are disabled or dependency-gated; no external provider call was verified. |
 | Durable database/storage | **STUB / PLANNED** | Cloudflare D1 migration/seed plus R2 binding artifacts exist; no live D1 database, R2 bucket, or durable adapter is connected. |
-| Content file intake | **IMPLEMENTED (local API, dependency-gated) / STUB (demo UI)** | The local `/contents` API accepts bounded text or base64 files and reports extraction states; the UI's document option remains unavailable and no hosted file storage exists. |
+| Content file intake | **IMPLEMENTED (local API and opt-in UI, dependency-gated)** | The local `/contents` API and explicit browser API mode accept bounded text or base64 files and report extraction states; default browser-only mode remains text-only and no hosted file storage exists. |
 | Hosted deployment | **READY / NOT DEPLOYED** | Pages export, Python Worker entrypoint, and Wrangler bindings exist; no deployed environment has been verified. |
 
 The local API is suitable for contract/RBAC tests with fictional data, not confidential

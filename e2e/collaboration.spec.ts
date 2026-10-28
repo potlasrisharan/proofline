@@ -79,4 +79,16 @@ test.describe("seeded collaboration preview (not authenticated persistence)", ()
     const batteryFact = page.getByRole("article").filter({ hasText: "NovaBook S1 · Battery life" });
     await expect(batteryFact.getByRole("button", { name: /Approve/ })).toBeVisible();
   });
+
+  test("brand owner saves a source draft without activating it", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("combobox", { name: "Role preview" }).selectOption("brand_owner");
+    await page.getByRole("button", { name: "Truth registry", exact: true }).click();
+    await page.getByRole("button", { name: /Add source/ }).click();
+    await page.getByLabel("Source name").fill("VoltEdge launch claims policy");
+    await page.getByRole("button", { name: "Save source draft", exact: true }).click();
+    const draft = page.getByRole("article").filter({ hasText: "VoltEdge launch claims policy" });
+    await expect(draft).toContainText("Draft · not active");
+    await expect(page.getByRole("status")).toContainText("not active until approved");
+  });
 });

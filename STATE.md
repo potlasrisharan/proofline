@@ -1,7 +1,7 @@
 # Proofline verified state
 
-**Last verified:** 2026-10-26 13:02 IST
-**Phase:** 4 — improvements, hardening, deploy, docs
+**Last verified:** 2026-10-28 23:50 IST
+**Phase:** 4 — Cloudflare full-stack deployment, D1 file artifacts, Pages live pairing
 **Rule:** statuses below describe what was actually inspected or run, not what the PRD
 proposes.
 
@@ -23,9 +23,11 @@ proposes.
 - Legacy PostgreSQL runtime: **LEGACY / NOT TARGET** — no hosted Supabase project or
   durable adapter is configured. The old migration and seed were applied successfully to
   a temporary local PostgreSQL database with the required auth schema shim, then dropped.
-- Cloudflare runtime: **READY / NOT DEPLOYED** — Pages export, Python Worker entrypoint,
-  D1 migration/seed, R2/Queue bindings, and Wrangler configuration exist; no Cloudflare
-  resources, Access policy, or durable adapter has been smoke-tested.
+- Cloudflare runtime: **DEPLOYED & VERIFIED** — Cloudflare Pages (`https://proofline-4cz.pages.dev`),
+  Python Worker (`https://proofline-api.potlasrisharanchowdary.workers.dev`), and remote D1 database
+  `proofline` (`507b5293-0765-4497-9739-510a25639f17`) are live and operational. D1 migrations
+  `0001_proofline_foundation.sql` and `0002_file_artifacts.sql` are applied on remote D1. The D1
+  `file_artifacts` table provides bounded document/hash storage replacing R2 object storage.
 - Docker foundation: **WORKING (image smoke test)** — `backend/Dockerfile` built and the
   container `/health` endpoint returned 200 JSON.
 
@@ -228,3 +230,34 @@ proposes.
 - **Boundary:** this is still local/in-memory development authentication and persistence;
   Cloudflare Access, D1/R2/Queues, external AI/OCR, hosted deployment, and production
   authentication remain unverified.
+
+## 2026-10-26 — Robustness verification pass
+
+- **Completed locally:** approving a newer registry version now marks the earlier approved
+  version `superseded` while retaining it for history; browser corrections require an exact
+  audited span; and the seeded registry's Add source action now retains a visible, inactive
+  source draft instead of only showing a toast.
+- **Verified:** `npm test` passed with 11 browser tests, 1 opt-in skip, 140 backend/report-
+  safety tests, lint, typecheck, build, fixture validation, and read-only report checking.
+  Standalone `python3 -m pytest -q` passed 147 tests; API E2E passed 4 tests; `npm run
+  build:pages`, `uv lock --check`, `npx wrangler --version`, and the reliability/evaluation
+  checks passed.
+- **Boundary:** this remains local/demo behavior. Durable Cloudflare persistence, production
+  authentication, hosted OCR/AI, and deployment are still **STUB**, **PLANNED**, or
+  **MISSING** as documented.
+
+## 2026-10-27 — PRD coverage and local intake pass
+
+- **Completed locally:** added the PRD implementation matrix; registry search, bounded CSV/
+  text-extractable file import, source metadata retention, owner-only retirement, and
+  active-version filtering; and wired the explicit local API browser path to bounded PDF,
+  DOCX, PNG, and JPG submission with visible extraction-state handling. Default browser-only
+  mode remains text-only and local.
+- **Verified:** `npm test` passed with 11 browser tests, 1 opt-in skip, and 142 backend/
+  report-safety tests. Standalone `python3 -m pytest -q` passed 149 tests; API E2E passed
+  4 tests; Pages build, lockfile, Wrangler, golden-fixture, reliability, and evaluation
+  checks passed.
+- **PRD result:** P0/P1 local paths are documented in `docs/PRD_IMPLEMENTATION_MATRIX.md`.
+  Durable Cloudflare services, production identity, live AI/OCR, video, external connectors,
+  multilingual comparison, and enterprise retention remain explicitly **STUB**, **PLANNED**,
+  or **MISSING** because no verified external resources are available.

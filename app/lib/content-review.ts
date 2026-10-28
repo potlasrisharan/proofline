@@ -180,6 +180,13 @@ function auditRevision(revision: ContentRevision, scope: ContentScope): ContentA
   return { id: uid("audit"), content_version_id: revision.id, created_at: new Date().toISOString(), findings, status: "review_required" };
 }
 
+function replaceExactSpan(text: string, start: number, end: number, expected: string, replacement: string) {
+  if (start < 0 || end < start || text.slice(start, end) !== expected) {
+    throw new Error("The finding no longer matches the audited source. Run a fresh check.");
+  }
+  return `${text.slice(0, start)}${replacement}${text.slice(end)}`;
+}
+
 export function createContentReview(text: string, scope: ContentScope): ContentReview {
   if (!text.trim()) throw new Error("Add content before running the local check.");
   const timestamp = new Date().toISOString();
@@ -206,7 +213,7 @@ export function applyFindingDecision(review: ContentReview, findingId: string, a
     const start = finding.span.start + offset;
     if (current.text.slice(start, start + finding.span.text.length) !== finding.span.text) throw new Error("Another edit overlaps this suggestion. Run a fresh check before changing this span.");
     before = finding.span.text;
-    next = { ...current, id: uid("version"), number: current.number + 1, text: `${current.text.slice(0, start)}${value}${current.text.slice(start + finding.span.text.length)}`, created_at: timestamp, based_on: current.id };
+    next = { ...current, id: uid("version"), number: current.number + 1, text: replaceExactSpan(current.text, start, start + finding.span.text.length, finding.span.text, value), created_at: timestamp, based_on: current.id };
   }
   const event: ReviewEvent = { id: uid("event"), actor: "VoltEdge demo creator", timestamp, action, content_version_id: next.id, finding_id: finding.id, reason: action === "dismissed" ? value.trim() : finding.suggestion?.intent_note ?? null, before, after: action === "dismissed" ? null : value };
   return { ...review, revisions: next === current ? review.revisions : [...review.revisions, next], audits: review.audits.map((item) => item.id === audit.id ? { ...item, findings: item.findings.map((entry) => entry.id === findingId ? { ...entry, status: action, dismiss_reason: action === "dismissed" ? value.trim() : null } : entry) } : item), events: [...review.events, event] };

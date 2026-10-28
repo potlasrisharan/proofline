@@ -377,3 +377,37 @@ def act_on_audit_finding(
         return response
     except (WorkflowNotFoundError, WorkflowPermissionError, WorkflowStateError) as exc:
         raise _error(exc) from exc
+
+
+@router.get("/content-versions/{content_version_id}/raw")
+def get_version_raw_input(
+    content_version_id: str,
+    principal: Annotated[Principal, Depends(get_current_principal)],
+    request: Request,
+):
+    store = _content_store(request)
+    try:
+        raw = store.get_raw_input(principal, content_version_id)
+        if raw is None:
+            raise HTTPException(status_code=404, detail={"code": "not_found", "message": "no raw input found for version"})
+        version = store.get_version(principal, content_version_id)
+        original_file = version.metadata.get("original_file") if isinstance(version.metadata, dict) else None
+        if isinstance(raw, bytes):
+            return {
+                "content_version_id": content_version_id,
+                "type": "file",
+                "filename": original_file.get("filename") if isinstance(original_file, dict) and original_file.get("filename") else "file.bin",
+                "mime_type": original_file.get("mime_type") if isinstance(original_file, dict) and original_file.get("mime_type") else "application/octet-stream",
+                "size_bytes": len(raw),
+                "data_base64": base64.b64encode(raw).decode("ascii"),
+                "storage": "d1_file_artifacts",
+            }
+        return {
+            "content_version_id": content_version_id,
+            "type": "text",
+            "text": raw,
+            "storage": "d1_file_artifacts",
+        }
+    except WorkflowNotFoundError as exc:
+        raise _error(exc) from exc
+

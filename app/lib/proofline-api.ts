@@ -78,7 +78,10 @@ export type VaultCreateInput = {
 export type ContentCreateInput = {
   title: string;
   content_type?: "text" | "pdf" | "docx" | "image" | "other";
-  text: string;
+  text?: string;
+  file_base64?: string;
+  filename?: string;
+  mime_type?: string;
   confidential?: boolean;
   exposure?: 1 | 2 | 3;
   regulated?: boolean;
@@ -171,6 +174,13 @@ export type FindingActionInput = {
   replacement_text?: string;
 };
 
+export type VaultImportInput = {
+  records: VaultCreateInput[];
+  source_filename: string;
+  source_type?: "csv" | "text" | "pdf" | "docx" | "manual";
+  extraction_status?: "complete" | "partial" | "review_required";
+};
+
 export class ProoflineApiError extends Error {
   readonly status: number;
 
@@ -229,6 +239,15 @@ export function createProoflineApiClient(baseUrl: string, options: RequestOption
     },
     approveVault(resource: VaultResource, recordId: string) {
       return request<VaultRecordResponse>(`/v1/${resource}/${recordId}/approve`, { method: "POST" });
+    },
+    retireVault(resource: VaultResource, recordId: string) {
+      return request<VaultRecordResponse>(`/v1/${resource}/${recordId}/retire`, { method: "POST" });
+    },
+    importVault(resource: VaultResource, input: VaultImportInput) {
+      return request<{ persistence: "in_memory_demo"; resource: VaultResource; imported_count: number; items: VaultRecord[] }>(`/v1/${resource}/import`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      });
     },
     createContent(input: ContentCreateInput) {
       return request<ContentAuditResponse>("/contents", {
