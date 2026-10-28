@@ -36,10 +36,11 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 
 .app-shell { display: flex; min-height: 100vh; }
 .sidebar { width: 254px; min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; padding: 29px 17px 18px; background: var(--navy); color: #edf8f4; }
-.brand-lockup { display: flex; align-items: center; gap: 11px; padding: 0 12px; }
-.brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px 10px 10px 3px; background: var(--aqua); color: var(--navy); font-family: Georgia, serif; font-size: 21px; font-weight: 700; }
-.brand-name { font-size: 17px; font-weight: 750; letter-spacing: -.03em; }
-.brand-caption { margin-top: 3px; color: #91ada7; font-size: 10px; letter-spacing: .01em; }
+.brand-lockup { display: flex; align-items: center; gap: 12px; padding: 0 8px; text-decoration: none; }
+.brand-mark { width: 36px; height: 36px; display: grid; place-items: center; flex-shrink: 0; border-radius: 9px; background: linear-gradient(135deg, #44f2c9 0%, #15b89a 100%); color: #0a2923; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 20px; font-weight: 900; box-shadow: 0 4px 14px rgba(68, 242, 201, 0.35); border: 1px solid rgba(255, 255, 255, 0.3); }
+.brand-text-col { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.brand-name { display: block; color: #ffffff !important; font-size: 17.5px; font-weight: 850; letter-spacing: -.03em; line-height: 1.15; }
+.brand-caption { display: block; margin-top: 3px; color: #a4ceca !important; font-size: 9.5px; font-weight: 500; letter-spacing: .01em; line-height: 1.25; }
 .workspace-switcher { display: flex; align-items: center; gap: 9px; width: 100%; margin: 46px 5px 30px; padding: 11px; border: 1px solid #38534f; border-radius: 9px; color: #cfe3de; background: transparent; font-size: 11px; text-align: left; }
 .workspace-switcher:hover { border-color: #5e8179; background: rgba(255, 255, 255, .04); }
 .workspace-dot, .health-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--aqua-deep); box-shadow: 0 0 0 3px rgba(92, 199, 185, .13); }

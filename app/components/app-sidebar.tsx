@@ -66,9 +66,9 @@ export function AppSidebar({
 
   return (
     <aside className="sidebar" aria-label="VoltEdge workspace navigation">
-      <Link className="brand-lockup pl-brand-link" href="/">
+      <Link className="brand-lockup pl-brand-link" href="/" aria-label="Proofline Home">
         <span className="brand-mark" aria-hidden="true">P</span>
-        <span>
+        <span className="brand-text-col">
           <span className="brand-name">Proofline</span>
           <span className="brand-caption">Brand truth, before publish.</span>
         </span>
