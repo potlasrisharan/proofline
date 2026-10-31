@@ -977,6 +977,59 @@ export default function Home() {
                 <article className="signal-card"><div className="signal-label">Registry coverage <span className="trend up">↑ 4%</span></div><div className="signal-value">86<span className="value-unit">%</span></div><div className="signal-foot">facts with an active source</div><div className="progress-track mint"><span style={{ width: "86%" }} /></div></article>
               </div>
 
+              {/* 60-Second Self-Guided Golden Journey for Judges */}
+              <div className="judge-guide-card" role="region" aria-label="Quick Start Guide for Judges">
+                <div className="judge-guide-badge">🎯 Judge Quickstart — Try the 60-Second Golden Journey</div>
+                <p className="judge-guide-lede">
+                  Proofline is an automated pre-publication quality gate for brand content. You can experience the complete review workflow on your own without any setup:
+                </p>
+                <div className="judge-guide-steps">
+                  <div className="judge-guide-step">
+                    <span className="step-badge">1</span>
+                    <div>
+                      <strong>Inspect Flagged Claims</strong>
+                      <p>View side-by-side red strike-throughs on contradicted specs (e.g. 20h battery vs. approved 12h).</p>
+                    </div>
+                  </div>
+                  <div className="judge-guide-step">
+                    <span className="step-badge">2</span>
+                    <div>
+                      <strong>Apply 1-Click Fix</strong>
+                      <p>Click &ldquo;Apply&rdquo; to replace inaccuracies with approved specs while preserving creator intent.</p>
+                    </div>
+                  </div>
+                  <div className="judge-guide-step">
+                    <span className="step-badge">3</span>
+                    <div>
+                      <strong>Re-scan &amp; Sign Off</strong>
+                      <p>Run re-scan to confirm 0 open findings, approve as human reviewer, and unlock gated multi-platform dispatch.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="judge-guide-actions">
+                  <button
+                    className="primary-button"
+                    type="button"
+                    onClick={() => {
+                      navigate("reviews");
+                      setSelectedReviewId("novabook-launch");
+                      setDetailTab("findings");
+                      setSelectedSpanId("battery");
+                      notify("Starting Golden Flow: Inspecting NovaBook S1 launch email.");
+                    }}
+                  >
+                    ▶ Launch 60-Second Golden Flow
+                  </button>
+                  <button
+                    className="ghost-button"
+                    type="button"
+                    onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
+                  >
+                    Take Guided Interactive Tour
+                  </button>
+                </div>
+              </div>
+
               <div className="dashboard-grid">
                 <section className="panel workflow-panel">
                   <div className="panel-heading"><div><p className="eyebrow">The Proofline method</p><h2>From source to sign-off</h2></div><span className="panel-badge">3 steps</span></div>

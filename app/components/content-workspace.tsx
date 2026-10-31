@@ -350,8 +350,8 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <div className="submit-form-heading">
                   <div><h2>Content to review</h2><p className="micro-helper">Original and corrections stay available for comparison.</p></div>
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                    <button className="small-button" type="button" onClick={() => { setText(sampleVoltEdgeText); setScope(defaultContentScope); setUploadStatus(""); }}>Load Flagged Sample</button>
-                    <button className="small-button" type="button" onClick={() => { setText("VoltEdge NovaBook S1 offers up to 24 hours of battery life and includes a 30-day return guarantee. Full details apply at voltedge.com/terms."); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Clean Draft" })); setUploadStatus(""); }}>Load Clean Sample</button>
+                    <button className="small-button apply-button" type="button" onClick={() => { setText(sampleVoltEdgeText); setScope(defaultContentScope); setUploadStatus(""); setMessage("Loaded Flagged Sample: VoltEdge NovaBook S1 with 20h battery spec conflict."); }}>⚡ 1-Click: Flagged Draft</button>
+                    <button className="small-button" type="button" onClick={() => { setText("VoltEdge NovaBook S1 offers up to 12 hours of battery life and includes a 30-day return guarantee. Full details apply at voltedge.com/terms."); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Clean Draft" })); setUploadStatus(""); setMessage("Loaded Clean Sample: VoltEdge NovaBook S1 with compliant claims."); }}>✓ 1-Click: Clean Draft</button>
                   </div>
                 </div>
                 <label className="field-label" htmlFor="pl-title">Review name<input id="pl-title" value={scope.title} maxLength={200} onChange={(event) => updateScope("title", event.target.value)} /></label>

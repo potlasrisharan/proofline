@@ -309,6 +309,75 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 .receipt-item { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: #2e6255; padding: 4px 0; border-bottom: 1px dashed #c9edd1; }
 .receipt-item:last-child { border-bottom: 0; }
 .asset-type-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 5px; font-size: 9px; font-weight: 700; background: #edf4f1; color: #3b574f; }
+
+/* Judge Quickstart Banner */
+.judge-guide-card {
+  padding: 16px 20px;
+  background: #f4f8f6;
+  border: 1px solid #cce1d8;
+  border-radius: 9px;
+  margin-bottom: 20px;
+}
+.judge-guide-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #123e32;
+  margin-bottom: 6px;
+}
+.judge-guide-lede {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #3b574f;
+  margin: 0 0 14px;
+}
+.judge-guide-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.judge-guide-step {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #dce8e2;
+  border-radius: 7px;
+}
+.judge-guide-step .step-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1b4d3e;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.judge-guide-step strong {
+  display: block;
+  font-size: 11px;
+  color: #102d25;
+  margin-bottom: 3px;
+}
+.judge-guide-step p {
+  font-size: 10px;
+  line-height: 1.4;
+  color: #557067;
+  margin: 0;
+}
+.judge-guide-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 /* Judge Quick-Demo Bar & Interactive Showcase */
 .judge-demo-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: linear-gradient(135deg, #132f2b 0%, #1c4a40 100%); color: #fff; border-radius: 9px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(18, 54, 46, .12); border: 1px solid rgba(168, 229, 208, .2); }
 .judge-demo-title { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 750; color: #f0faf5; }
