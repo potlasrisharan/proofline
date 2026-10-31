@@ -884,21 +884,52 @@ export default function Home() {
               <button
                 className="judge-preset-btn"
                 type="button"
+                onClick={() => router.push("/impact")}
+                title="Round 3 Improvement 1: Automated re-audit queue when specs change"
+              >
+                <span>①</span> [IMP-1] Impact Radar
+              </button>
+              <button
+                className="judge-preset-btn"
+                type="button"
                 onClick={() => {
                   navigate("reviews");
                   setSelectedReviewId("novabook-launch");
                   setDetailTab("findings");
-                  notify("Demo 1: Inspecting NovaBook S1 claim findings with visual diffs and evidence trace.");
+                  setSelectedSpanId("reliable");
+                  notify("Improvement 2: Evidence-or-Abstain Reliability — 'Missing evidence' abstains from guessing vs. hard contradiction on battery.");
+                }}
+                title="Round 3 Improvement 2: Evidence-or-Abstain Reliability Layer"
+              >
+                <span>②</span> [IMP-2] Evidence-or-Abstain
+              </button>
+              <button
+                className="judge-preset-btn"
+                type="button"
+                onClick={() => router.push("/insights")}
+                title="Round 3 Improvement 3: Guideline-Gap Detector & recurring mistake telemetry"
+              >
+                <span>③</span> [IMP-3] Guideline-Gap Detector
+              </button>
+              <button
+                className="judge-preset-btn"
+                type="button"
+                onClick={() => {
+                  navigate("reviews");
+                  setSelectedReviewId("novabook-launch");
+                  setDetailTab("findings");
+                  setSelectedSpanId("battery");
+                  notify("Demo 4: Inspecting NovaBook S1 claim findings with side-by-side visual diffs and evidence trace.");
                 }}
               >
-                <span>①</span> Claim Audit &amp; Visual Diff
+                <span>④</span> Claim Audit &amp; Visual Diff
               </button>
               <button
                 className="judge-preset-btn"
                 type="button"
                 onClick={() => setIsIndicModalOpen(true)}
               >
-                <span>②</span> Indic Verification (Sarvam AI)
+                <span>⑤</span> Indic Verification (Sarvam AI)
               </button>
               <button
                 className="judge-preset-btn"
@@ -910,10 +941,10 @@ export default function Home() {
                   setAuditState("approved");
                   setDispatchReceipts(null);
                   setIsPublishModalOpen(true);
-                  notify("Demo 3: Compliance verified! Gated dispatch unlocked for multi-platform publishing.");
+                  notify("Demo 6: Compliance verified! Gated dispatch unlocked for multi-platform publishing.");
                 }}
               >
-                <span>③</span> 1-Click Gated Dispatch (Zernio)
+                <span>⑥</span> 1-Click Gated Dispatch (Zernio)
               </button>
               <button
                 className="judge-preset-btn"
@@ -921,10 +952,10 @@ export default function Home() {
                 onClick={() => {
                   setCurrentRole("legal_reviewer");
                   navigate("audit-log");
-                  notify("Demo 4: Cryptographic SHA-256 audit log loaded with verified hash chain.");
+                  notify("Demo 7: Cryptographic SHA-256 audit log loaded with verified hash chain.");
                 }}
               >
-                <span>④</span> Cryptographic Audit Chain
+                <span>⑦</span> Cryptographic Audit Chain
               </button>
             </div>
           </div>

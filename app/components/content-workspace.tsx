@@ -374,7 +374,22 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
               <aside className="submit-sidebar"><section className="panel context-panel"><div className="panel-heading"><h2>Scope of this check</h2></div><div className="scope-list"><div><span className="scope-icon" aria-hidden="true">⌁</span><span><strong>Synthetic, versioned VoltEdge sources</strong><small>Demonstration records for instant checking.</small></span></div><div><span className="scope-icon" aria-hidden="true">⌗</span><span><strong>{channelLabels[scope.channel]}</strong><small>{regionLabels[scope.region]} · {languageLabels[scope.language]}</small></span></div><div><span className="scope-icon" aria-hidden="true">◷</span><span><strong>{scope.scheduled_date || "No publication date"}</strong><small>Stored for publication context.</small></span></div></div></section><section className="panel intake-checklist"><h2>Evidence before assertion</h2><ul><li><span aria-hidden="true">✓</span><div><strong>Missing evidence stays unverified</strong><p className="micro-helper">Missing source is never treated as false.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>AI status stays visible</strong><p className="micro-helper">All checks on this page run as deterministic rules.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>Decisions remain explicit</strong><p className="micro-helper">Accept, edit, or dismiss with written rationale.</p></div></li></ul></section></aside>
             </div>
           ) : !review || !audit || !revision || !auditedRevision || !risk ? (
-            <section className="panel pl-empty"><h2>No content has been submitted in this tab.</h2><p>Submit a VoltEdge draft to inspect its highlighted spans, evidence, and correction history.</p><Link className="primary-button pl-link-button" href="/submit" prefetch={false}>Submit content</Link></section>
+            <section className="panel pl-empty">
+              <h2>No content has been submitted in this tab.</h2>
+              <p>Submit a VoltEdge draft to inspect its highlighted spans, evidence, and correction history.</p>
+              <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap", justifyContent: "center" }}>
+                <button
+                  className="primary-button pl-link-button"
+                  type="button"
+                  onClick={() => saveReview(createContentReview(sampleVoltEdgeText, defaultContentScope))}
+                >
+                  ⚡ Load Sample NovaBook S1 Review
+                </button>
+                <Link className="ghost-button pl-link-button" href="/submit" prefetch={false}>
+                  Submit custom draft
+                </Link>
+              </div>
+            </section>
           ) : (
             <>
                <section className="pl-review-header"><div><h2>{review.scope.title}</h2><p>{channelLabels[review.scope.channel]} · {regionLabels[review.scope.region]} · {languageLabels[review.scope.language]} · {review.scope.scheduled_date || "No scheduled date"}</p></div><div className="pl-review-badges"><span className="pl-review-required">! Human review required</span>{review.scope.confidential ? <span className="pl-confidential-badge">Confidential · browser-local</span> : null}</div></section>
