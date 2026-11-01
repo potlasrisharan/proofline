@@ -196,4 +196,55 @@ test.describe("Judge Quick-Demo Scenarios", () => {
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog", { name: "PUBLICATION & REGULATORY COMPLIANCE" })).not.toBeVisible();
   });
+
+  test("Scenario 10: Role-Based Workspaces & Demo Credentials switcher verifies all 5 roles and seamless navigation", async ({ page }) => {
+    await page.goto("/");
+
+    // Verify Active Role Workflow Banner is visible
+    const banner = page.getByRole("region", { name: "Active role workflow context" });
+    await expect(banner).toBeVisible();
+    await expect(banner.getByText("Logged in as Maya Chen")).toBeVisible();
+    await expect(banner.getByText("maya.chen@voltedge.io")).toBeVisible();
+
+    // Verify Role Showcase cards and demo credentials are visible on home page
+    const showcase = page.locator(".role-showcase-container");
+    await expect(showcase.getByRole("heading", { name: "Role Dashboards & 1-Click Demo Login" })).toBeVisible();
+    await expect(showcase.getByText("aisha.rahman@voltedge.io")).toBeVisible();
+    await expect(showcase.getByText("marcus.vance@voltedge.io")).toBeVisible();
+    await expect(showcase.getByText("lena.ortiz@voltedge.io")).toBeVisible();
+    await expect(showcase.getByText("carlos.mendez@agency-partner.com")).toBeVisible();
+
+    // 1-Click launch as Aisha Rahman (Creator)
+    await showcase.getByRole("button", { name: /Launch as Aisha \(creator\)/ }).click();
+    await expect(banner.getByText("Logged in as Aisha Rahman")).toBeVisible();
+    await expect(banner.getByText("aisha.rahman@voltedge.io")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "NovaBook S1 launch email" })).toBeVisible();
+
+    // Open Role Switcher modal via topbar avatar
+    await page.locator("header .persona-avatar").first().click();
+    await expect(page.getByRole("dialog", { name: "Switch Demo Persona & Dashboard" })).toBeVisible();
+
+    // Switch to Lena Ortiz (Brand Owner)
+    await page.getByRole("button", { name: /Lena Ortiz/ }).click();
+    await expect(banner.getByText("Logged in as Lena Ortiz")).toBeVisible();
+    await expect(banner.getByText("lena.ortiz@voltedge.io")).toBeVisible();
+    // Lena's primary view is Truth Registry
+    await expect(page.getByRole("heading", { name: "The sources behind every decision." })).toBeVisible();
+
+    // Open Role Switcher modal via banner button
+    await banner.getByRole("button", { name: "⇄ Switch Demo Role" }).click();
+    await expect(page.getByRole("dialog", { name: "Switch Demo Persona & Dashboard" })).toBeVisible();
+
+    // Switch to Marcus Vance (Manager)
+    await page.getByRole("button", { name: /Marcus Vance/ }).click();
+    await expect(banner.getByText("Logged in as Marcus Vance")).toBeVisible();
+    await expect(banner.getByText("marcus.vance@voltedge.io")).toBeVisible();
+
+    // Switch to Carlos Mendez (Agency) via sidebar profile button
+    await page.locator(".profile-card-button").click();
+    await expect(page.getByRole("dialog", { name: "Switch Demo Persona & Dashboard" })).toBeVisible();
+    await page.getByRole("button", { name: /Carlos Mendez/ }).click();
+    await expect(banner.getByText("Logged in as Carlos Mendez")).toBeVisible();
+    await expect(banner.getByText("carlos.mendez@agency-partner.com")).toBeVisible();
+  });
 });

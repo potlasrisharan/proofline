@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { ProoflineRole } from "../lib/proofline-api";
+import { demoPersonas } from "./role-dashboard-showcase";
 
 export type NavKey =
   | "overview"
@@ -21,6 +23,8 @@ type AppSidebarProps = {
   onNavigateView?: (view: "overview" | "reviews" | "registry" | "insights" | "audit-log") => void;
   openReviewCount?: number;
   currentRole?: string;
+  roleKey?: ProoflineRole;
+  onSwitchRole?: () => void;
 };
 
 function getStoredFindingsBadge(): number | null {
@@ -43,8 +47,11 @@ export function AppSidebar({
   onNavigateView,
   openReviewCount = 3,
   currentRole = "Authorised reviewer",
+  roleKey = "legal_reviewer",
+  onSwitchRole,
 }: AppSidebarProps) {
   const router = useRouter();
+  const persona = demoPersonas[roleKey] ?? demoPersonas.legal_reviewer;
   const [findingsBadge] = useState<number | null>(getStoredFindingsBadge);
 
   const navItems: Array<{
@@ -161,14 +168,19 @@ export function AppSidebar({
           </div>
         </div>
 
-        <div className="profile-card">
-          <div className="avatar">MC</div>
-          <div>
-            <strong>Maya Chen</strong>
-            <small>{currentRole}</small>
+        <button
+          className="profile-card profile-card-button"
+          type="button"
+          onClick={onSwitchRole}
+          title="Click to switch demo role / credentials"
+        >
+          <div className={`avatar persona-avatar ${persona.badgeTone}`}>{persona.initials}</div>
+          <div className="profile-text">
+            <strong>{persona.name}</strong>
+            <small>{persona.title} ({currentRole})</small>
           </div>
-          <span className="more" aria-hidden="true">•••</span>
-        </div>
+          <span className="more" aria-hidden="true" title="Switch role">⇄</span>
+        </button>
       </div>
     </aside>
   );

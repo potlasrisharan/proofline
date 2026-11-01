@@ -13,6 +13,12 @@ import { ReviewAuditLog } from "./components/review-audit-log";
 import { ReviewContentPreview, suggestionReplacement } from "./components/review-content-preview";
 import { SpanComments, type VersionedSpanComment } from "./components/span-comments";
 import { ComplianceQualityGate, ComplianceCertificateModal } from "./components/compliance-quality-gate";
+import {
+  RoleDashboardShowcase,
+  ActiveRoleWorkflowBanner,
+  DemoRoleModal,
+  demoPersonas,
+} from "./components/role-dashboard-showcase";
 import type { ProoflineRole } from "./lib/proofline-api";
 
 type View = "overview" | "reviews" | "registry" | "insights" | "audit-log";
@@ -451,10 +457,6 @@ function severityLabel(severity: Severity) {
   return severity[0].toUpperCase() + severity.slice(1);
 }
 
-function roleInitials(role: ProoflineRole) {
-  return role === "legal_reviewer" ? "AR" : role === "brand_owner" ? "BO" : role === "creator" ? "CR" : role === "manager" ? "MG" : "AG";
-}
-
 function initialDashboardView(): View {
   if (typeof window === "undefined") return "overview";
   const requestedView = new URLSearchParams(window.location.search).get("view");
@@ -524,6 +526,7 @@ export default function Home() {
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isComplianceCertOpen, setIsComplianceCertOpen] = useState(false);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [isIndicModalOpen, setIsIndicModalOpen] = useState(false);
   const [indicLang, setIndicLang] = useState<"te" | "hi">("te");
   const [engineMode, setEngineMode] = useState<"api" | "browser">(() => {
@@ -544,6 +547,7 @@ export default function Home() {
   const currentDateStr = useSyncExternalStore(emptySubscribe, getClientDateString, () => "Sunday, October 25, 2026");
 
   const permissions = rolePermissions[currentRole];
+  const activePersona = demoPersonas[currentRole] ?? demoPersonas.legal_reviewer;
   const openFindings = useMemo(() => findings.filter((finding) => !finding.resolved), [findings]);
   const highCount = openFindings.filter((finding) => finding.severity === "high" || finding.severity === "critical").length;
   const mediumCount = openFindings.filter((finding) => finding.severity === "medium").length;
@@ -801,10 +805,22 @@ export default function Home() {
 
   function changeRole(role: ProoflineRole) {
     setCurrentRole(role);
+    const persona = demoPersonas[role] ?? demoPersonas.legal_reviewer;
     if (activeView === "audit-log" && !rolePermissions[role].canViewAuditLog) setActiveView("overview");
     if (activeView === "insights" && !rolePermissions[role].canViewInsights) setActiveView("overview");
-    appendAuditEvent({ kind: "role_preview_changed", actor: "Maya Chen", role, summary: `Demo role preview changed to ${roleLabels[role]}.`, contentVersion });
-    notify(`Role preview: ${roleLabels[role]}. Restricted actions are hidden.`);
+    appendAuditEvent({ kind: "role_preview_changed", actor: persona.name, role, summary: `Logged in as ${persona.name} (${persona.title}).`, contentVersion });
+    notify(`Signed in as ${persona.name} · ${persona.title} (${roleLabels[role]}).`);
+  }
+
+  function launchRoleDashboard(role: ProoflineRole) {
+    changeRole(role);
+    const persona = demoPersonas[role] ?? demoPersonas.legal_reviewer;
+    navigate(persona.primaryView);
+    if (persona.primaryView === "reviews") {
+      setSelectedReviewId("novabook-launch");
+      setDetailTab("findings");
+      setSelectedSpanId("battery");
+    }
   }
 
   function selectReview(item: ReviewItem) {
@@ -872,6 +888,8 @@ export default function Home() {
         onNavigateView={navigate}
         openReviewCount={openReviewCount}
         currentRole={roleLabels[currentRole]}
+        roleKey={currentRole}
+        onSwitchRole={() => setIsRoleModalOpen(true)}
       />
 
       <section id="main-content" className="main-content" tabIndex={-1}>
@@ -912,11 +930,24 @@ export default function Home() {
             <span className="save-state"><span className="health-dot" /> Demo state only</span>
             <label className="role-preview"><span>Role preview</span><select aria-label="Role preview" value={currentRole} onChange={(event) => changeRole(event.target.value as ProoflineRole)}>{(Object.keys(roleLabels) as ProoflineRole[]).map((role) => <option value={role} key={role}>{roleLabels[role]}</option>)}</select></label>
             <button className="icon-button" type="button" aria-label="Open AI and services disclosure" onClick={() => setIsDisclosureOpen(true)}>?</button>
-            <button className="avatar avatar-button" type="button" aria-label="Open Maya Chen profile" onClick={() => notify(`Signed in as Maya Chen · ${roleLabels[currentRole]}`)}>{roleInitials(currentRole)}</button>
+            <button
+              className={`avatar avatar-button persona-avatar ${activePersona.badgeTone}`}
+              type="button"
+              aria-label={`Open ${activePersona.name} profile`}
+              onClick={() => setIsRoleModalOpen(true)}
+              title="Click to switch demo role / credentials"
+            >
+              {activePersona.initials}
+            </button>
           </div>
         </header>
 
         <div className="content-wrap">
+          <ActiveRoleWorkflowBanner
+            currentRole={currentRole}
+            onOpenSwitchRole={() => setIsRoleModalOpen(true)}
+          />
+
           <div className="judge-demo-bar" role="region" aria-label="Judge Quick-Demo Scenarios">
             <div className="judge-demo-title">
               <span>⚖️</span>
@@ -1019,11 +1050,17 @@ export default function Home() {
               <div className="page-heading">
                 <div>
                   <p className="eyebrow" suppressHydrationWarning>{currentDateStr} <span className="eyebrow-dot" /> Week at a glance</p>
-                  <h1 id="overview-heading" suppressHydrationWarning>{greeting}, Maya.</h1>
-                  <div className="friendly-role-badge">
+                  <h1 id="overview-heading" suppressHydrationWarning>{greeting}, {activePersona.name.split(" ")[0]}.</h1>
+                  <button
+                    className="friendly-role-badge clickable-role-badge"
+                    type="button"
+                    onClick={() => setIsRoleModalOpen(true)}
+                    title="Click to switch persona / demo credentials"
+                  >
                     <span>👤</span>
-                    <span>Reviewing as <strong>Maya Lin (Brand Reviewer)</strong> · VoltEdge Electronics</span>
-                  </div>
+                    <span>Logged in as <strong>{activePersona.name} ({activePersona.title})</strong> · <code>{activePersona.email}</code></span>
+                    <span className="role-switch-pill">⇄ Switch Role</span>
+                  </button>
                   <p className="lede">Your workspace has <strong>{openReviewCount} items</strong> waiting for a human decision.</p>
                 </div>
                  <div className="overview-actions"><button className="ghost-button" type="button" onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}>Take the guided tour</button>{permissions.canStartReview ? <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}><span>＋</span> Start a review</button> : <span className="permission-note heading-permission">Read-only reviewer view</span>}</div>
@@ -1087,6 +1124,12 @@ export default function Home() {
                   </button>
                 </div>
               </div>
+
+              {/* ROLE DASHBOARD SHOWCASE & 1-CLICK DEMO CREDENTIAL LOGIN */}
+              <RoleDashboardShowcase
+                currentRole={currentRole}
+                onSelectRole={launchRoleDashboard}
+              />
 
               <div className="signal-grid" aria-label="Workspace signals">
                 <article className="signal-card highlight"><div className="signal-label">In review <span className="trend up">↑ 18%</span></div><div className="signal-value">{openReviewCount + 8}</div><div className="signal-foot">content items this week</div><div className="mini-bars" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /><i /></div></article>
@@ -1528,6 +1571,16 @@ export default function Home() {
           </section>
         </div>
       ) : null}
+
+      <DemoRoleModal
+        isOpen={isRoleModalOpen}
+        onClose={() => setIsRoleModalOpen(false)}
+        currentRole={currentRole}
+        onSelectRole={(role) => {
+          launchRoleDashboard(role);
+          setIsRoleModalOpen(false);
+        }}
+      />
 
       {toast ? <div className="toast" role="status" aria-live="polite">{toast}</div> : null}
       <DisclosurePanel open={isDisclosureOpen} onClose={() => setIsDisclosureOpen(false)} />
