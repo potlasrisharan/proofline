@@ -27,11 +27,19 @@ export function InsightsDemo() {
   }
 
   return (
-    <GovernanceInsights
-      data={data}
-      role="brand_owner"
-      isDemo
-      onApproveSuggestion={approveSuggestion}
-    />
+    <div>
+      <div className="helper-hint-callout" style={{ marginBottom: 16 }}>
+        <span>💡</span>
+        <div>
+          <strong>What is Governance Insights?</strong> It spots recurring marketing mistakes across teams and detects confusing brand rules. Under <strong>&ldquo;Rules that need attention&rdquo;</strong>, brand owners can approve clearer wording in 1 click to prevent future mistakes.
+        </div>
+      </div>
+      <GovernanceInsights
+        data={data}
+        role="brand_owner"
+        isDemo
+        onApproveSuggestion={approveSuggestion}
+      />
+    </div>
   );
 }

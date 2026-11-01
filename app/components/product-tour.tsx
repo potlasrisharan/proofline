@@ -13,6 +13,8 @@ type TourStep = {
 };
 
 const TOUR_STORAGE_KEY = "proofline-guided-tour-v1";
+const TOUR_ACTIVE_KEY = "proofline-tour-active-v1";
+const TOUR_STEP_KEY = "proofline-tour-step-v1";
 
 const steps: TourStep[] = [
   {
@@ -70,17 +72,35 @@ const noOpSubscribe = () => () => undefined;
 const clientReady = () => true;
 const serverNotReady = () => false;
 
+function getTourActiveSnapshot() {
+  if (typeof window === "undefined") return false;
+  try { return window.sessionStorage.getItem(TOUR_ACTIVE_KEY) === "true"; }
+  catch { return false; }
+}
+
+function getTourStepSnapshot() {
+  if (typeof window === "undefined") return 0;
+  try {
+    const saved = parseInt(window.sessionStorage.getItem(TOUR_STEP_KEY) || "0", 10);
+    return isNaN(saved) ? 0 : saved;
+  } catch { return 0; }
+}
+
 export function ProductTour() {
   const pathname = usePathname();
   const router = useRouter();
   const ready = useSyncExternalStore(noOpSubscribe, clientReady, serverNotReady);
-  const [open, setOpen] = useState(false);
-  const [stepIndex, setStepIndex] = useState(0);
+  const [open, setOpen] = useState(getTourActiveSnapshot);
+  const [stepIndex, setStepIndex] = useState(getTourStepSnapshot);
 
   useEffect(() => {
     const openTour = () => {
       setStepIndex(0);
       setOpen(true);
+      try {
+        window.sessionStorage.setItem(TOUR_ACTIVE_KEY, "true");
+        window.sessionStorage.setItem(TOUR_STEP_KEY, "0");
+      } catch { /* session storage disabled */ }
     };
     window.addEventListener("proofline:open-tour", openTour);
     return () => window.removeEventListener("proofline:open-tour", openTour);
@@ -93,6 +113,10 @@ export function ProductTour() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setOpen(false);
+        try {
+          window.sessionStorage.removeItem(TOUR_ACTIVE_KEY);
+          window.sessionStorage.removeItem(TOUR_STEP_KEY);
+        } catch { /* session storage disabled */ }
         window.localStorage.setItem(TOUR_STORAGE_KEY, "dismissed");
       }
     };
@@ -102,12 +126,20 @@ export function ProductTour() {
 
   function closeTour() {
     setOpen(false);
+    try {
+      window.sessionStorage.removeItem(TOUR_ACTIVE_KEY);
+      window.sessionStorage.removeItem(TOUR_STEP_KEY);
+    } catch { /* session storage disabled */ }
     window.localStorage.setItem(TOUR_STORAGE_KEY, "dismissed");
   }
 
   function goToStep(index: number) {
     const nextStep = steps[index];
     setStepIndex(index);
+    try {
+      window.sessionStorage.setItem(TOUR_ACTIVE_KEY, "true");
+      window.sessionStorage.setItem(TOUR_STEP_KEY, String(index));
+    } catch { /* session storage disabled */ }
     if (nextStep.href !== pathname) router.push(nextStep.href);
   }
 

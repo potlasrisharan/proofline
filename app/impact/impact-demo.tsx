@@ -41,6 +41,12 @@ export function ImpactDemo() {
 
   return (
     <div>
+      <div className="helper-hint-callout" style={{ marginBottom: 14 }}>
+        <span>💡</span>
+        <div>
+          <strong>What is Impact Radar?</strong> When engineers update a product spec (e.g., NovaBook battery tested at 12 hours instead of 10) or marketing promos expire, Impact Radar automatically finds every published email, ad, and social post that still quotes the old spec so your team can update them.
+        </div>
+      </div>
       <div className="impact-simulator-bar" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap", padding: "10px 14px", background: "var(--card-bg, #fff)", border: "1px solid var(--line-strong, #e1e7e4)", borderRadius: 8 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: "var(--navy, #0f2d26)", textTransform: "uppercase", letterSpacing: "0.05em" }}>⚡ Simulate Spec Change:</span>
         <button

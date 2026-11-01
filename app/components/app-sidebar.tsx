@@ -54,15 +54,16 @@ export function AppSidebar({
     href: string;
     isHomeView?: "overview" | "reviews" | "registry" | "insights" | "audit-log";
     badge?: number | null;
+    title: string;
   }> = [
-    { key: "overview", icon: "◈", label: "Overview", href: "/", isHomeView: "overview" },
-    { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount },
-    { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: findingsBadge },
-    { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry" },
-    { key: "impact", icon: "!", label: "Impact radar", href: "/impact" },
-    { key: "insights", icon: "⌁", label: "Governance insights", href: "/insights", isHomeView: "insights" },
-    { key: "audit-log", icon: "≋", label: "Audit log", href: "/?view=audit-log", isHomeView: "audit-log" },
-    { key: "privacy", icon: "🛡", label: "Privacy & AI disclosure", href: "/privacy" },
+    { key: "overview", icon: "◈", label: "Overview", href: "/", isHomeView: "overview", title: "Overview · Workspace summary and 60-second quick demo" },
+    { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Inspect and approve pending drafts" },
+    { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: findingsBadge, title: "Findings · Flagged claims with 1-click suggested fixes" },
+    { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry", title: "Truth registry · Official specs and approved brand facts" },
+    { key: "impact", icon: "!", label: "Impact radar", href: "/impact", title: "Impact radar · See what drafts break when specs change" },
+    { key: "insights", icon: "⌁", label: "Governance insights", href: "/insights", isHomeView: "insights", title: "Governance insights · Mistake trends and rule clarifications" },
+    { key: "audit-log", icon: "≋", label: "Audit log", href: "/?view=audit-log", isHomeView: "audit-log", title: "Audit log · Tamper-proof cryptographic record of decisions" },
+    { key: "privacy", icon: "🛡", label: "Privacy & AI disclosure", href: "/privacy", title: "Privacy & AI disclosure · How AI and data are handled" },
   ];
 
   return (
@@ -93,6 +94,7 @@ export function AppSidebar({
         href="/submit"
         prefetch={false}
         aria-current={activeKey === "submit" ? "page" : undefined}
+        title="Check a new marketing draft or announcement against brand specs"
       >
         <span aria-hidden="true">＋</span>
         <span>Submit content</span>
@@ -109,6 +111,7 @@ export function AppSidebar({
                 className={`nav-item ${isActive ? "active" : ""}`}
                 aria-current={isActive ? "page" : undefined}
                 onClick={() => onNavigateView(item.isHomeView!)}
+                title={item.title}
               >
                 <span aria-hidden="true">{item.icon}</span>
                 {item.label}
@@ -124,6 +127,7 @@ export function AppSidebar({
               prefetch={false}
               className={`nav-item ${isActive ? "active" : ""}`}
               aria-current={isActive ? "page" : undefined}
+              title={item.title}
             >
               <span aria-hidden="true">{item.icon}</span>
               {item.label}

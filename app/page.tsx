@@ -887,7 +887,8 @@ export default function Home() {
                 onClick={() => router.push("/impact")}
                 title="Round 3 Improvement 1: Automated re-audit queue when specs change"
               >
-                <span>①</span> [IMP-1] Impact Radar
+                <span>① [IMP-1] Impact Radar</span>
+                <span className="preset-sub">When Specs Change</span>
               </button>
               <button
                 className="judge-preset-btn"
@@ -901,7 +902,8 @@ export default function Home() {
                 }}
                 title="Round 3 Improvement 2: Evidence-or-Abstain Reliability Layer"
               >
-                <span>②</span> [IMP-2] Evidence-or-Abstain
+                <span>② [IMP-2] Evidence-or-Abstain</span>
+                <span className="preset-sub">Zero Fake Guesses</span>
               </button>
               <button
                 className="judge-preset-btn"
@@ -909,7 +911,8 @@ export default function Home() {
                 onClick={() => router.push("/insights")}
                 title="Round 3 Improvement 3: Guideline-Gap Detector & recurring mistake telemetry"
               >
-                <span>③</span> [IMP-3] Guideline-Gap Detector
+                <span>③ [IMP-3] Guideline-Gap Detector</span>
+                <span className="preset-sub">Mistake Trends &amp; Fixes</span>
               </button>
               <button
                 className="judge-preset-btn"
@@ -921,15 +924,19 @@ export default function Home() {
                   setSelectedSpanId("battery");
                   notify("Demo 4: Inspecting NovaBook S1 claim findings with side-by-side visual diffs and evidence trace.");
                 }}
+                title="Demo 4: Claim Audit & Visual Diff"
               >
-                <span>④</span> Claim Audit &amp; Visual Diff
+                <span>④ Claim Audit &amp; Visual Diff</span>
+                <span className="preset-sub">20h → 12h Battery Diff</span>
               </button>
               <button
                 className="judge-preset-btn"
                 type="button"
                 onClick={() => setIsIndicModalOpen(true)}
+                title="Demo 5: Sarvam AI Indic cross-lingual checking (Telugu & Hindi)"
               >
-                <span>⑤</span> Indic Verification (Sarvam AI)
+                <span>⑤ Indic Verification (Sarvam AI)</span>
+                <span className="preset-sub">Telugu &amp; Hindi Audio/Text</span>
               </button>
               <button
                 className="judge-preset-btn"
@@ -943,8 +950,10 @@ export default function Home() {
                   setIsPublishModalOpen(true);
                   notify("Demo 6: Compliance verified! Gated dispatch unlocked for multi-platform publishing.");
                 }}
+                title="Demo 6: 1-Click Gated Dispatch (Zernio)"
               >
-                <span>⑥</span> 1-Click Gated Dispatch (Zernio)
+                <span>⑥ 1-Click Gated Dispatch (Zernio)</span>
+                <span className="preset-sub">Multi-Platform Publishing</span>
               </button>
               <button
                 className="judge-preset-btn"
@@ -954,8 +963,10 @@ export default function Home() {
                   navigate("audit-log");
                   notify("Demo 7: Cryptographic SHA-256 audit log loaded with verified hash chain.");
                 }}
+                title="Demo 7: Cryptographic SHA-256 Audit Chain"
               >
-                <span>⑦</span> Cryptographic Audit Chain
+                <span>⑦ Cryptographic Audit Chain</span>
+                <span className="preset-sub">Tamper-Proof Proof</span>
               </button>
             </div>
           </div>
@@ -966,9 +977,72 @@ export default function Home() {
                 <div>
                   <p className="eyebrow" suppressHydrationWarning>{currentDateStr} <span className="eyebrow-dot" /> Week at a glance</p>
                   <h1 id="overview-heading" suppressHydrationWarning>{greeting}, Maya.</h1>
+                  <div className="friendly-role-badge">
+                    <span>👤</span>
+                    <span>Reviewing as <strong>Maya Lin (Brand Reviewer)</strong> · VoltEdge Electronics</span>
+                  </div>
                   <p className="lede">Your workspace has <strong>{openReviewCount} items</strong> waiting for a human decision.</p>
                 </div>
                  <div className="overview-actions"><button className="ghost-button" type="button" onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}>Take the guided tour</button>{permissions.canStartReview ? <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}><span>＋</span> Start a review</button> : <span className="permission-note heading-permission">Read-only reviewer view</span>}</div>
+              </div>
+
+              {/* WHAT IS PROOFLINE? 3-SECOND MENTAL MODEL HERO FOR 18-YEAR-OLDS & JUDGES */}
+              <div className="how-it-works-hero" role="region" aria-label="What is Proofline">
+                <div className="how-it-works-header">
+                  <span className="how-it-works-badge">💡 10-Second Summary</span>
+                  <p className="how-it-works-tagline">Think of Proofline as a Fact-Checker for Marketing.</p>
+                </div>
+                <p className="how-it-works-sub">
+                  Before marketing copy is posted, Proofline checks it against your company&apos;s official specs. If you claimed &ldquo;20-hour battery&rdquo; but lab tests say &ldquo;12 hours&rdquo;, it catches the mistake and lets you fix it in 1 click.
+                </p>
+                <div className="how-it-works-steps">
+                  <div className="how-it-works-step">
+                    <span className="step-number-bubble">1</span>
+                    <div>
+                      <strong>Paste or Pick a Draft</strong>
+                      <p>Add marketing text, an email announcement, or a social post.</p>
+                    </div>
+                  </div>
+                  <div className="how-it-works-step">
+                    <span className="step-number-bubble">2</span>
+                    <div>
+                      <strong>Spot Mistakes in Red</strong>
+                      <p>We flag false battery claims, expired discounts, &amp; risky promises.</p>
+                    </div>
+                  </div>
+                  <div className="how-it-works-step">
+                    <span className="step-number-bubble">3</span>
+                    <div>
+                      <strong>1-Click Fix &amp; Publish</strong>
+                      <p>Click &ldquo;Apply&rdquo; to update with approved lab specs and unlock dispatch.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="how-it-works-actions">
+                  <button
+                    className="primary-button"
+                    type="button"
+                    onClick={() => {
+                      navigate("reviews");
+                      setSelectedReviewId("novabook-launch");
+                      setDetailTab("findings");
+                      setSelectedSpanId("battery");
+                      notify("Starting Golden Flow: Inspecting NovaBook S1 launch email.");
+                    }}
+                  >
+                    ▶ Launch 60-Second Demo
+                  </button>
+                  <Link className="ghost-button" href="/submit" prefetch={false}>
+                    ＋ Test Your Own Copy
+                  </Link>
+                  <button
+                    className="ghost-button"
+                    type="button"
+                    onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
+                  >
+                    Take Guided Interactive Tour
+                  </button>
+                </div>
               </div>
 
               <div className="signal-grid" aria-label="Workspace signals">
@@ -1077,6 +1151,12 @@ export default function Home() {
                   <div className="detail-tabs" role="tablist" aria-label="Review detail tabs">{(["findings", "content", "history"] as DetailTab[]).map((tab) => <button className={`detail-tab ${detailTab === tab ? "active" : ""}`} id={`review-tab-${tab}`} key={tab} type="button" role="tab" tabIndex={detailTab === tab ? 0 : -1} aria-selected={detailTab === tab} aria-controls={`review-panel-${tab}`} onKeyDown={(event) => handleDetailTabKeyDown(event, tab)} onClick={() => setDetailTab(tab)}>{tab === "findings" ? "Findings" : tab === "content" ? "Submitted content" : "History"}{tab === "findings" && selectedIsInteractive ? <span className="tab-count">{openFindings.length}</span> : null}</button>)}</div>
 
                   {detailTab === "findings" ? <div id="review-panel-findings" className="detail-tab-panel" role="tabpanel" aria-labelledby="review-tab-findings" tabIndex={0}>{selectedIsInteractive ? <>
+                    <div className="helper-hint-callout" style={{ margin: "4px 0 14px" }}>
+                      <span>💡</span>
+                      <div>
+                        <strong>How to review this draft:</strong> Review the flagged claims below. Click <strong>&ldquo;Apply&rdquo;</strong> to update the draft with the approved lab spec, then run <strong>&ldquo;Run re-scan&rdquo;</strong> to confirm zero errors.
+                      </div>
+                    </div>
                     <div className={`finding-banner ${openFindings.length === 0 ? "success" : ""}`}><div className="banner-symbol">{openFindings.length === 0 ? "✓" : "!"}</div><div><strong>{openFindings.length === 0 ? "All findings resolved" : `${openFindings.length} ${openFindings.length === 1 ? "issue needs" : "issues need"} attention before approval`}</strong><p className="micro-helper">{openFindings.length === 0 ? "Run a fresh scan to confirm revision, then send for approval." : "Apply corrections, then run a fresh scan to confirm."}</p></div><span className="banner-risk">{openFindings.length === 0 ? "Ready to scan" : `${highCount} high · ${mediumCount} medium`}</span></div>
                     <div className="finding-list detailed-list">{findings.map((finding) => (
                       <article className={`finding-card ${finding.resolved ? "resolved" : ""}`} key={finding.id}>
@@ -1096,6 +1176,11 @@ export default function Home() {
                             <ins>{suggestionReplacement(finding.suggestion)}</ins>
                           </div>
                         </div>
+                        {finding.resolved ? (
+                          <div style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 8px", background: "var(--mint-soft)", borderRadius: 5, fontSize: 10, fontWeight: 700, color: "var(--mint-deep, #1b604e)", margin: "8px 0" }}>
+                            <span>✓</span> Fix applied to draft! Run re-scan below to confirm.
+                          </div>
+                        ) : null}
                         {/* High-contrast evidence chip */}
                         <div className="approved-fact-pill" title={finding.evidenceTitle}>
                           <span>⌁</span>
@@ -1109,9 +1194,9 @@ export default function Home() {
                               {comments.filter((comment) => comment.findingId === finding.id).length} span comment{comments.filter((comment) => comment.findingId === finding.id).length === 1 ? "" : "s"}
                             </button>
                             {permissions.canApplySuggestion ? finding.resolved ? (
-                              <button className="small-button" type="button" onClick={() => undoSuggestion(finding.id)}>Undo</button>
+                              <button className="small-button" type="button" onClick={() => undoSuggestion(finding.id)} title="Undo fix and restore original text">Undo</button>
                             ) : (
-                              <button className="small-button apply-button" type="button" onClick={() => applySuggestion(finding.id)}>Apply</button>
+                              <button className="small-button apply-button" type="button" onClick={() => applySuggestion(finding.id)} title="Update draft text with approved lab spec">Apply</button>
                             ) : null}
                           </div>
                         </div>
