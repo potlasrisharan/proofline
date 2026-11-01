@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useSyncExternalStore, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { AppSidebar } from "./app-sidebar";
+import { ComplianceCertificateModal } from "./compliance-quality-gate";
 import {
   createLocalApiClient,
   type ContentAuditResponse,
@@ -118,6 +119,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   const [contentTab, setContentTab] = useState<"audited" | "current" | "original">("audited");
   const [message, setMessage] = useState("");
   const [apiBusy, setApiBusy] = useState(false);
+  const [isCertOpen, setIsCertOpen] = useState(false);
   const audit = review ? latestAudit(review) : null;
   const revision = review ? latestRevision(review) : null;
   const auditedRevision = review?.revisions.find((item) => item.id === audit?.content_version_id) ?? null;
@@ -403,7 +405,8 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <section className="pl-content-column" aria-label="Content and risk">
                   <section className="content-preview-card enhanced-content-preview"><div className="content-preview-header"><h2>Content spans</h2><span className="content-version">Audited v{auditedRevision.number}</span></div><div className="pl-preview-tabs" aria-label="Content versions">{(["audited", "current", "original"] as const).map((tab) => <button className={contentTab === tab ? "active" : ""} type="button" key={tab} aria-pressed={contentTab === tab} onClick={() => setContentTab(tab)}>{tab === "audited" ? "Audited text" : tab === "current" ? `Current v${revision.number}` : "Original"}</button>)}</div>{contentTab === "audited" ? <Preview text={auditedRevision.text} findings={audit.findings} selected={selectedFindingId} onSelect={selectFinding} /> : <div className="pl-content-copy">{contentTab === "current" ? revision.text : originalRevision?.text}</div>}<p className="pl-helper">Select a numbered span to inspect its finding. Highlight numbers, verdict text, and severity labels also identify issues without relying on colour.</p>{review.scope.has_image ? <div className="alt-text-review"><span aria-hidden="true" className={`verdict-icon verdict-${revision.alt_text.trim() ? "supported" : "needs_human"}`}>{revision.alt_text.trim() ? "✓" : "!"}</span><div><strong>{revision.alt_text.trim() ? "Alt text provided · quality not assessed" : "Missing alt text · needs human review"}</strong><p>{revision.alt_text.trim() || "Add alt text in a revised submission or record why the image is decorative."}</p></div></div> : null}<div className="content-footer"><span>{review.scope.original_filename || "Pasted text"}</span><span>{review.revisions.length} retained version(s)</span></div></section>
                   <section className="risk-summary" aria-labelledby="pl-risk-heading"><div className="risk-summary-header"><div><h3 id="pl-risk-heading">Risk breakdown</h3><span className="badge-pill pill-violation" style={{ marginTop: 4 }}>{risk.label} triage priority</span></div><strong className="risk-score">{risk.score}<small>/100</small></strong></div><div className="risk-breakdown">{Object.entries(risk.counts).map(([label, count]) => <div key={label} className={`risk-stat-chip ${label}`}><span className={`risk-marker ${label}`} /><strong>{count}</strong><span>{label}</span></div>)}</div><details className="formula-accordion"><summary className="formula-summary">Triage formula details ▾</summary><p className="risk-summary-copy">Formula: round(100 × severity {risk.severity} × exposure {risk.exposure} × policy {risk.policy_multiplier} ÷ 22.5). Fact contradiction forces High priority.</p></details><div className="pl-evidence-counts"><span>{risk.missing} evidence gap(s)</span><span>{risk.human} human-review finding(s)</span><span>{audit.findings.filter((finding) => finding.status === "dismissed").length} explicitly dismissed</span></div></section>
-                   <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic VoltEdge · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "Check corrected version" : "Run fresh evidence check"}</button></section>
+                   <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic VoltEdge · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "Check corrected version" : "Run fresh evidence check"}</button>
+<button className="ghost-button pl-full-width" type="button" style={{ marginTop: 8 }} onClick={() => setIsCertOpen(true)}>📜 View Compliance Certificate</button></section>
                 </section>
                 <section className="pl-findings-column" aria-labelledby="pl-findings-heading"><div className="pl-findings-heading"><h2 id="pl-findings-heading">{audit.findings.length} finding(s)</h2><span>{openCount} open · {audit.findings.length - openCount} actioned</span></div><p className="micro-helper">Actions create a new version; dismissing retains original wording.</p>
                 <div className="helper-hint-callout" style={{ margin: "8px 0 14px" }}>
@@ -498,6 +501,24 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                   })}</section>
               </div>
               <section className="panel pl-history" aria-labelledby="pl-history-heading"><div className="history-header"><div><h2 id="pl-history-heading">Explicit action history</h2><p className="pl-helper">Local tab records · {review.revisions.length} versions · {review.audits.length} audit runs</p></div><span className="panel-badge">{review.events.length} events</span></div><ol className="pl-event-list">{review.events.slice().reverse().map((event) => <li key={event.id}><div className="pl-event-top"><strong>{event.action}</strong><time dateTime={event.timestamp}>{timestamp(event.timestamp)}</time></div><p>{event.actor} · content version {event.content_version_id}{event.finding_id ? ` · finding ${event.finding_id}` : ""}</p>{event.reason ? <p><strong>Reason: </strong>{event.reason}</p> : null}{event.before !== null ? <div className="pl-event-change"><span>Before: {event.before}</span><span>After: {event.after}</span></div> : null}</li>)}</ol><p className="pl-helper">Kept in sessionStorage for this browser tab when available; no durable server storage or authenticated identity is implied.</p></section>
+              {audit && revision ? (
+                <ComplianceCertificateModal
+                  isOpen={isCertOpen}
+                  onClose={() => setIsCertOpen(false)}
+                  content={revision.text}
+                  contentVersion={`v${revision.number}`}
+                  auditState={openCount === 0 ? "approved" : "needs-changes"}
+                  reviewerName="Maya Chen"
+                  findings={audit.findings.map((f) => ({
+                    id: f.id,
+                    category: f.category,
+                    severity: f.severity,
+                    excerpt: f.span.text,
+                    suggestion: f.suggestion?.text ?? "",
+                    resolved: f.status !== "open",
+                  }))}
+                />
+              ) : null}
             </>
           )}
         </div>

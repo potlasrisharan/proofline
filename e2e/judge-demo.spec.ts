@@ -165,8 +165,35 @@ test.describe("Judge Quick-Demo Scenarios", () => {
     await expect(page.getByText("OFFICIALLY SEALED")).toBeVisible();
     await expect(page.getByText(/PLC-2026-/)).toBeVisible();
 
+    // Copy JSON receipt verification
+    await page.getByRole("button", { name: /Copy Verification JSON/ }).click();
+    await expect(page.getByText("Receipt JSON Copied!")).toBeVisible();
+
     // Close certificate modal
     await page.getByRole("button", { name: "Close", exact: true }).click();
+    await expect(page.getByRole("dialog", { name: "PUBLICATION & REGULATORY COMPLIANCE" })).not.toBeVisible();
+  });
+
+  test("Scenario 9: Compliance Certificate opens and functions seamlessly on /findings", async ({ page }) => {
+    await page.goto("/findings");
+    // Load sample review if not yet loaded
+    const loadBtn = page.getByRole("button", { name: /⚡ Load Sample NovaBook S1 Review/ });
+    if (await loadBtn.isVisible()) {
+      await loadBtn.click();
+    }
+
+    // Click View Compliance Certificate from Check context
+    const viewCertBtn = page.getByRole("button", { name: /View Compliance Certificate/ });
+    await expect(viewCertBtn).toBeVisible();
+    await viewCertBtn.click();
+
+    // Verify modal is displayed with cryptographic details
+    await expect(page.getByRole("dialog", { name: "PUBLICATION & REGULATORY COMPLIANCE" })).toBeVisible();
+    await expect(page.getByText("PROOFLINE TRUTH ENGINE")).toBeVisible();
+    await expect(page.getByText(/PLC-2026-/)).toBeVisible();
+
+    // Close modal via Escape key
+    await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog", { name: "PUBLICATION & REGULATORY COMPLIANCE" })).not.toBeVisible();
   });
 });

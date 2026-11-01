@@ -527,9 +527,25 @@ export function ComplianceCertificateModal({
   };
 
   function handleCopy() {
-    navigator.clipboard?.writeText(JSON.stringify(certificatePayload, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(JSON.stringify(certificatePayload, null, 2))
+          .then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
+          })
+          .catch(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
+          });
+      } else {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      }
+    } catch {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   }
 
   function handlePrint() {
