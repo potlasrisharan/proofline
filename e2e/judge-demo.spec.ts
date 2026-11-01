@@ -112,4 +112,61 @@ test.describe("Judge Quick-Demo Scenarios", () => {
     await expect(page.getByRole("heading", { name: "NovaBook S1 launch email" })).toBeVisible();
     await expect(page.getByText(/Human review required/)).toBeVisible();
   });
+
+  test("Scenario 8: Enterprise Compliance Suite verifies Acrolinx Scorecard, Red Marker Rulebook, PerformLine Scanner, and Filestage Certificate", async ({ page }) => {
+    await page.goto("/");
+    // Switch to creator role so we can apply fixes
+    await page.getByRole("combobox", { name: "Role preview" }).selectOption("creator");
+    // Click into content review via 60-second demo button
+    await page.getByRole("button", { name: "▶ Launch 60-Second Demo" }).click();
+
+    // Verify Quality Gate Scorecard is visible and initially blocked
+    await expect(page.getByText("PUBLISHING GATE: BLOCKED")).toBeVisible();
+    await expect(page.getByText("Acrolinx Quality Scorecard")).toBeVisible();
+
+    // Test Red Marker Regulatory Rulebook Tab
+    await page.getByRole("tab", { name: /Red Marker Regulatory Rulebook/ }).click();
+    await expect(page.getByText("FTC 16 CFR § 255")).toBeVisible();
+    await expect(page.getByText("Lanham Act § 43(a)")).toBeVisible();
+    await expect(page.getByText("Mandatory Disclosure Rule")).toBeVisible();
+
+    // Insert mandatory disclaimer
+    const addDisclaimerBtn = page.getByRole("button", { name: /Insert Mandatory Disclaimer/ });
+    if (await addDisclaimerBtn.isVisible()) {
+      await addDisclaimerBtn.click();
+      await expect(page.getByText("Footnote Detected")).toBeVisible();
+    }
+
+    // Test PerformLine Superlative Scanner Tab
+    await page.getByRole("tab", { name: /PerformLine Superlative Scanner/ }).click();
+    await expect(page.getByText("High-Risk Superlative & Absolute Scanner")).toBeVisible();
+    await expect(page.locator(".trigger-text")).toContainText("our most reliable laptop yet");
+
+    // Apply safe-harbor rewrite
+    const safeHarborBtn = page.getByRole("button", { name: /Apply Safe-Harbor Rewrite/ });
+    if (await safeHarborBtn.isVisible()) {
+      await safeHarborBtn.click();
+    }
+
+    // Now resolve battery finding to unlock gate
+    await page.getByRole("tab", { name: /Acrolinx Quality Scorecard/ }).click();
+    const batteryApplyBtn = page.getByRole("button", { name: "Apply" }).first();
+    if (await batteryApplyBtn.isVisible()) {
+      await batteryApplyBtn.click();
+    }
+
+    // Gate should now be UNLOCKED
+    await expect(page.getByText("PUBLISHING GATE: UNLOCKED")).toBeVisible();
+
+    // Open Compliance Certificate Modal
+    await page.getByRole("button", { name: "View Certificate" }).first().click();
+    await expect(page.getByRole("dialog", { name: "PUBLICATION & REGULATORY COMPLIANCE" })).toBeVisible();
+    await expect(page.getByText("PROOFLINE TRUTH ENGINE")).toBeVisible();
+    await expect(page.getByText("OFFICIALLY SEALED")).toBeVisible();
+    await expect(page.getByText(/PLC-2026-/)).toBeVisible();
+
+    // Close certificate modal
+    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await expect(page.getByRole("dialog", { name: "PUBLICATION & REGULATORY COMPLIANCE" })).not.toBeVisible();
+  });
 });

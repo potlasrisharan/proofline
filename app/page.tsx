@@ -12,6 +12,7 @@ import { RevisionHistory, type ReviewRevision } from "./components/revision-hist
 import { ReviewAuditLog } from "./components/review-audit-log";
 import { ReviewContentPreview, suggestionReplacement } from "./components/review-content-preview";
 import { SpanComments, type VersionedSpanComment } from "./components/span-comments";
+import { ComplianceQualityGate, ComplianceCertificateModal } from "./components/compliance-quality-gate";
 import type { ProoflineRole } from "./lib/proofline-api";
 
 type View = "overview" | "reviews" | "registry" | "insights" | "audit-log";
@@ -522,6 +523,7 @@ export default function Home() {
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [isComplianceCertOpen, setIsComplianceCertOpen] = useState(false);
   const [isIndicModalOpen, setIsIndicModalOpen] = useState(false);
   const [indicLang, setIndicLang] = useState<"te" | "hi">("te");
   const [engineMode, setEngineMode] = useState<"api" | "browser">(() => {
@@ -664,6 +666,47 @@ export default function Home() {
     addActivity({ icon: "↶", title: "Finding reopened", detail: `${finding.category} is open again in ${nextLabel}.`, time: "Just now", tone: "alert" });
     appendAuditEvent({ kind: "suggestion_applied", actor: "Maya Chen", role: currentRole, summary: `${finding.category} correction was undone in ${nextLabel}.`, contentVersion: nextLabel });
     notify("The finding is open again for review.");
+  }
+
+  function addMandatoryDisclaimer() {
+    if (!permissions.canApplySuggestion && currentRole !== "legal_reviewer") {
+      notify(`${roleLabels[currentRole]} can comment and review, but cannot edit this draft.`);
+      return;
+    }
+    const disclaimerText = " *Terms apply. Full details at voltedge.com/terms.";
+    if (submittedContent.includes("voltedge.com/terms")) {
+      notify("Mandatory disclaimer footnote is already present in draft.");
+      return;
+    }
+    const revisedContent = `${submittedContent.trim()}${disclaimerText}`;
+    const nextLabel = createRevision("Added mandatory terms disclaimer footnote.", [revisedContent]);
+    setSubmittedContent(revisedContent);
+    addActivity({ icon: "⚖️", title: "Disclaimer added", detail: `Mandatory legal terms footnote added to ${nextLabel}.`, time: "Just now", tone: "good" });
+    appendAuditEvent({ kind: "suggestion_applied", actor: "Maya Chen", role: currentRole, summary: `Mandatory disclaimer footnote inserted into ${nextLabel}.`, contentVersion: nextLabel });
+    notify("Mandatory legal disclaimer added to new draft revision.");
+  }
+
+  function applySafeHarbor() {
+    const finding = findings.find((item) => item.id === "reliable");
+    if (!finding || finding.resolved) {
+      notify("Superlative claim has already been mitigated.");
+      return;
+    }
+    const replacement = suggestionReplacement(finding.suggestion);
+    let revisedContent: string;
+    try {
+      revisedContent = replaceFindingText(submittedContent, finding, replacement);
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "The finding no longer matches this revision.");
+      return;
+    }
+    const nextLabel = createRevision(`Applied safe-harbor rewrite for ${finding.category.toLowerCase()}.`, [revisedContent]);
+    setSubmittedContent(revisedContent);
+    setAuditState("needs-changes");
+    setFindings((current) => current.map((item) => (item.id === "reliable" ? { ...item, resolved: true, actionStatus: "accepted" } : item)));
+    addActivity({ icon: "⚖️", title: "Safe-harbor applied", detail: `PerformLine safe-harbor rewrite added to ${nextLabel}.`, time: "Just now", tone: "good" });
+    appendAuditEvent({ kind: "suggestion_applied", actor: "Maya Chen", role: currentRole, summary: `Superlative safe-harbor rewrite applied to ${nextLabel}.`, contentVersion: nextLabel });
+    notify("Safe-harbor rewrite applied to new revision.");
   }
 
   function runRescan() {
@@ -1151,6 +1194,15 @@ export default function Home() {
                   <div className="detail-tabs" role="tablist" aria-label="Review detail tabs">{(["findings", "content", "history"] as DetailTab[]).map((tab) => <button className={`detail-tab ${detailTab === tab ? "active" : ""}`} id={`review-tab-${tab}`} key={tab} type="button" role="tab" tabIndex={detailTab === tab ? 0 : -1} aria-selected={detailTab === tab} aria-controls={`review-panel-${tab}`} onKeyDown={(event) => handleDetailTabKeyDown(event, tab)} onClick={() => setDetailTab(tab)}>{tab === "findings" ? "Findings" : tab === "content" ? "Submitted content" : "History"}{tab === "findings" && selectedIsInteractive ? <span className="tab-count">{openFindings.length}</span> : null}</button>)}</div>
 
                   {detailTab === "findings" ? <div id="review-panel-findings" className="detail-tab-panel" role="tabpanel" aria-labelledby="review-tab-findings" tabIndex={0}>{selectedIsInteractive ? <>
+                    <ComplianceQualityGate
+                      findings={findings}
+                      submittedContent={submittedContent}
+                      auditState={auditState}
+                      currentRoleLabel={roleLabels[currentRole]}
+                      onViewCertificate={() => setIsComplianceCertOpen(true)}
+                      onAddDisclaimer={addMandatoryDisclaimer}
+                      onApplySafeHarbor={applySafeHarbor}
+                    />
                     <div className="helper-hint-callout" style={{ margin: "4px 0 14px" }}>
                       <span>💡</span>
                       <div>
@@ -1241,16 +1293,26 @@ export default function Home() {
                           <p className="micro-helper" style={{ margin: 0 }}>All claims substantiated against VoltEdge truth registry.</p>
                         </div>
                       </div>
-                      <button
-                        className="dispatch-btn"
-                        type="button"
-                        onClick={() => {
-                          setDispatchReceipts(null);
-                          setIsPublishModalOpen(true);
-                        }}
-                      >
-                        Dispatch to Channels (Zernio) ↗
-                      </button>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                        <button
+                          className="ghost-button"
+                          type="button"
+                          style={{ borderColor: "rgba(255,255,255,0.4)", color: "#fff", padding: "0 12px", minHeight: 38, fontSize: 11, fontWeight: 700 }}
+                          onClick={() => setIsComplianceCertOpen(true)}
+                        >
+                          📜 Compliance Certificate
+                        </button>
+                        <button
+                          className="dispatch-btn"
+                          type="button"
+                          onClick={() => {
+                            setDispatchReceipts(null);
+                            setIsPublishModalOpen(true);
+                          }}
+                        >
+                          Dispatch to Channels (Zernio) ↗
+                        </button>
+                      </div>
                     </section>
                   ) : null}
                 </section>
@@ -1371,6 +1433,16 @@ export default function Home() {
           </section>
         </div>
       ) : null}
+
+      <ComplianceCertificateModal
+        isOpen={isComplianceCertOpen}
+        onClose={() => setIsComplianceCertOpen(false)}
+        content={submittedContent}
+        contentVersion={contentVersion}
+        auditState={auditState}
+        reviewerName="Maya Chen"
+        findings={findings}
+      />
 
       {isIndicModalOpen ? (
         <div className="modal-backdrop" role="presentation" onClick={() => setIsIndicModalOpen(false)}>
