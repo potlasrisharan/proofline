@@ -205,9 +205,11 @@ export function RoleDashboardShowcase({
 export function ActiveRoleWorkflowBanner({
   currentRole,
   onOpenSwitchRole,
+  onOpenCreatorStudio,
 }: {
   currentRole: ProoflineRole;
   onOpenSwitchRole: () => void;
+  onOpenCreatorStudio?: () => void;
 }) {
   const persona = demoPersonas[currentRole];
 
@@ -227,6 +229,30 @@ export function ActiveRoleWorkflowBanner({
         </div>
       </div>
       <div className="role-banner-right">
+        {currentRole === "creator" && onOpenCreatorStudio ? (
+          <button
+            type="button"
+            className="creator-studio-trigger-btn"
+            onClick={onOpenCreatorStudio}
+            title="Open Creator Multi-Platform Studio with Groq & Sarvam AI"
+            style={{
+              background: "#143e33",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: 6,
+              padding: "6px 11px",
+              fontSize: 10,
+              fontWeight: 800,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              marginRight: 6,
+            }}
+          >
+            <span>✨</span> Creator Studio (Groq + Sarvam)
+          </button>
+        ) : null}
         <button
           type="button"
           className="role-switch-trigger-btn"

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, useSyncExternalStore, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { AppSidebar } from "./app-sidebar";
 import { ComplianceCertificateModal } from "./compliance-quality-gate";
+import { creatorPlatformPresets } from "./creator-platform-studio";
 import {
   createLocalApiClient,
   type ContentAuditResponse,
@@ -355,6 +356,15 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                     <button className="small-button apply-button" type="button" onClick={() => { setText(sampleVoltEdgeText); setScope(defaultContentScope); setUploadStatus(""); setMessage("Loaded Flagged Sample: VoltEdge NovaBook S1 with 20h battery spec conflict."); }}>⚡ 1-Click: Flagged Draft</button>
                     <button className="small-button" type="button" onClick={() => { setText("VoltEdge NovaBook S1 offers up to 12 hours of battery life and includes a 30-day return guarantee. Full details apply at voltedge.com/terms."); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Clean Draft" })); setUploadStatus(""); setMessage("Loaded Clean Sample: VoltEdge NovaBook S1 with compliant claims."); }}>✓ 1-Click: Clean Draft</button>
                   </div>
+                </div>
+
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "-6px 0 14px", alignItems: "center" }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 750, color: "#386053" }}>Creator Platforms:</span>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.linkedin.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · LinkedIn Announcement", channel: "social" })); setMessage("Loaded LinkedIn Creator Post with comparative claims & 20h spec."); }}>💼 LinkedIn</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.twitter.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · X/Twitter Thread", channel: "social" })); setMessage("Loaded X/Twitter Launch Thread (checks 280-char limit & FTC #ad disclosure)."); }}>𝕏 Twitter</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.instagram.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Instagram Caption", channel: "social" })); setMessage("Loaded Instagram Caption (checks FTC § 255 sponsorship disclosure)."); }}>📸 Instagram</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.newsletter.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Newsletter Digest", channel: "email" })); setMessage("Loaded Newsletter Digest with spec verification."); }}>📬 Newsletter</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.press_release.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Press Release", channel: "document" })); setMessage("Loaded Press Release with Lanham Act § 43(a) compliance."); }}>📰 Press Release</button>
                 </div>
                 <div className="helper-hint-callout" style={{ margin: "-12px 0 16px" }}>
                   <span>💡</span>

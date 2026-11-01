@@ -19,6 +19,7 @@ import {
   DemoRoleModal,
   demoPersonas,
 } from "./components/role-dashboard-showcase";
+import { CreatorPlatformStudioModal } from "./components/creator-platform-studio";
 import type { ProoflineRole } from "./lib/proofline-api";
 
 type View = "overview" | "reviews" | "registry" | "insights" | "audit-log";
@@ -527,6 +528,7 @@ export default function Home() {
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isComplianceCertOpen, setIsComplianceCertOpen] = useState(false);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [isCreatorStudioOpen, setIsCreatorStudioOpen] = useState(false);
   const [isIndicModalOpen, setIsIndicModalOpen] = useState(false);
   const [indicLang, setIndicLang] = useState<"te" | "hi">("te");
   const [engineMode, setEngineMode] = useState<"api" | "browser">(() => {
@@ -946,6 +948,7 @@ export default function Home() {
           <ActiveRoleWorkflowBanner
             currentRole={currentRole}
             onOpenSwitchRole={() => setIsRoleModalOpen(true)}
+            onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
           />
 
           <div className="judge-demo-bar" role="region" aria-label="Judge Quick-Demo Scenarios">
@@ -1041,6 +1044,15 @@ export default function Home() {
               >
                 <span>⑦ Cryptographic Audit Chain</span>
                 <span className="preset-sub">Tamper-Proof Proof</span>
+              </button>
+              <button
+                className="judge-preset-btn"
+                type="button"
+                onClick={() => setIsCreatorStudioOpen(true)}
+                title="Demo 8: Creator Multi-Platform Studio with Groq, Sarvam AI, and Fail-Soft Fallbacks"
+              >
+                <span>⑧ Creator Studio (Groq + Sarvam)</span>
+                <span className="preset-sub">LinkedIn, X, IG + AI Fallback</span>
               </button>
             </div>
           </div>
@@ -1579,6 +1591,19 @@ export default function Home() {
         onSelectRole={(role) => {
           launchRoleDashboard(role);
           setIsRoleModalOpen(false);
+        }}
+      />
+
+      <CreatorPlatformStudioModal
+        isOpen={isCreatorStudioOpen}
+        onClose={() => setIsCreatorStudioOpen(false)}
+        initialText={submittedContent}
+        onApplyToDraft={(cleanText) => {
+          setSubmittedContent(cleanText);
+          navigate("reviews");
+          setSelectedReviewId("novabook-launch");
+          setDetailTab("findings");
+          notify("Compliant creator copy applied to workspace! Fresh evidence check verified.");
         }}
       />
 

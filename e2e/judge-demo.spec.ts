@@ -247,4 +247,43 @@ test.describe("Judge Quick-Demo Scenarios", () => {
     await expect(banner.getByText("Logged in as Carlos Mendez")).toBeVisible();
     await expect(banner.getByText("carlos.mendez@agency-partner.com")).toBeVisible();
   });
+
+  test("Scenario 11: Creator Multi-Platform Studio audits LinkedIn, X/Twitter, and Instagram with Groq/Sarvam fallbacks", async ({ page }) => {
+    await page.goto("/");
+
+    // Open Creator Multi-Platform Studio via Demo preset ⑧
+    await page.getByRole("button", { name: /⑧ Creator Studio/ }).click();
+
+    const studioDialog = page.getByRole("dialog", { name: "Creator Content Studio · Cross-Platform Compliance" });
+    await expect(studioDialog).toBeVisible();
+    await expect(page.getByText("Live Groq & Sarvam AI + Fail-Soft Fallbacks")).toBeVisible();
+
+    // Select Instagram tab
+    await studioDialog.getByRole("tab", { name: "Instagram" }).click();
+    await expect(page.getByText("Instagram & TikTok Caption")).toBeVisible();
+
+    // Run Multi-Platform Audit
+    await studioDialog.getByRole("button", { name: "▶ Run Multi-Platform Audit" }).click();
+
+    // Verify findings are displayed: FTC rule 255 and Truth Registry spec
+    await expect(studioDialog.getByText("FTC 16 CFR § 255 (Endorsement Guides)")).toBeVisible();
+    await expect(studioDialog.getByText("Truth Registry Contradiction: up to 20 hours of battery life")).toBeVisible();
+
+    // Test Sarvam Indic language toggle
+    await studioDialog.getByRole("button", { name: "Telugu (తెలుగు)" }).click();
+    await expect(studioDialog.getByText("వోల్ట్‌ఎడ్జ్ నోవాబుక్")).toBeVisible();
+
+    await studioDialog.getByRole("button", { name: "Hindi (हिन्दी)" }).click();
+    await expect(studioDialog.getByText("वोल्टएज नोवाबुक")).toBeVisible();
+
+    // Click 1-Click Fix All
+    await studioDialog.getByRole("button", { name: /1-Click Fix All/ }).click();
+    await expect(studioDialog.getByText("100 / 100")).toBeVisible();
+    await expect(studioDialog.getByText("All Specifications & Regulatory Checks Passed")).toBeVisible();
+
+    // Apply to main workspace
+    await studioDialog.getByRole("button", { name: "✓ Apply Clean Copy to Main Workspace" }).click();
+    await expect(studioDialog).not.toBeVisible();
+    await expect(page.getByText("Compliant creator copy applied to workspace!")).toBeVisible();
+  });
 });
