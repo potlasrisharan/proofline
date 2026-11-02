@@ -286,6 +286,179 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 .registry-card-compact { display: flex; flex-direction: column; justify-content: space-between; min-height: 170px; }
 .action-first-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; border-radius: 9px; border: 1px solid #cae8dd; background: #f0faf6; }
 
+/* ==========================================================================
+   GENERAL ENTERPRISE HOME DASHBOARD (Organization-Wide Overview)
+   ========================================================================== */
+.general-dash-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 18px 0 24px;
+}
+
+.general-kpi-card {
+  background: #ffffff;
+  border: 1px solid #dce8e1;
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 8px rgba(18, 48, 40, 0.03);
+}
+
+.general-kpi-card:hover {
+  border-color: #1a6250;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 48, 40, 0.06);
+}
+
+.general-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.general-kpi-label {
+  font-size: 11px;
+  font-weight: 750;
+  color: #557269;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.general-kpi-val {
+  font-size: 26px;
+  font-weight: 850;
+  color: #0c2b23;
+  line-height: 1.15;
+}
+
+.general-kpi-sub {
+  font-size: 11px;
+  color: #7b9990;
+  margin-top: 4px;
+}
+
+/* Flagship Gate Status Banner */
+.flagship-gate-banner {
+  background: #ffffff;
+  border: 1px solid #d8e6df;
+  border-left: 4px solid #d97706;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  box-shadow: 0 4px 14px rgba(18, 48, 40, 0.03);
+  flex-wrap: wrap;
+}
+
+.gate-banner-info h3 {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0d2c25;
+  margin: 0 0 4px;
+}
+
+.gate-banner-info p {
+  font-size: 11.5px;
+  color: #557269;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Department Role Launchpads Grid */
+.dept-launchpad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.dept-launchpad-card {
+  background: #ffffff;
+  border: 1px solid #dce8e1;
+  border-radius: 11px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(18, 48, 40, 0.03);
+}
+
+.dept-launchpad-card:hover {
+  border-color: #176553;
+  box-shadow: 0 6px 20px rgba(23, 101, 83, 0.08);
+  transform: translateY(-2px);
+}
+
+.dept-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.dept-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.dept-badge {
+  font-size: 9.5px;
+  font-weight: 750;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(23, 101, 83, 0.08);
+  color: #176553;
+}
+
+.dept-card-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0e2f26;
+  margin: 0 0 4px;
+}
+
+.dept-card-desc {
+  font-size: 11px;
+  color: #557269;
+  line-height: 1.45;
+  margin: 0 0 12px;
+  flex: 1;
+}
+
+.dept-card-btn {
+  font-size: 11.5px;
+  font-weight: 750;
+  color: #176553;
+  background: #edf8f4;
+  border: 1px solid #c9ecdd;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.dept-launchpad-card:hover .dept-card-btn {
+  background: #176553;
+  color: #ffffff;
+  border-color: #176553;
+}
+
 /* Gated Dispatch & Multi-Channel Publishing Styles */
 .publish-dispatch-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 0 24px 22px; padding: 16px 20px; border: 1.5px solid #a8e5d0; border-radius: 10px; background: #f0faf5; box-shadow: 0 6px 20px rgba(62, 154, 130, .08); }
 .dispatch-badge { display: flex; align-items: center; gap: 12px; }

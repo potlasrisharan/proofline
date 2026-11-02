@@ -4,7 +4,7 @@ test("loads the seeded workspace and navigates to the review queue", async ({ pa
   await page.goto("/");
 
   await expect(page).toHaveTitle(/Proofline/);
-  await expect(page.getByRole("heading", { name: /Good (morning|afternoon|evening), Maya\./ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Organization Truth & Compliance Command Center/ })).toBeVisible();
   await expect(page.getByText("Enterprise workspace")).toBeVisible();
 
   await page.getByRole("button", { name: /Review queue/ }).click();
@@ -27,7 +27,7 @@ test("opens the review intake dialog", async ({ page }) => {
 
 test("walks a user through the guided review tour", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Take the guided tour" }).click();
+  await page.getByRole("button", { name: /Take (Guided Interactive |the guided )tour/i }).click();
 
   await expect(page.getByRole("heading", { name: "Start with the workspace overview" })).toBeVisible();
   await page.getByRole("button", { name: "Open overview" }).click();

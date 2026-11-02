@@ -973,17 +973,17 @@ export default function Home() {
 
           {activeView === "overview" ? (
             <section className="view-panel" aria-labelledby="overview-heading">
-              {/* HOME PAGE HERO & VALUE BANNER */}
-              <div className="what-we-provide-hero" role="region" aria-label="What Proofline Provides" style={{ margin: "0 0 24px" }}>
+              {/* 1. GENERAL ORGANIZATION DASHBOARD HERO */}
+              <div className="what-we-provide-hero" role="region" aria-label="What Proofline Provides" style={{ margin: "0 0 20px" }}>
                 <div className="what-we-provide-badge">
-                  <span>🛡️</span>
-                  <span suppressHydrationWarning>Enterprise Brand Truth · Automated Quality Gate · {currentDateStr}</span>
+                  <span>🏢</span>
+                  <span suppressHydrationWarning>VoltEdge Global Overview · General Command Center · {currentDateStr}</span>
                 </div>
                 <h1 className="what-we-provide-title" id="overview-heading">
-                  The Automated Quality Gate &amp; Fact-Checker Before You Publish.
+                  Organization Truth &amp; Compliance Command Center
                 </h1>
                 <p className="what-we-provide-lede">
-                  Proofline protects brands from unverified claims, regulatory fines (FTC §5 &amp; Lanham Act §43(a)), and reputational damage. Select your corporate role below to log in and access your dedicated dashboard.
+                  Neutral enterprise overview monitoring global marketing claims, brand specifications, statutory regulatory rules, and cross-department workflows.
                 </p>
 
                 <div className="what-we-provide-actions">
@@ -1000,12 +1000,17 @@ export default function Home() {
                   >
                     Open Review Workspace →
                   </button>
+                  {permissions.canStartReview ? (
+                    <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}>
+                      <span>＋</span> Start a review
+                    </button>
+                  ) : null}
                   <button
                     className="ghost-button"
                     type="button"
                     onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
                   >
-                    ▶ Take Guided Product Tour
+                    ▶ Take Guided Interactive Tour
                   </button>
                   <Link className="ghost-button" href="/submit" prefetch={false}>
                     ＋ Test Marketing Copy Now
@@ -1013,44 +1018,222 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* ROLE-BASED LOGIN GATEWAY (FRONT & CENTER ON HOME PAGE) */}
+              {/* 2. GENERAL ORGANIZATION KPIS */}
+              <div className="general-dash-kpi-grid">
+                <div className="general-kpi-card">
+                  <div className="general-kpi-top">
+                    <span className="general-kpi-label">Brand Truth Accuracy</span>
+                    <span>📊</span>
+                  </div>
+                  <div className="general-kpi-val">94.8%</div>
+                  <div className="general-kpi-sub" style={{ color: "#166534" }}>✓ High compliance across live copy</div>
+                </div>
+
+                <div className="general-kpi-card">
+                  <div className="general-kpi-top">
+                    <span className="general-kpi-label">Active Truth Registry</span>
+                    <span>▦</span>
+                  </div>
+                  <div className="general-kpi-val">{localRegistryRecords.filter((r) => r.status !== "draft").length} Specs</div>
+                  <div className="general-kpi-sub">Immutable specs &amp; claims on file</div>
+                </div>
+
+                <div className="general-kpi-card">
+                  <div className="general-kpi-top">
+                    <span className="general-kpi-label">Review Queue Volume</span>
+                    <span>⏱️</span>
+                  </div>
+                  <div className="general-kpi-val">{openReviewCount} Drafts</div>
+                  <div className="general-kpi-sub" style={{ color: "#b45309" }}>1 High scrutiny · 2 Editorial</div>
+                </div>
+
+                <div className="general-kpi-card">
+                  <div className="general-kpi-top">
+                    <span className="general-kpi-label">Audit Hash Chain</span>
+                    <span>🛡️</span>
+                  </div>
+                  <div className="general-kpi-val">SHA-256</div>
+                  <div className="general-kpi-sub" style={{ color: "#166534" }}>✓ {auditLog.length} Linked decisions verified</div>
+                </div>
+              </div>
+
+              {/* 3. FLAGSHIP CAMPAIGN PUBLISHING GATE BANNER */}
+              <div className="flagship-gate-banner" role="region" aria-label="Flagship Campaign Gate Status">
+                <div className="gate-banner-info">
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <span className="badge-pill pill-risk" style={{ fontSize: 9 }}>FLAGSHIP CAMPAIGN</span>
+                    <strong style={{ fontSize: 13, color: "#134e4a" }}>NovaBook S1 Global Launch</strong>
+                    <span className={`gate-status-pill ${auditState === "approved" ? "unlocked" : "blocked"}`}>
+                      {auditState === "approved" ? "GATE UNLOCKED" : "GATE BLOCKED"}
+                    </span>
+                  </div>
+                  <p>
+                    {auditState === "approved"
+                      ? "All brand truth specifications and statutory legal guidelines are signed off. Ready for 1-click multi-channel dispatch."
+                      : "Unverified battery claims (12h vs 20h) and superlative reliability risk require human sign-off before dispatch."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="primary-button"
+                  style={{ whiteSpace: "nowrap" }}
+                  onClick={() => {
+                    navigate("reviews");
+                    setSelectedReviewId("novabook-launch");
+                    setDetailTab("findings");
+                    setSelectedSpanId("battery");
+                  }}
+                >
+                  Inspect Campaign Gate →
+                </button>
+              </div>
+
+              {/* 4. DEPARTMENT & ROLE LAUNCHPADS (ENTER ANY ROLE WORKFLOW) */}
+              <div style={{ margin: "28px 0 12px" }}>
+                <div className="page-heading-sub" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <div>
+                    <h2 style={{ fontSize: 15, fontWeight: 800, color: "#0c2b23", margin: "0 0 2px" }}>Department Role Launchpads</h2>
+                    <p style={{ fontSize: 11.5, color: "#557269", margin: 0 }}>Select any department workflow to launch tailored tools, guidelines, and review actions.</p>
+                  </div>
+                </div>
+
+                <div className="dept-launchpad-grid">
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("creator");
+                      navigate("reviews");
+                      setIsCreatorStudioOpen(true);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#fef3c7", color: "#92400e" }}>AV</div>
+                      <span className="dept-badge">Content Creator</span>
+                    </div>
+                    <div className="dept-card-title">Creator Content Studio</div>
+                    <div className="dept-card-desc">Draft copy with automated truth-matching, visual diffs, and Indic localization.</div>
+                    <div className="dept-card-btn">Launch Studio →</div>
+                  </div>
+
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("manager");
+                      navigate("reviews");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#e0e7ff", color: "#3730a3" }}>PN</div>
+                      <span className="dept-badge">Editorial Manager</span>
+                    </div>
+                    <div className="dept-card-title">Campaign Review Queue</div>
+                    <div className="dept-card-desc">Triage submissions, manage reviewer assignments, and resolve claim discrepancies.</div>
+                    <div className="dept-card-btn">Open Review Queue ({openReviewCount}) →</div>
+                  </div>
+
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("legal_reviewer");
+                      navigate("reviews");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#dbeafe", color: "#1e40af" }}>MC</div>
+                      <span className="dept-badge">Legal &amp; Regulatory</span>
+                    </div>
+                    <div className="dept-card-title">Regulatory Quality Gate</div>
+                    <div className="dept-card-desc">Audit FTC §5 and Lanham Act rules, apply safe-harbor rewrites, and sign certs.</div>
+                    <div className="dept-card-btn">Audit Quality Gate →</div>
+                  </div>
+
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("brand_owner");
+                      navigate("registry");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#dcfce7", color: "#166534" }}>LO</div>
+                      <span className="dept-badge">Brand Leadership</span>
+                    </div>
+                    <div className="dept-card-title">Truth Registry &amp; Dispatch</div>
+                    <div className="dept-card-desc">Version official product facts, approve guideline gaps, and dispatch to channels.</div>
+                    <div className="dept-card-btn">Manage Truth Registry →</div>
+                  </div>
+
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("agency");
+                      navigate("reviews");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#f3e8ff", color: "#6b21a8" }}>CM</div>
+                      <span className="dept-badge">Agency Partner</span>
+                    </div>
+                    <div className="dept-card-title">Sandboxed Agency Portal</div>
+                    <div className="dept-card-desc">Submit revisions within locked permissions and test copy against client specs.</div>
+                    <div className="dept-card-btn">Open Partner Portal →</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 5. ROLE-BASED LOGIN GATEWAY (FRONT & CENTER ON HOME PAGE) */}
               <EnterpriseSingleLogin
                 currentRole={currentRole}
                 onSelectRole={launchRoleDashboard}
               />
 
-              {/* THREE CORE VALUE PILLARS */}
-              <div className="what-we-provide-grid" style={{ margin: "24px 0" }}>
-                <div className="provide-card">
-                  <div className="provide-icon-box coral">🎯</div>
-                  <h3>1. Automated Spec &amp; Fact Verification</h3>
-                  <p>
-                    Automatically catches false numbers and specs (like claiming &ldquo;20h battery&rdquo; when lab tests say &ldquo;12 hours&rdquo;). Highlights inaccuracies with visual diffs and applies approved lab specs in 1 click.
-                  </p>
-                  <span className="provide-badge">Zero Hallucinations</span>
+              {/* 6. RECENT CROSS-ORGANIZATION AUDIT ACTIVITY */}
+              <div style={{ margin: "24px 0" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <div>
+                    <h2 style={{ fontSize: 15, fontWeight: 800, color: "#0c2b23", margin: "0 0 2px" }}>Recent Organization Activity</h2>
+                    <p style={{ fontSize: 11.5, color: "#557269", margin: 0 }}>Cryptographically linked decision log recorded across all departments.</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="ghost-button"
+                    style={{ fontSize: 11 }}
+                    onClick={() => navigate("audit-log")}
+                  >
+                    View Complete Audit Log ({auditLog.length}) →
+                  </button>
                 </div>
 
-                <div className="provide-card">
-                  <div className="provide-icon-box blue">⚖️</div>
-                  <h3>2. Legal &amp; Regulatory Quality Gate</h3>
-                  <p>
-                    Scans copy against statutory rules (FTC 16 CFR § 255 sponsorship tags, Lanham Act § 43(a) superlative risks). Automatically generates tamper-proof cryptographic compliance certificates.
-                  </p>
-                  <span className="provide-badge">Audit-Proof Evidence</span>
-                </div>
-
-                <div className="provide-card">
-                  <div className="provide-icon-box mint">🚀</div>
-                  <h3>3. Role Governance &amp; Gated Dispatch</h3>
-                  <p>
-                    Strict separation of duties across Creators, Editorial Managers, Legal Reviewers, and Brand Owners. Unlocks 1-click gated multi-channel dispatch (LinkedIn, X, Instagram) only after human sign-off.
-                  </p>
-                  <span className="provide-badge">5 Role Workspaces</span>
+                <div className="activity-list" style={{ background: "#ffffff", border: "1px solid #dce8e1", borderRadius: 10, padding: "8px 14px" }}>
+                  {auditLog.slice(-4).reverse().map((event) => (
+                    <div key={event.id} className="activity-item" style={{ padding: "10px 4px", borderBottom: "1px solid #f0f5f2" }}>
+                      <span className="activity-icon">🛡️</span>
+                      <div className="activity-body">
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <strong>{event.summary}</strong>
+                          <span className="badge-pill pill-pass" style={{ fontSize: 8.5 }}>{auditKindLabels[event.kind]}</span>
+                        </div>
+                        <p style={{ fontSize: 11, color: "#617c74", margin: "2px 0 0" }}>
+                          Actor: <strong>{event.actor}</strong> ({roleLabels[event.role]}) · Version: {event.contentVersion} · {event.timestamp.replace("T", " · ").replace("Z", " UTC")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               <footer className="footer">
-                <span>Proofline · VoltEdge workspace · Truth Engine active</span>
+                <span>Proofline · VoltEdge Production · Truth Engine active</span>
                 <span>
                   <Link href="/privacy" prefetch={false}>Privacy and AI disclosure</Link> · Built for confident publishing.
                 </span>
