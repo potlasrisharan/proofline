@@ -16,11 +16,12 @@ export type NavKey =
   | "impact"
   | "insights"
   | "audit-log"
+  | "portal"
   | "privacy";
 
 type AppSidebarProps = {
   activeKey: NavKey;
-  onNavigateView?: (view: "overview" | "reviews" | "registry" | "insights" | "audit-log") => void;
+  onNavigateView?: (view: "overview" | "reviews" | "registry" | "insights" | "audit-log" | "portal") => void;
   openReviewCount?: number;
   currentRole?: string;
   roleKey?: ProoflineRole;

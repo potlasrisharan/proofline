@@ -20,9 +20,10 @@ import {
   demoPersonas,
 } from "./components/role-dashboard-showcase";
 import { CreatorPlatformStudioModal } from "./components/creator-platform-studio";
+import PortalPage from "./portal/page";
 import type { ProoflineRole } from "./lib/proofline-api";
 
-type View = "overview" | "reviews" | "registry" | "insights" | "audit-log";
+type View = "overview" | "reviews" | "registry" | "insights" | "audit-log" | "portal";
 type DetailTab = "findings" | "content" | "history";
 type AuditState = "needs-changes" | "scanning" | "ready" | "submitted" | "approved" | "changes-requested";
 type Severity = "critical" | "high" | "medium" | "low";
@@ -457,7 +458,7 @@ function severityLabel(severity: Severity) {
 function initialDashboardView(): View {
   if (typeof window === "undefined") return "overview";
   const requestedView = new URLSearchParams(window.location.search).get("view");
-  return requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log" ? requestedView : "overview";
+  return requestedView === "portal" || requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log" ? requestedView : "overview";
 }
 
 const emptySubscribe = () => () => {};
@@ -489,7 +490,7 @@ export default function Home() {
   useEffect(() => {
     const handleUrlView = () => {
       const requestedView = new URLSearchParams(window.location.search).get("view");
-      if (requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log") {
+      if (requestedView === "portal" || requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log") {
         setActiveView(requestedView);
       } else if (!requestedView && window.location.pathname === "/") {
         setActiveView("overview");
@@ -886,6 +887,7 @@ export default function Home() {
     registry: "Truth registry",
     insights: "Insights",
     "audit-log": "Audit log",
+    portal: "Enterprise Role Portal",
   };
 
   const openReviewCount = reviewItems.filter((item) => (item.id === "novabook-launch" ? queueStatusForAudit[auditState] : item.status) !== "approved").length;
@@ -988,6 +990,48 @@ export default function Home() {
                   ) : (
                     <span className="permission-note heading-permission">Read-only reviewer view</span>
                   )}
+                </div>
+              </div>
+
+              {/* SEPARATE MAIN SCREEN GATEWAY BANNER */}
+              <div
+                className="portal-entry-card"
+                role="region"
+                aria-label="Separate Main Screen & Dedicated Dashboards"
+                style={{
+                  background: "#ffffff",
+                  border: "2px solid #176553",
+                  borderRadius: 12,
+                  padding: "16px 22px",
+                  margin: "18px 0 20px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 16,
+                  boxShadow: "0 4px 18px rgba(23, 101, 83, 0.08)",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 800, color: "#176553", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                    🚀 SEPARATE MAIN SCREEN &amp; DEDICATED ROLE DASHBOARDS
+                  </div>
+                  <h3 style={{ fontSize: 17, fontWeight: 850, color: "#0c2b23", margin: "4px 0" }}>
+                    Proofline Enterprise Role Portal
+                  </h3>
+                  <p style={{ fontSize: 12, color: "#496a5f", margin: 0, lineHeight: 1.5 }}>
+                    Access the separate main screen with individual logins and tailored dashboards for Creator, Campaign Manager, Legal Reviewer, Brand Owner, and Agency Partner.
+                  </p>
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <Link
+                    href="/portal"
+                    prefetch={false}
+                    className="primary-button"
+                    style={{ textDecoration: "none", whiteSpace: "nowrap", padding: "10px 18px", fontSize: 12, fontWeight: 800 }}
+                  >
+                    Open Separate Main Screen (/portal) →
+                  </Link>
                 </div>
               </div>
 
@@ -1235,6 +1279,8 @@ export default function Home() {
           {activeView === "insights" ? <section className="view-panel" aria-labelledby="insights-heading"><div className="page-heading compact-heading"><div><p className="eyebrow">Governance insights</p><h1 id="insights-heading">See where your guidelines need help.</h1><p className="lede">Patterns come from saved findings and reviewer decisions, not model confidence scores.</p></div><div className="heading-actions"><span className="review-summary-chip"><span className="status-dot blue" /> Last 30 days</span><Link className="ghost-button pl-link-button" href="/insights" prefetch={false}>Open insights dashboard</Link></div></div><div className="insights-grid"><section className="panel insight-chart-card"><div className="panel-heading"><div><p className="eyebrow">Issue mix</p><h2>What keeps surfacing</h2></div></div><div className="bar-chart">{issueMix.map((item) => <div className="bar-row" key={item.label}><label>{item.label}</label><div className="bar-track"><span className={item.tone} style={{ width: `${item.value}%` }} /></div><strong>{item.count}</strong></div>)}</div></section><section className="panel insight-list-card"><div className="panel-heading"><div><p className="eyebrow">Guideline health</p><h2>Clarity opportunities</h2></div></div><div className="clarity-list">{clarityOpportunities.map(([title, copy]) => <div className="clarity-item" key={title}><span className="clarity-marker" /><div><strong>{title}</strong><p>{copy}</p></div></div>)}</div></section></div><div className="privacy-note"><span>◌</span><p><strong>Human review stays in the loop.</strong> Insights suggest where a rule may need clarification; only an authorised brand owner can update the registry.</p></div></section> : null}
 
           {activeView === "audit-log" && permissions.canViewAuditLog ? <ReviewAuditLog events={auditLog} chainState={chainState} chainError={chainError} kindLabels={auditKindLabels} roleLabels={roleLabels} /> : null}
+
+          {activeView === "portal" ? <PortalPage /> : null}
         </div>
       </section>
 
