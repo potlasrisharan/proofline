@@ -287,6 +287,334 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 .action-first-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; border-radius: 9px; border: 1px solid #cae8dd; background: #f0faf6; }
 
 /* ==========================================================================
+   STANDALONE LANDING PAGE (ayuseva.pages.dev aesthetic)
+   ========================================================================== */
+.landing-standalone-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #111827;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-navbar-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e7efe9;
+}
+
+.landing-navbar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.landing-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.landing-brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  object-fit: cover;
+  border: 1px solid #c9ecdd;
+}
+
+.landing-brand-text {
+  font-size: 19px;
+  font-weight: 850;
+  color: #0c2b23;
+  letter-spacing: -0.02em;
+}
+
+.landing-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.landing-nav-link {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #4b635c;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: color 0.15s ease;
+}
+
+.landing-nav-link:hover {
+  color: #0e3b31;
+}
+
+.landing-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.landing-pill-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #124338;
+  color: #ffffff !important;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(18, 67, 56, 0.2);
+}
+
+.landing-pill-btn-primary:hover {
+  background: #092720;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(18, 67, 56, 0.28);
+}
+
+.landing-pill-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f7faf8;
+  color: #176553 !important;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  border: 1px solid #c9ecdd;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.landing-pill-btn-ghost:hover {
+  background: #edf7f3;
+  border-color: #176553;
+}
+
+/* Landing Hero Layout */
+.landing-hero-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 60px 32px 64px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 960px) {
+  .landing-hero-container {
+    grid-template-columns: 1fr;
+    padding: 36px 20px 48px;
+    gap: 32px;
+  }
+}
+
+.landing-hero-kicker-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e8f5f0;
+  color: #0d7a5f;
+  border: 1px solid #c9ecdd;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  margin-bottom: 20px;
+}
+
+.landing-kicker-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0d7a5f;
+}
+
+.landing-hero-title {
+  font-size: 54px;
+  font-weight: 850;
+  color: #0c2b23;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  margin: 0 0 20px;
+}
+
+@media (max-width: 720px) {
+  .landing-hero-title {
+    font-size: 38px;
+  }
+}
+
+.landing-hero-subtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #4b635c;
+  margin: 0 0 28px;
+  max-width: 540px;
+}
+
+.landing-hero-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.landing-trust-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6b867e;
+  font-weight: 550;
+}
+
+/* Landing Hero Visual Canvas */
+.landing-hero-visual-canvas {
+  background: linear-gradient(135deg, #e8f5f0 0%, #f7faf8 50%, #edf7f3 100%);
+  border: 1px solid #c9ecdd;
+  border-radius: 28px;
+  padding: 32px 26px;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  box-shadow: 0 16px 40px rgba(18, 67, 56, 0.05);
+}
+
+.hero-floating-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.hero-pill-badge {
+  background: #ffffff;
+  border: 1px solid #d4e7de;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 750;
+  color: #0c2b23;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(18, 48, 40, 0.05);
+}
+
+.hero-mission-card {
+  background: #ffffff;
+  border: 1px solid #d4e7de;
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 12px 30px rgba(18, 48, 40, 0.08);
+}
+
+.hero-mission-kicker {
+  font-size: 10px;
+  font-weight: 800;
+  color: #176553;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.hero-mission-title {
+  font-size: 18px;
+  font-weight: 850;
+  color: #0c2b23;
+  margin: 0 0 6px;
+}
+
+.hero-mission-sub {
+  font-size: 12px;
+  color: #557269;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Landing Content Sections */
+.landing-section-wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  width: 100%;
+}
+
+.landing-section-header {
+  margin-bottom: 22px;
+}
+
+.landing-section-kicker {
+  font-size: 11px;
+  font-weight: 800;
+  color: #176553;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.landing-section-title {
+  font-size: 26px;
+  font-weight: 850;
+  color: #0c2b23;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+
+.landing-section-subtitle {
+  font-size: 14px;
+  color: #557269;
+  margin: 0;
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+/* Landing Modern Footer */
+.landing-footer {
+  border-top: 1px solid #e7efe9;
+  background: #fafcfb;
+  padding: 48px 32px 36px;
+  margin-top: auto;
+}
+
+.landing-footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* ==========================================================================
    GENERAL ENTERPRISE HOME DASHBOARD (Organization-Wide Overview)
    ========================================================================== */
 .home-services-grid {
