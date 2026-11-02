@@ -16,8 +16,8 @@ export type NavKey =
   | "impact"
   | "insights"
   | "audit-log"
-  | "portal"
-  | "privacy";
+  | "privacy"
+  | "portal";
 
 type AppSidebarProps = {
   activeKey: NavKey;
@@ -43,17 +43,41 @@ function getStoredFindingsBadge(): number | null {
   }
 }
 
+function getStoredRole(fallback: ProoflineRole): ProoflineRole {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const stored = (sessionStorage.getItem("proofline:active-role") || localStorage.getItem("proofline:active-role")) as ProoflineRole | null;
+    if (stored && demoPersonas[stored]) {
+      return stored;
+    }
+  } catch {
+    return fallback;
+  }
+  return fallback;
+}
+
 export function AppSidebar({
   activeKey,
   onNavigateView,
   openReviewCount = 3,
   currentRole = "Authorised reviewer",
-  roleKey = "legal_reviewer",
+  roleKey,
   onSwitchRole,
 }: AppSidebarProps) {
   const router = useRouter();
-  const persona = demoPersonas[roleKey] ?? demoPersonas.legal_reviewer;
+  const [storedRole] = useState<ProoflineRole>(() => getStoredRole(roleKey ?? "legal_reviewer"));
   const [findingsBadge] = useState<number | null>(getStoredFindingsBadge);
+
+  const effectiveRoleKey = roleKey ?? storedRole;
+  const persona = demoPersonas[effectiveRoleKey] ?? demoPersonas.legal_reviewer;
+
+  const handleRoleSwitch = () => {
+    if (onSwitchRole) {
+      onSwitchRole();
+    } else {
+      router.push("/?openSwitchRole=true");
+    }
+  };
 
   const navItems: Array<{
     key: NavKey;
@@ -91,7 +115,7 @@ export function AppSidebar({
         </span>
       </Link>
 
-      <div className="workspace-switcher">
+      <div className="workspace-switcher" title="Active enterprise workspace">
         <span className="workspace-dot" />
         <span>VoltEdge workspace</span>
         <span className="chevron" aria-hidden="true">⌄</span>
@@ -147,49 +171,9 @@ export function AppSidebar({
 
       <div className="sidebar-bottom">
         <button
-          className="nav-item muted"
-          type="button"
-          onClick={() => {
-            if (onNavigateView) {
-              onNavigateView("registry");
-            } else {
-              router.push("/?view=registry");
-            }
-          }}
-        >
-          <span aria-hidden="true">⚙</span>
-          <span>Workspace settings</span>
-        </button>
-
-        <div className="registry-health">
-          <span className="health-dot" />
-          <div>
-            <strong>VoltEdge demo</strong>
-            <small>Truth registry · Active</small>
-          </div>
-        </div>
-
-        <Link
-          href="/portal"
-          prefetch={false}
-          className="nav-item portal-nav-link"
-          title="Open Separate Main Screen with Role Logins & Dashboards"
-          style={{
-            background: "rgba(168, 238, 225, 0.12)",
-            border: "1px solid rgba(168, 238, 225, 0.25)",
-            color: "var(--aqua, #a8eee1)",
-            margin: "4px 8px",
-            borderRadius: 6,
-          }}
-        >
-          <span aria-hidden="true">🚀</span>
-          <span>Role Portals &amp; Dashboards</span>
-        </Link>
-
-        <button
           className="profile-card profile-card-button"
           type="button"
-          onClick={onSwitchRole}
+          onClick={handleRoleSwitch}
           title="Click to switch demo role / credentials"
         >
           <div className={`avatar persona-avatar ${persona.badgeTone}`}>{persona.initials}</div>

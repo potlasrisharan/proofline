@@ -116,7 +116,7 @@ test.describe("Enterprise Workspaces & Quality Gate Workflows", () => {
     await expect(page.getByText(/Human review required/)).toBeVisible();
   });
 
-  test("Scenario 8: Enterprise Compliance Suite verifies Acrolinx Scorecard, Red Marker Rulebook, PerformLine Scanner, and Filestage Certificate", async ({ page }) => {
+  test("Scenario 8: Enterprise Compliance Suite verifies Quality Scorecard, Regulatory Rulebook, Superlative Scanner, and Certificate", async ({ page }) => {
     await page.goto("/");
     // Switch to creator role so we can apply fixes
     await page.getByRole("combobox", { name: "Role preview" }).selectOption("creator");
@@ -126,10 +126,10 @@ test.describe("Enterprise Workspaces & Quality Gate Workflows", () => {
 
     // Verify Quality Gate Scorecard is visible and initially blocked
     await expect(page.getByText("PUBLISHING GATE: BLOCKED")).toBeVisible();
-    await expect(page.getByText("Acrolinx Quality Scorecard")).toBeVisible();
+    await expect(page.getByText("4-Pillar Quality Scorecard")).toBeVisible();
 
-    // Test Red Marker Regulatory Rulebook Tab
-    await page.getByRole("tab", { name: /Red Marker Regulatory Rulebook/ }).click();
+    // Test Statutory Regulatory Rulebook Tab
+    await page.getByRole("tab", { name: /Statutory Regulatory Rulebook/ }).click();
     await expect(page.getByText("FTC 16 CFR § 255")).toBeVisible();
     await expect(page.getByText("Lanham Act § 43(a)")).toBeVisible();
     await expect(page.getByText("Mandatory Disclosure Rule")).toBeVisible();
@@ -141,8 +141,8 @@ test.describe("Enterprise Workspaces & Quality Gate Workflows", () => {
       await expect(page.getByText("Footnote Detected")).toBeVisible();
     }
 
-    // Test PerformLine Superlative Scanner Tab
-    await page.getByRole("tab", { name: /PerformLine Superlative Scanner/ }).click();
+    // Test Superlative Claim Scanner Tab
+    await page.getByRole("tab", { name: /Superlative & Comparative Claim Scanner/ }).click();
     await expect(page.getByText("High-Risk Superlative & Absolute Scanner")).toBeVisible();
     await expect(page.locator(".trigger-text")).toContainText("our most reliable laptop yet");
 
@@ -153,7 +153,7 @@ test.describe("Enterprise Workspaces & Quality Gate Workflows", () => {
     }
 
     // Now resolve battery finding to unlock gate
-    await page.getByRole("tab", { name: /Acrolinx Quality Scorecard/ }).click();
+    await page.getByRole("tab", { name: /4-Pillar Quality Scorecard/ }).click();
     const batteryApplyBtn = page.getByRole("button", { name: "Apply" }).first();
     if (await batteryApplyBtn.isVisible()) {
       await batteryApplyBtn.click();

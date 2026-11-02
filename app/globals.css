@@ -44,35 +44,37 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 button:disabled { cursor: not-allowed; opacity: .6; }
 
 .app-shell { display: flex; min-height: 100vh; }
-.sidebar { width: 254px; min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; padding: 29px 17px 18px; background: var(--navy); color: #edf8f4; }
+.sidebar { width: 254px; height: 100vh; position: sticky; top: 0; display: flex; flex-direction: column; flex-shrink: 0; padding: 20px 14px 16px; background: var(--navy); color: #edf8f4; overflow-y: auto; z-index: 100; }
 .brand-lockup { display: flex; align-items: center; gap: 12px; padding: 0 8px; text-decoration: none; }
 .brand-logo-img { width: 36px; height: 36px; flex-shrink: 0; border-radius: 9px; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
 .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; flex-shrink: 0; border-radius: 9px; background: linear-gradient(135deg, #44f2c9 0%, #15b89a 100%); color: #0a2923; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 20px; font-weight: 900; box-shadow: 0 4px 14px rgba(68, 242, 201, 0.35); border: 1px solid rgba(255, 255, 255, 0.3); }
 .brand-text-col { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
 .brand-name { display: block; color: #ffffff !important; font-size: 17.5px; font-weight: 850; letter-spacing: -.03em; line-height: 1.15; }
 .brand-caption { display: block; margin-top: 3px; color: #a4ceca !important; font-size: 9.5px; font-weight: 500; letter-spacing: .01em; line-height: 1.25; }
-.workspace-switcher { display: flex; align-items: center; gap: 9px; width: 100%; margin: 46px 5px 30px; padding: 11px; border: 1px solid #38534f; border-radius: 9px; color: #cfe3de; background: transparent; font-size: 11px; text-align: left; }
+.workspace-switcher { display: flex; align-items: center; gap: 9px; width: 100%; margin: 16px 0 12px; padding: 9px 11px; border: 1px solid #38534f; border-radius: 9px; color: #cfe3de; background: transparent; font-size: 11px; text-align: left; }
 .workspace-switcher:hover { border-color: #5e8179; background: rgba(255, 255, 255, .04); }
 .workspace-dot, .health-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--aqua-deep); box-shadow: 0 0 0 3px rgba(92, 199, 185, .13); }
 .chevron { margin-left: auto; color: #7d9c96; font-size: 16px; }
-.nav-action-btn { display: flex; align-items: center; gap: 10px; min-height: 42px; width: 100%; margin: 0 0 14px; padding: 0 13px; border: 1px solid #385d56; border-radius: 8px; color: #f0fdf9; background: rgba(92, 199, 185, .12); font-size: 12px; font-weight: 650; text-decoration: none; transition: all .2s; cursor: pointer; }
+.nav-action-btn { display: flex; align-items: center; gap: 10px; min-height: 40px; width: 100%; margin: 0 0 12px; padding: 0 13px; border: 1px solid #385d56; border-radius: 8px; color: #f0fdf9; background: rgba(92, 199, 185, .12); font-size: 12px; font-weight: 650; text-decoration: none; transition: all .2s; cursor: pointer; }
 .nav-action-btn:hover { border-color: var(--aqua); background: rgba(92, 199, 185, .22); color: #fff; }
 .nav-action-btn.active { border-color: var(--aqua); background: var(--aqua); color: var(--navy); }
 .nav-action-btn.active span { color: var(--navy); }
 .nav-action-btn span { display: grid; width: 18px; place-items: center; color: var(--aqua); font-size: 16px; font-weight: 700; }
-.nav-list { display: grid; gap: 4px; }
-.nav-item { display: flex; align-items: center; gap: 12px; min-height: 40px; width: 100%; padding: 0 13px; border: 0; border-radius: 8px; color: #93aca7; background: transparent; font-size: 12px; text-align: left; transition: background .2s, color .2s; }
+.nav-list { display: grid; gap: 3px; }
+.nav-item { display: flex; align-items: center; gap: 12px; min-height: 38px; width: 100%; padding: 0 12px; border: 0; border-radius: 8px; color: #93aca7; background: transparent; font-size: 12.5px; text-align: left; transition: background .2s, color .2s; }
 .nav-item span { display: grid; width: 17px; place-items: center; color: #80a39b; font-size: 16px; }
 .nav-item:hover, .nav-item.active { color: #e9faf5; background: #294844; }
 .nav-item.active span { color: var(--aqua); }
 .nav-item b { margin-left: auto; min-width: 19px; padding: 3px 5px; border-radius: 10px; color: var(--navy); background: var(--aqua); text-align: center; font-size: 10px; }
-.sidebar-bottom { margin-top: auto; }
+.sidebar-bottom { margin-top: auto; padding-top: 10px; }
 .nav-item.muted { margin-bottom: 14px; }
 .registry-health { display: flex; align-items: flex-start; gap: 9px; padding: 13px 10px 16px; border-top: 1px solid #35504b; color: #cfe3de; }
 .registry-health strong, .registry-health small { display: block; }
 .registry-health strong { font-size: 11px; font-weight: 650; }
 .registry-health small { margin-top: 4px; color: #7e9d96; font-size: 10px; }
-.profile-card { display: flex; align-items: center; gap: 9px; padding: 11px 8px 0; border-top: 1px solid #35504b; }
+.profile-card { display: flex; align-items: center; gap: 9px; padding: 10px 8px; border-top: 1px solid #35504b; margin-top: auto; border-radius: 8px; transition: background 0.2s; background: transparent; width: 100%; text-align: left; }
+.profile-card:hover { background: rgba(255, 255, 255, 0.05); }
+.profile-card-button { border-left: 0; border-right: 0; border-bottom: 0; cursor: pointer; }
 .avatar { width: 30px; height: 30px; display: grid; place-items: center; flex-shrink: 0; border: 0; border-radius: 50%; color: var(--navy); background: #e4b47d; font-size: 10px; font-weight: 750; }
 .avatar-button { cursor: pointer; }
 .profile-card strong, .profile-card small { display: block; }
@@ -284,7 +286,7 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 .registry-card-compact { display: flex; flex-direction: column; justify-content: space-between; min-height: 170px; }
 .action-first-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; border-radius: 9px; border: 1px solid #cae8dd; background: #f0faf6; }
 
-/* Gated Dispatch & Zernio Publishing Styles */
+/* Gated Dispatch & Multi-Channel Publishing Styles */
 .publish-dispatch-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 0 24px 22px; padding: 16px 20px; border: 1.5px solid #a8e5d0; border-radius: 10px; background: #f0faf5; box-shadow: 0 6px 20px rgba(62, 154, 130, .08); }
 .dispatch-badge { display: flex; align-items: center; gap: 12px; }
 .dispatch-check { width: 32px; height: 32px; display: grid; place-items: center; flex-shrink: 0; border-radius: 50%; color: #fff; background: var(--mint); font-size: 16px; font-weight: 800; }
@@ -1019,8 +1021,8 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 }
 
 /* ==========================================================================
-   ENTERPRISE COMPLIANCE & QUALITY GATE SUITE (Reverse-Engineered Features)
-   Acrolinx · Red Marker · PerformLine · Filestage
+   ENTERPRISE COMPLIANCE & QUALITY GATE SUITE
+   4-Pillar Scorecard · Statutory Rulebook · Superlative Scanner · Sign-Off Matrix
    ========================================================================== */
 
 .quality-gate-container {
@@ -1192,7 +1194,7 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
   animation: panel-in 140ms ease-out;
 }
 
-/* Acrolinx Scorecard */
+/* 4-Pillar Quality Scorecard */
 .gate-score-summary-bar {
   display: grid;
   grid-template-columns: 140px 1fr;
@@ -1314,7 +1316,7 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
   line-height: 1.35;
 }
 
-/* Red Marker Rulebook Grid */
+/* Statutory Regulatory Rulebook Grid */
 .rulebook-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1454,7 +1456,7 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
   background: #a46d29;
 }
 
-/* PerformLine Superlative Scanner */
+/* Superlative & Comparative Claim Scanner */
 .superlative-scanner-box {
   background: #fafcfb;
   border: 1px solid #dce8e1;
@@ -1606,7 +1608,7 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
   margin: 2px 0 0;
 }
 
-/* Filestage Sign-Off Matrix */
+/* Multi-Stakeholder Sign-Off Matrix */
 .signoff-matrix-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

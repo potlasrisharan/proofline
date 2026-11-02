@@ -138,7 +138,7 @@ export function ComplianceQualityGate({
         <div className="gate-title-block">
           <div className="gate-kicker-row">
             <span className="gate-kicker">ENTERPRISE COMPLIANCE SUITE</span>
-            <span className="gate-benchmark-chip">Acrolinx · Red Marker · PerformLine · Filestage</span>
+            <span className="gate-benchmark-chip">Statutory Rules · Quality Index · Claim Validation · Stakeholder Sign-Off</span>
             <span className="gate-benchmark-chip">· Role: {currentRoleLabel}</span>
           </div>
           <h3 className="gate-headline">Multi-Dimensional Quality Gate &amp; Legal Audit</h3>
@@ -177,7 +177,7 @@ export function ComplianceQualityGate({
           className={`gate-tab-btn ${activeTab === "scorecard" ? "active" : ""}`}
           onClick={() => setActiveTab("scorecard")}
         >
-          <span>📊</span> Acrolinx Quality Scorecard ({compositeScore}/100)
+          <span>📊</span> 4-Pillar Quality Scorecard ({compositeScore}/100)
         </button>
         <button
           type="button"
@@ -186,7 +186,7 @@ export function ComplianceQualityGate({
           className={`gate-tab-btn ${activeTab === "rulebook" ? "active" : ""}`}
           onClick={() => setActiveTab("rulebook")}
         >
-          <span>⚖️</span> Red Marker Regulatory Rulebook
+          <span>⚖️</span> Statutory Regulatory Rulebook
           {!hasDisclaimer ? <span className="tab-alert-badge">!</span> : null}
         </button>
         <button
@@ -196,7 +196,7 @@ export function ComplianceQualityGate({
           className={`gate-tab-btn ${activeTab === "superlatives" ? "active" : ""}`}
           onClick={() => setActiveTab("superlatives")}
         >
-          <span>🔍</span> PerformLine Superlative Scanner
+          <span>🔍</span> Superlative &amp; Comparative Claim Scanner
           {detectedSuperlative ? <span className="tab-alert-badge">1</span> : null}
         </button>
         <button
@@ -206,11 +206,11 @@ export function ComplianceQualityGate({
           className={`gate-tab-btn ${activeTab === "signoff" ? "active" : ""}`}
           onClick={() => setActiveTab("signoff")}
         >
-          <span>🤝</span> Filestage Sign-Off Matrix
+          <span>🤝</span> Multi-Stakeholder Sign-Off Matrix
         </button>
       </div>
 
-      {/* Tab 1: Acrolinx Quality Scorecard */}
+      {/* Tab 1: 4-Pillar Quality Scorecard */}
       {activeTab === "scorecard" ? (
         <div className="gate-tab-content">
           <div className="gate-score-summary-bar">
@@ -278,7 +278,7 @@ export function ComplianceQualityGate({
         </div>
       ) : null}
 
-      {/* Tab 2: Red Marker Regulatory Rulebook & Disclaimer Detector */}
+      {/* Tab 2: Statutory Regulatory Rulebook & Disclaimer Detector */}
       {activeTab === "rulebook" ? (
         <div className="gate-tab-content">
           <div className="rulebook-grid">
@@ -346,7 +346,7 @@ export function ComplianceQualityGate({
         </div>
       ) : null}
 
-      {/* Tab 3: PerformLine Superlative & Absolute Claim Scanner */}
+      {/* Tab 3: Superlative & Comparative Claim Scanner */}
       {activeTab === "superlatives" ? (
         <div className="gate-tab-content">
           <div className="superlative-scanner-box">
@@ -370,7 +370,7 @@ export function ComplianceQualityGate({
                   <span className="risk-level-tag high">Tier 1: High Regulatory Scrutiny</span>
                 </div>
                 <p className="trigger-rationale">
-                  <strong>PerformLine Rule:</strong> Superlative claim requires an active third-party audited MTBF (Mean Time Between Failures) benchmark on file. No benchmark source found in VoltEdge registry.
+                  <strong>Statutory Rule:</strong> Superlative claim requires an active third-party audited MTBF (Mean Time Between Failures) benchmark on file. No benchmark source found in VoltEdge registry.
                 </p>
                 {onApplySafeHarbor ? (
                   <div className="safe-harbor-action-bar">
@@ -397,7 +397,7 @@ export function ComplianceQualityGate({
         </div>
       ) : null}
 
-      {/* Tab 4: Filestage Multi-Stakeholder Sign-Off Matrix */}
+      {/* Tab 4: Multi-Stakeholder Sign-Off Matrix */}
       {activeTab === "signoff" ? (
         <div className="gate-tab-content">
           <div className="signoff-matrix-grid">
@@ -461,7 +461,7 @@ export function ComplianceQualityGate({
                 )}
               </div>
               <small className="step-timestamp">
-                {auditState === "approved" ? "Zernio Multi-Channel Active" : "Unlocks upon legal approval"}
+                {auditState === "approved" ? "Multi-Channel Dispatch Active" : "Unlocks upon legal approval"}
               </small>
             </div>
           </div>

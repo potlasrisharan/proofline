@@ -699,7 +699,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
           <div className={styles.metricSubtext}>&ldquo;most reliable&rdquo; claim</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Acrolinx Quality Index</div>
+          <div className={styles.metricLabel}>Quality Score Index</div>
           <div className={styles.metricValue}>95.2 <span className={styles.metricChange}>/ 100</span></div>
           <div className={styles.metricSubtext}>Accuracy + Legal + A11y</div>
         </div>
@@ -711,7 +711,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
       </div>
 
       <div className={styles.dashboardWorkbench}>
-        {/* Left: 4-Pillar Acrolinx Quality Scorecard */}
+        {/* Left: 4-Pillar Quality Scorecard */}
         <section className={styles.panelCard}>
           <h2 className={styles.panelTitle}>4-Pillar Regulatory &amp; Brand Scorecard</h2>
           <p className={styles.panelSub}>Statutory clearinghouse for VoltEdge marketing copy</p>
@@ -760,7 +760,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
 
           <div style={{ background: "#f8fbfd", border: "1px solid #d3e4f3", borderRadius: 8, padding: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 800, color: "#154278", marginBottom: 6 }}>
-              PerformLine Superlative Scanner
+              Superlative &amp; Comparative Claim Scanner
             </div>
             <p style={{ fontSize: 11, margin: 0, color: "#2d5483", lineHeight: 1.5 }}>
               Claim flagged: <em>&ldquo;our most reliable laptop yet&rdquo;</em> (High-risk comparative claim under Lanham Act §43(a)).
@@ -841,7 +841,7 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Multi-Channel Dispatch</div>
-          <div className={styles.metricValue}>{dispatched ? "9" : "8"} <span className={styles.metricChange}>Zernio API</span></div>
+          <div className={styles.metricValue}>{dispatched ? "9" : "8"} <span className={styles.metricChange}>Channels Active</span></div>
           <div className={styles.metricSubtext}>LinkedIn, X, Instagram</div>
         </div>
       </div>
@@ -882,7 +882,7 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
         {/* Right: Multi-Channel Dispatch Console */}
         <section className={styles.panelCard}>
           <h2 className={styles.panelTitle}>1-Click Gated Multi-Channel Dispatch</h2>
-          <p className={styles.panelSub}>Zernio social integration (Unlocked only after legal approval)</p>
+          <p className={styles.panelSub}>Connected social integration (Unlocked only after legal approval)</p>
 
           <div className={styles.channelRow}>
             <span><strong>LinkedIn Business Page</strong> (@VoltEdgeLabs)</span>
@@ -902,7 +902,7 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
             className={styles.dispatchBtn}
             onClick={() => setDispatched(true)}
           >
-            {dispatched ? "✓ Content Dispatched to All Channels (Zernio Live)" : "🚀 1-Click Dispatch to Social Channels"}
+            {dispatched ? "✓ Content Dispatched to All Channels (Live)" : "🚀 1-Click Dispatch to Social Channels"}
           </button>
         </section>
       </div>

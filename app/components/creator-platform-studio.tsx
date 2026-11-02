@@ -75,7 +75,7 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     primaryRules: [
       "CAN-SPAM Act compliance: explicit opt-out & physical address disclosure",
       "Truth Registry verification on technical specifications",
-      "PerformLine absolute & superlative scanner",
+      "Absolute & superlative claim scanner",
     ],
   },
   press_release: {
@@ -187,7 +187,7 @@ export function CreatorPlatformStudioModal({
     if (/most reliable/i.test(text)) {
       superlativeIssues.push({
         flagged: "our most reliable laptop yet",
-        rule: "Lanham Act § 43(a) & PerformLine Absolute Scanner",
+        rule: "Lanham Act § 43(a) Superlative Claim Scanner",
         rewrite: "our most thoroughly tested laptop yet",
       });
     }

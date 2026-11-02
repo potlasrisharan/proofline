@@ -532,7 +532,13 @@ export default function Home() {
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isComplianceCertOpen, setIsComplianceCertOpen] = useState(false);
-  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("openSwitchRole") === "true" || params.get("switchRole") === "1";
+    }
+    return false;
+  });
   const [isCreatorStudioOpen, setIsCreatorStudioOpen] = useState(false);
   const [isIndicModalOpen, setIsIndicModalOpen] = useState(false);
   const [indicLang, setIndicLang] = useState<"te" | "hi">("te");
@@ -715,7 +721,7 @@ export default function Home() {
     setSubmittedContent(revisedContent);
     setAuditState("needs-changes");
     setFindings((current) => current.map((item) => (item.id === "reliable" ? { ...item, resolved: true, actionStatus: "accepted" } : item)));
-    addActivity({ icon: "⚖️", title: "Safe-harbor applied", detail: `PerformLine safe-harbor rewrite added to ${nextLabel}.`, time: "Just now", tone: "good" });
+    addActivity({ icon: "⚖️", title: "Safe-harbor applied", detail: `Statutory safe-harbor rewrite added to ${nextLabel}.`, time: "Just now", tone: "good" });
     appendAuditEvent({ kind: "suggestion_applied", actor: "Maya Chen", role: currentRole, summary: `Superlative safe-harbor rewrite applied to ${nextLabel}.`, contentVersion: nextLabel });
     notify("Safe-harbor rewrite applied to new revision.");
   }
@@ -771,13 +777,13 @@ export default function Home() {
         kind: "revision_approved",
         actor: "Maya Chen",
         role: currentRole,
-        summary: `Dispatched to ${selectedChannels.join(", ")} via Zernio Sandbox (Simulated).`,
+        summary: `Dispatched to ${selectedChannels.join(", ")} via Multi-Channel Dispatch (Simulated).`,
         contentVersion,
       });
       addActivity({
         icon: "↗",
         title: `Dispatched to ${selectedChannels.length} channels`,
-        detail: `Zernio sandbox mock: ${selectedChannels.join(", ")}.`,
+        detail: `Social & CMS dispatch: ${selectedChannels.join(", ")}.`,
         time: "Just now",
         tone: "good",
       });
@@ -1264,7 +1270,7 @@ export default function Home() {
                             setIsPublishModalOpen(true);
                           }}
                         >
-                          Dispatch to Channels (Zernio) ↗
+                          Dispatch to Channels ↗
                         </button>
                       </div>
                     </section>
@@ -1302,11 +1308,11 @@ export default function Home() {
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
               <Image src="/logo.png" alt="Proofline" width={22} height={22} style={{ borderRadius: 5, border: "1px solid rgba(0,0,0,0.1)" }} />
               <p className="eyebrow" style={{ margin: 0 }}>Gated Multi-Platform Dispatch</p>
-              <span className="badge-pill pill-risk" style={{ fontSize: 9 }}>SIMULATED · Zernio Sandbox Mock</span>
+              <span className="badge-pill pill-risk" style={{ fontSize: 9 }}>SIMULATED · Multi-Channel Dispatch Mock</span>
             </div>
             <h2 id="dispatch-modal-title">Publish approved revision</h2>
             <p className="modal-copy">
-              Dispatches verified content across connected social channels and CMS via Zernio API. 
+              Dispatches verified content across connected social channels and CMS via verified channel APIs. 
               Unverified claims are strictly blocked from distribution.
             </p>
 
