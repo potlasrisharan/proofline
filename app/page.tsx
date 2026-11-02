@@ -463,13 +463,6 @@ function initialDashboardView(): View {
 
 const emptySubscribe = () => () => {};
 
-function getClientGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return "Good morning";
-  if (hour >= 12 && hour < 17) return "Good afternoon";
-  return "Good evening";
-}
-
 function getClientDateString(): string {
   try {
     return new Date().toLocaleDateString("en-US", {
@@ -556,7 +549,6 @@ export default function Home() {
   const [submittedContent, setSubmittedContent] = useState(defaultSubmitForm.content);
   const [localRegistryRecords, setLocalRegistryRecords] = useState<RegistryRecord[]>(registryRecords);
   const [sourceDraft, setSourceDraft] = useState({ title: "Campaign claims policy", scope: "VoltEdge Labs", validity: "Current · reviewed October 25, 2026" });
-  const greeting = useSyncExternalStore(emptySubscribe, getClientGreeting, () => "Good morning");
   const currentDateStr = useSyncExternalStore(emptySubscribe, getClientDateString, () => "Sunday, October 25, 2026");
 
   const permissions = rolePermissions[currentRole];
@@ -946,6 +938,18 @@ export default function Home() {
               </button>
             </div>
             <span className="save-state"><span className="health-dot" /> Enterprise workspace</span>
+            {activeView !== "overview" ? (
+              <button
+                type="button"
+                className="ghost-button"
+                style={{ fontSize: 11, padding: "4px 9px", height: 30, display: "inline-flex", alignItems: "center", gap: 5 }}
+                onClick={() => navigate("overview")}
+                title="Return to Home Page & Role Logins"
+              >
+                <span>🏠</span>
+                <span>Home &amp; Logins</span>
+              </button>
+            ) : null}
             <label className="role-preview"><span>Role preview</span><select aria-label="Role preview" value={currentRole} onChange={(event) => changeRole(event.target.value as ProoflineRole)}>{(Object.keys(roleLabels) as ProoflineRole[]).map((role) => <option value={role} key={role}>{roleLabels[role]}</option>)}</select></label>
             <button className="icon-button" type="button" aria-label="Open AI and services disclosure" onClick={() => setIsDisclosureOpen(true)}>?</button>
             <button
@@ -969,140 +973,39 @@ export default function Home() {
 
           {activeView === "overview" ? (
             <section className="view-panel" aria-labelledby="overview-heading">
-              <div className="page-heading">
-                <div>
-                  <p className="eyebrow" suppressHydrationWarning>{currentDateStr} <span className="eyebrow-dot" /> VoltEdge Workspace</p>
-                  <h1 id="overview-heading" suppressHydrationWarning>{greeting}, {activePersona.name.split(" ")[0]}.</h1>
-                  <button
-                    className="friendly-role-badge clickable-role-badge"
-                    type="button"
-                    onClick={() => setIsRoleModalOpen(true)}
-                    title="Click to switch account / role"
-                  >
-                    <span>👤</span>
-                    <span>Logged in as <strong>{activePersona.name} ({activePersona.title})</strong> · <code>{activePersona.email}</code></span>
-                    <span className="role-switch-pill">⇄ Switch Role</span>
-                  </button>
-                  <p className="lede">Your workspace has <strong>{openReviewCount} items</strong> waiting for a human decision.</p>
-                </div>
-                <div className="overview-actions">
-                  <button className="ghost-button" type="button" onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}>
-                    Take the guided tour
-                  </button>
-                  {permissions.canStartReview ? (
-                    <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}>
-                      <span>＋</span> Start a review
-                    </button>
-                  ) : (
-                    <span className="permission-note heading-permission">Read-only reviewer view</span>
-                  )}
-                </div>
-              </div>
-
-              {/* SEPARATE MAIN SCREEN GATEWAY BANNER */}
-              <div
-                className="portal-entry-card"
-                role="region"
-                aria-label="Separate Main Screen & Dedicated Dashboards"
-                style={{
-                  background: "#ffffff",
-                  border: "2px solid #176553",
-                  borderRadius: 12,
-                  padding: "16px 22px",
-                  margin: "18px 0 20px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 16,
-                  boxShadow: "0 4px 18px rgba(23, 101, 83, 0.08)",
-                  flexWrap: "wrap",
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 800, color: "#176553", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                    🚀 SEPARATE MAIN SCREEN &amp; DEDICATED ROLE DASHBOARDS
-                  </div>
-                  <h3 style={{ fontSize: 17, fontWeight: 850, color: "#0c2b23", margin: "4px 0" }}>
-                    Proofline Enterprise Role Portal
-                  </h3>
-                  <p style={{ fontSize: 12, color: "#496a5f", margin: 0, lineHeight: 1.5 }}>
-                    Access the separate main screen with individual logins and tailored dashboards for Creator, Campaign Manager, Legal Reviewer, Brand Owner, and Agency Partner.
-                  </p>
-                </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <Link
-                    href="/portal"
-                    prefetch={false}
-                    className="primary-button"
-                    style={{ textDecoration: "none", whiteSpace: "nowrap", padding: "10px 18px", fontSize: 12, fontWeight: 800 }}
-                  >
-                    Open Separate Main Screen (/portal) →
-                  </Link>
-                </div>
-              </div>
-
-              {/* WHAT WE PROVIDE - HERO & CORE VALUE PILLARS */}
-              <div className="what-we-provide-hero" role="region" aria-label="What Proofline Provides">
+              {/* HOME PAGE HERO & VALUE BANNER */}
+              <div className="what-we-provide-hero" role="region" aria-label="What Proofline Provides" style={{ margin: "0 0 24px" }}>
                 <div className="what-we-provide-badge">
                   <span>🛡️</span>
-                  <span>What Proofline Provides · Automated Brand Truth &amp; Quality Gate</span>
+                  <span suppressHydrationWarning>Enterprise Brand Truth · Automated Quality Gate · {currentDateStr}</span>
                 </div>
-                <h2 className="what-we-provide-title">
+                <h1 className="what-we-provide-title" id="overview-heading">
                   The Automated Quality Gate &amp; Fact-Checker Before You Publish.
-                </h2>
+                </h1>
                 <p className="what-we-provide-lede">
-                  Proofline protects brands from unverified claims, regulatory fines, and reputational risk. We automatically verify marketing text, product announcements, and creator posts against your company&apos;s approved specifications and legal guidelines with 1-click fixes.
+                  Proofline protects brands from unverified claims, regulatory fines (FTC §5 &amp; Lanham Act §43(a)), and reputational damage. Select your corporate role below to log in and access your dedicated dashboard.
                 </p>
-
-                <div className="what-we-provide-grid">
-                  <div className="provide-card">
-                    <div className="provide-icon-box coral">🎯</div>
-                    <h3>1. Automated Spec &amp; Fact Verification</h3>
-                    <p>
-                      Automatically catches false numbers and specs (like claiming &ldquo;20h battery&rdquo; when lab tests say &ldquo;12 hours&rdquo;). Highlights inaccuracies with visual diffs and applies approved lab specs in 1 click.
-                    </p>
-                    <span className="provide-badge">Zero Hallucinations</span>
-                  </div>
-
-                  <div className="provide-card">
-                    <div className="provide-icon-box blue">⚖️</div>
-                    <h3>2. Legal &amp; Regulatory Quality Gate</h3>
-                    <p>
-                      Scans copy against statutory rules (FTC 16 CFR § 255 sponsorship tags, Lanham Act § 43(a) superlative risks). Automatically generates tamper-proof cryptographic compliance certificates.
-                    </p>
-                    <span className="provide-badge">Audit-Proof Evidence</span>
-                  </div>
-
-                  <div className="provide-card">
-                    <div className="provide-icon-box mint">🚀</div>
-                    <h3>3. Role Governance &amp; Gated Dispatch</h3>
-                    <p>
-                      Strict separation of duties across Creators, Editorial Managers, Legal Reviewers, and Brand Owners. Unlocks 1-click gated multi-channel dispatch (LinkedIn, X, Instagram) only after human sign-off.
-                    </p>
-                    <span className="provide-badge">5 Role Workspaces</span>
-                  </div>
-                </div>
 
                 <div className="what-we-provide-actions">
                   <button
                     className="primary-button"
-                    type="button"
-                    onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
-                  >
-                    ▶ Take Guided Product Tour
-                  </button>
-                  <button
-                    className="ghost-button"
                     type="button"
                     onClick={() => {
                       navigate("reviews");
                       setSelectedReviewId("novabook-launch");
                       setDetailTab("findings");
                       setSelectedSpanId("battery");
-                      notify("Inspecting NovaBook S1 launch email in review workspace.");
+                      notify("Opening NovaBook S1 review workspace.");
                     }}
                   >
                     Open Review Workspace →
+                  </button>
+                  <button
+                    className="ghost-button"
+                    type="button"
+                    onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
+                  >
+                    ▶ Take Guided Product Tour
                   </button>
                   <Link className="ghost-button" href="/submit" prefetch={false}>
                     ＋ Test Marketing Copy Now
@@ -1110,11 +1013,41 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* SINGLE ENTERPRISE LOGIN & QUICK-ROLE ACCESS DIRECTLY BELOW */}
+              {/* ROLE-BASED LOGIN GATEWAY (FRONT & CENTER ON HOME PAGE) */}
               <EnterpriseSingleLogin
                 currentRole={currentRole}
                 onSelectRole={launchRoleDashboard}
               />
+
+              {/* THREE CORE VALUE PILLARS */}
+              <div className="what-we-provide-grid" style={{ margin: "24px 0" }}>
+                <div className="provide-card">
+                  <div className="provide-icon-box coral">🎯</div>
+                  <h3>1. Automated Spec &amp; Fact Verification</h3>
+                  <p>
+                    Automatically catches false numbers and specs (like claiming &ldquo;20h battery&rdquo; when lab tests say &ldquo;12 hours&rdquo;). Highlights inaccuracies with visual diffs and applies approved lab specs in 1 click.
+                  </p>
+                  <span className="provide-badge">Zero Hallucinations</span>
+                </div>
+
+                <div className="provide-card">
+                  <div className="provide-icon-box blue">⚖️</div>
+                  <h3>2. Legal &amp; Regulatory Quality Gate</h3>
+                  <p>
+                    Scans copy against statutory rules (FTC 16 CFR § 255 sponsorship tags, Lanham Act § 43(a) superlative risks). Automatically generates tamper-proof cryptographic compliance certificates.
+                  </p>
+                  <span className="provide-badge">Audit-Proof Evidence</span>
+                </div>
+
+                <div className="provide-card">
+                  <div className="provide-icon-box mint">🚀</div>
+                  <h3>3. Role Governance &amp; Gated Dispatch</h3>
+                  <p>
+                    Strict separation of duties across Creators, Editorial Managers, Legal Reviewers, and Brand Owners. Unlocks 1-click gated multi-channel dispatch (LinkedIn, X, Instagram) only after human sign-off.
+                  </p>
+                  <span className="provide-badge">5 Role Workspaces</span>
+                </div>
+              </div>
 
               <footer className="footer">
                 <span>Proofline · VoltEdge workspace · Truth Engine active</span>
