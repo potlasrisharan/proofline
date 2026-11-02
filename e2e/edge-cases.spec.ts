@@ -13,8 +13,8 @@ test.describe("Edge Cases, Robustness & Direct Visits Audit", () => {
     test("handles bad inputs: empty content and empty review name", async ({ page }) => {
       await page.goto("/submit");
 
-      // Switch to Local Demo mode for offline predictable tests
-      await page.getByRole("radio", { name: /Local Demo/ }).click();
+      // Switch to Local Engine mode for offline predictable tests
+      await page.getByRole("radio", { name: /Local (Demo|Engine)/ }).click();
 
       // Clear out text and title
       await page.getByLabel("Paste content").fill("");
@@ -33,7 +33,7 @@ test.describe("Edge Cases, Robustness & Direct Visits Audit", () => {
 
     test("handles duplicate clicks and rapid submissions safely", async ({ page }) => {
       await page.goto("/submit");
-      await page.getByRole("radio", { name: /Local Demo/ }).click();
+      await page.getByRole("radio", { name: /Local (Demo|Engine)/ }).click();
 
       const submitButton = page.getByRole("button", { name: "Run evidence check" });
       await expect(submitButton).toBeEnabled();

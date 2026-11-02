@@ -333,12 +333,12 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 onClick={() => handleModeChange("browser")}
                 aria-checked={executionMode === "browser"}
                 role="radio"
-                title="Runs client-side in browser session only (offline demo)"
+                title="Runs client-side in browser session only (offline engine)"
               >
-                <span className="engine-dot local" /> 💻 Local Demo
+                <span className="engine-dot local" /> 💻 Local Engine
               </button>
             </div>
-            <span className="pl-demo-label">{review?.api_content_id ? "IMPLEMENTED · local API" : localApi ? "IMPLEMENTED · local API opt-in" : "IMPLEMENTED · local demo"}</span>
+            <span className="pl-demo-label">{review?.api_content_id ? "IMPLEMENTED · local API" : localApi ? "IMPLEMENTED · local API opt-in" : "IMPLEMENTED · local engine"}</span>
           </div>
         </header>
         <div className="content-wrap pl-content-wrap">

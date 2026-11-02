@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { ProoflineRole } from "../lib/proofline-api";
 
 export type DemoPersona = {
@@ -116,91 +116,148 @@ export const demoPersonas: Record<ProoflineRole, DemoPersona> = {
   },
 };
 
-export function RoleDashboardShowcase({
+export function EnterpriseSingleLogin({
   currentRole,
   onSelectRole,
+  compact = false,
+  onSuccess,
 }: {
   currentRole: ProoflineRole;
   onSelectRole: (role: ProoflineRole) => void;
+  compact?: boolean;
+  onSuccess?: () => void;
 }) {
   const personas = useMemo(() => Object.values(demoPersonas), []);
+  const activePersona = demoPersonas[currentRole] ?? demoPersonas.legal_reviewer;
+  const [emailInput, setEmailInput] = useState(activePersona.email);
+  const [passwordInput, setPasswordInput] = useState("••••••••••••••••");
+  const [loginMessage, setLoginMessage] = useState<string | null>(null);
+
+  const handleManualSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanEmail = emailInput.trim().toLowerCase();
+    const matched = personas.find((p) => p.email.toLowerCase() === cleanEmail);
+    if (matched) {
+      onSelectRole(matched.role);
+      setLoginMessage(`Signed in as ${matched.name} (${matched.title})`);
+      onSuccess?.();
+    } else {
+      onSelectRole("legal_reviewer");
+      setLoginMessage(`Signed in as Authorised Reviewer (${cleanEmail})`);
+      onSuccess?.();
+    }
+  };
+
+  const handleQuickLogin = (role: ProoflineRole) => {
+    const p = demoPersonas[role];
+    setEmailInput(p.email);
+    setPasswordInput("••••••••••••••••");
+    onSelectRole(role);
+    setLoginMessage(`Switched session to ${p.name} (${p.title})`);
+    onSuccess?.();
+  };
 
   return (
-    <section className="role-showcase-container" aria-label="Role-based dashboards and demo login">
-      <div className="role-showcase-header">
-        <div className="role-showcase-title-row">
-          <span className="role-showcase-kicker">ENTERPRISE ROLE-BASED WORKSPACES</span>
-          <span className="separation-badge">✓ Strict Separation of Duties Enforced</span>
+    <section className={`single-login-container ${compact ? "compact" : ""}`} aria-label="Enterprise workspace single login">
+      <div className="single-login-card">
+        <div className="single-login-header">
+          <div className="single-login-kicker-row">
+            <span className="single-login-badge">ENTERPRISE IDENTITY &amp; ACCESS</span>
+            <span className="single-login-active-tag">
+              ● Currently Active: <strong>{activePersona.name}</strong> ({activePersona.role})
+            </span>
+          </div>
+          <h2 className="single-login-title" id="single-login-modal-title">Sign In to VoltEdge Workspace</h2>
+          <p className="single-login-sub">
+            Access your role-governed workspace with corporate credentials, or click any account below to sign in instantly with tailored permissions and dashboard views.
+          </p>
         </div>
-        <h2 className="role-showcase-heading">Role Dashboards &amp; 1-Click Demo Login</h2>
-        <p className="role-showcase-lede">
-          Proofline separates drafting, editorial coordination, legal compliance, and executive publishing.
-          Select any role below to launch their customized workspace with realistic fictional credentials:
-        </p>
-      </div>
 
-      <div className="role-cards-grid">
-        {personas.map((p) => {
-          const isActive = currentRole === p.role;
-          return (
-            <article
-              key={p.role}
-              className={`role-persona-card ${p.badgeTone} ${isActive ? "active-session" : ""}`}
-            >
-              <div className="persona-card-top">
-                <div className={`persona-avatar ${p.badgeTone}`}>{p.initials}</div>
-                <div className="persona-info-col">
-                  <div className="persona-name-row">
-                    <h3 className="persona-name">{p.name}</h3>
-                    {isActive ? (
-                      <span className="active-role-tag">● Active Session</span>
-                    ) : null}
+        {/* Standard Corporate Login Form */}
+        <form className="single-login-form" onSubmit={handleManualSubmit}>
+          <div className="single-login-fields-row">
+            <div className="login-field-group">
+              <label htmlFor="login-email-input">Corporate Email</label>
+              <input
+                id="login-email-input"
+                type="email"
+                required
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                placeholder="name@voltedge.io"
+                className="login-input"
+              />
+            </div>
+            <div className="login-field-group">
+              <label htmlFor="login-pwd-input">Password</label>
+              <input
+                id="login-pwd-input"
+                type="password"
+                required
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="••••••••••••"
+                className="login-input"
+              />
+            </div>
+            <button type="submit" className="login-submit-button">
+              Sign In to Workspace →
+            </button>
+          </div>
+          {loginMessage ? (
+            <div className="login-success-feedback" role="status">
+              ✓ {loginMessage}
+            </div>
+          ) : null}
+        </form>
+
+        {/* Divider */}
+        <div className="single-login-divider">
+          <span>Or sign in instantly with an enterprise role</span>
+        </div>
+
+        {/* Unified 1-Click Role Login Buttons Below Form */}
+        <div className="single-login-role-buttons" role="region" aria-label="1-Click Enterprise Role Logins">
+          {personas.map((p) => {
+            const isActive = currentRole === p.role;
+            return (
+              <button
+                key={p.role}
+                type="button"
+                className={`single-role-btn ${p.badgeTone} ${isActive ? "active" : ""}`}
+                onClick={() => handleQuickLogin(p.role)}
+                title={`Sign in as ${p.name} (${p.title})`}
+                aria-label={`Sign in as ${p.name} (${p.title})`}
+              >
+                <div className={`single-role-avatar ${p.badgeTone}`}>{p.initials}</div>
+                <div className="single-role-info">
+                  <div className="single-role-top">
+                    <span className="single-role-name">{p.name}</span>
+                    <span className="single-role-tag">{p.title}</span>
                   </div>
-                  <span className="persona-title">{p.title}</span>
-                  <span className="persona-dept">{p.department}</span>
+                  <div className="single-role-email">{p.email}</div>
+                  <div className="single-role-focus">
+                    <strong>Focus:</strong> {p.focus}
+                  </div>
                 </div>
-              </div>
-
-              {/* Demo Credentials Box */}
-              <div className="persona-credentials-box">
-                <span className="cred-label">Demo Credentials:</span>
-                <code className="cred-email">{p.email}</code>
-                <span className="cred-role-tag">Role: {p.role}</span>
-              </div>
-
-              <div className="persona-focus-row">
-                <span className="focus-label">Primary Dashboard:</span>
-                <strong>{p.focus}</strong>
-              </div>
-
-              <p className="persona-description">{p.description}</p>
-
-              <div className="persona-capabilities-list">
-                <span className="caps-label">Key Capabilities:</span>
-                <ul>
-                  {p.coreCapabilities.map((cap, i) => (
-                    <li key={i}>{cap}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="persona-footer">
-                <span className="persona-permissions-note">{p.permissionsSummary}</span>
-                <button
-                  type="button"
-                  className={`persona-launch-btn ${isActive ? "current" : ""}`}
-                  onClick={() => onSelectRole(p.role)}
-                >
-                  {isActive ? "✓ Currently Active Dashboard" : `⚡ Launch as ${p.name.split(" ")[0]} (${p.role}) →`}
-                </button>
-              </div>
-            </article>
-          );
-        })}
+                <div className="single-role-action">
+                  {isActive ? (
+                    <span className="active-pill">✓ Active Session</span>
+                  ) : (
+                    <span className="login-arrow">Launch as {p.name.split(" ")[0]} →</span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
 }
+
+// Backward-compatible alias for existing views
+export const RoleDashboardShowcase = EnterpriseSingleLogin;
 
 export function ActiveRoleWorkflowBanner({
   currentRole,
@@ -211,7 +268,7 @@ export function ActiveRoleWorkflowBanner({
   onOpenSwitchRole: () => void;
   onOpenCreatorStudio?: () => void;
 }) {
-  const persona = demoPersonas[currentRole];
+  const persona = demoPersonas[currentRole] ?? demoPersonas.legal_reviewer;
 
   return (
     <div className={`active-role-workflow-banner ${persona.badgeTone}`} role="region" aria-label="Active role workflow context">
@@ -257,16 +314,16 @@ export function ActiveRoleWorkflowBanner({
           type="button"
           className="role-switch-trigger-btn"
           onClick={onOpenSwitchRole}
-          title="Switch to another persona / dashboard"
+          title="Switch account / enterprise role"
         >
-          ⇄ Switch Demo Role
+          ⇄ Switch Account / Role
         </button>
       </div>
     </div>
   );
 }
 
-export function DemoRoleModal({
+export function SingleLoginModal({
   isOpen,
   onClose,
   currentRole,
@@ -286,59 +343,35 @@ export function DemoRoleModal({
       onClick={onClose}
     >
       <section
-        className="modal-card demo-role-modal-card"
+        className="modal-card single-login-modal-card"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="demo-role-modal-title"
+        aria-labelledby="single-login-modal-title"
         onClick={(event) => event.stopPropagation()}
         onKeyDown={(event) => event.key === "Escape" && onClose()}
       >
         <button
           className="modal-close"
           type="button"
-          aria-label="Close role modal"
+          aria-label="Close login dialog"
           onClick={onClose}
         >
           ×
         </button>
 
-        <p className="eyebrow">Enterprise Identity &amp; Access</p>
-        <h2 id="demo-role-modal-title">Switch Demo Persona &amp; Dashboard</h2>
-        <p className="modal-copy">
-          Select any of the 5 organizational personas below to experience their dedicated workflow, permissions, and dashboards:
-        </p>
-
-        <div className="demo-role-modal-list">
-          {Object.values(demoPersonas).map((p) => {
-            const isActive = currentRole === p.role;
-            return (
-              <button
-                key={p.role}
-                type="button"
-                className={`demo-role-modal-item ${p.badgeTone} ${isActive ? "active" : ""}`}
-                onClick={() => {
-                  onSelectRole(p.role);
-                  onClose();
-                }}
-              >
-                <div className={`persona-avatar ${p.badgeTone}`}>{p.initials}</div>
-                <div className="modal-role-info">
-                  <div className="modal-role-top">
-                    <strong>{p.name}</strong>
-                    <span className="modal-role-tag">{p.title}</span>
-                    {isActive ? <span className="active-dot-tag">● Active</span> : null}
-                  </div>
-                  <div className="modal-role-email">{p.email}</div>
-                  <p className="modal-role-focus">
-                    <strong>Focus:</strong> {p.focus} · {p.permissionsSummary}
-                  </p>
-                </div>
-                <span className="modal-role-arrow">→</span>
-              </button>
-            );
-          })}
-        </div>
+        <EnterpriseSingleLogin
+          currentRole={currentRole}
+          onSelectRole={(role) => {
+            onSelectRole(role);
+            onClose();
+          }}
+          compact
+          onSuccess={onClose}
+        />
       </section>
     </div>
   );
 }
+
+// Backward-compatible alias for existing views
+export const DemoRoleModal = SingleLoginModal;

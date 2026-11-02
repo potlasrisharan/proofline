@@ -310,81 +310,308 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 .receipt-item:last-child { border-bottom: 0; }
 .asset-type-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 5px; font-size: 9px; font-weight: 700; background: #edf4f1; color: #3b574f; }
 
-/* Judge Quickstart Banner */
-.judge-guide-card {
-  padding: 16px 20px;
-  background: #f4f8f6;
-  border: 1px solid #cce1d8;
-  border-radius: 9px;
-  margin-bottom: 20px;
+/* Enterprise Single Login & Role Access Suite */
+.single-login-container {
+  margin: 20px 0 24px;
+  background: #ffffff;
+  border: 1px solid #d5e5dd;
+  border-radius: 12px;
+  padding: 20px 24px 22px;
+  box-shadow: 0 4px 18px rgba(18, 48, 42, 0.04);
 }
-.judge-guide-badge {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  color: #123e32;
+.single-login-container.compact {
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  border: none;
+}
+.single-login-header {
+  margin-bottom: 16px;
+}
+.single-login-kicker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
   margin-bottom: 6px;
 }
-.judge-guide-lede {
-  font-size: 11.5px;
-  line-height: 1.5;
-  color: #3b574f;
-  margin: 0 0 14px;
+.single-login-badge {
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  color: #176352;
+  background: #e1f7ef;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
-.judge-guide-steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.judge-guide-step {
-  display: flex;
-  gap: 10px;
-  padding: 10px 12px;
-  background: #fff;
-  border: 1px solid #dce8e2;
-  border-radius: 7px;
-}
-.judge-guide-step .step-badge {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #1b4d3e;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-}
-.judge-guide-step strong {
-  display: block;
-  font-size: 11px;
-  color: #102d25;
-  margin-bottom: 3px;
-}
-.judge-guide-step p {
+.single-login-active-tag {
   font-size: 10px;
-  line-height: 1.4;
-  color: #557067;
+  color: #276b5b;
+  background: #ebf7f3;
+  padding: 3px 9px;
+  border-radius: 5px;
+  border: 1px solid #caebd0;
+}
+.single-login-title {
+  font-size: 16px;
+  font-weight: 850;
+  color: #102e26;
+  margin: 0 0 5px;
+  letter-spacing: -0.01em;
+}
+.single-login-sub {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #557269;
   margin: 0;
 }
-.judge-guide-actions {
+.single-login-form {
+  background: #f8fbf9;
+  border: 1px solid #dbeae2;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.single-login-fields-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.login-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 170px;
+}
+.login-field-group label {
+  font-size: 10px;
+  font-weight: 750;
+  color: #1a493d;
+  letter-spacing: .02em;
+}
+.login-input {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #c7ded3;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #ffffff;
+  color: #12382e;
+  transition: all .15s ease;
+}
+.login-input:focus {
+  outline: none;
+  border-color: #1b6351;
+  box-shadow: 0 0 0 3px rgba(27, 99, 81, 0.12);
+}
+.login-submit-button {
+  height: 36px;
+  padding: 0 16px;
+  background: #174d3f;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.login-submit-button:hover {
+  background: #123e32;
+  transform: translateY(-1px);
+}
+.login-success-feedback {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #156247;
+}
+.single-login-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0 14px;
+  color: #6e8e85;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.single-login-divider::before,
+.single-login-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #e1ece6;
+}
+.single-login-divider span {
+  padding: 0 12px;
+}
+.single-login-role-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+}
+.single-role-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #fbfdfc;
+  border: 1px solid #dce8e1;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s ease;
+}
+.single-role-btn:hover {
+  border-color: #1b6351;
+  background: #f3faf6;
+  transform: translateY(-1px);
+}
+.single-role-btn.active {
+  border-color: #176352;
+  background: #eef8f4;
+  box-shadow: 0 2px 8px rgba(23, 99, 82, 0.08);
+}
+.single-role-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  flex: 0 0 auto;
+}
+.single-role-avatar.coral { background: #cf4f36; }
+.single-role-avatar.amber { background: #b86214; }
+.single-role-avatar.blue { background: #2f54a8; }
+.single-role-avatar.mint { background: #1f6b57; }
+.single-role-avatar.teal { background: #1a6078; }
+.single-role-info {
+  flex: 1;
+  min-width: 0;
+}
+.single-role-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.single-role-name {
+  font-size: 11.5px;
+  font-weight: 750;
+  color: #102d25;
+}
+.single-role-tag {
+  font-size: 9px;
+  font-weight: 700;
+  color: #4b6b61;
+}
+.single-role-email {
+  font-size: 10px;
+  color: #557269;
+  font-family: monospace;
+}
+.single-role-focus {
+  font-size: 9.5px;
+  color: #637f76;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.single-role-action {
+  flex: 0 0 auto;
+}
+.single-role-action .active-pill {
+  font-size: 9px;
+  font-weight: 800;
+  color: #135e4a;
+  background: #d6f2e6;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.single-role-action .login-arrow {
+  font-size: 10px;
+  font-weight: 750;
+  color: #1b6351;
+}
+
+/* Dedicated /login page wrapper */
+.login-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f8f6;
+  color: #14352b;
+}
+.login-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: #ffffff;
+  border-bottom: 1px solid #dce8e1;
+}
+.login-brand-lockup {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
+  text-decoration: none;
+  color: inherit;
 }
-
-/* Judge Quick-Demo Bar & Interactive Showcase */
-.judge-demo-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: linear-gradient(135deg, #132f2b 0%, #1c4a40 100%); color: #fff; border-radius: 9px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(18, 54, 46, .12); border: 1px solid rgba(168, 229, 208, .2); }
-.judge-demo-title { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 750; color: #f0faf5; }
-.judge-demo-badge { padding: 2px 7px; border-radius: 4px; background: rgba(168, 229, 208, .25); color: #a8e5d0; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
-.judge-preset-buttons { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.judge-preset-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .2); border-radius: 6px; color: #fff; font-size: 11px; font-weight: 650; cursor: pointer; transition: all .15s ease; }
-.judge-preset-btn:hover { background: rgba(255, 255, 255, .22); transform: translateY(-1px); }
+.login-brand-text strong {
+  display: block;
+  font-size: 15px;
+  color: #0f2c24;
+}
+.login-brand-text small {
+  display: block;
+  font-size: 9.5px;
+  color: #59776f;
+}
+.login-back-link {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1b6351;
+  text-decoration: none;
+}
+.login-back-link:hover {
+  text-decoration: underline;
+}
+.login-page-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.login-page-card-container {
+  width: 100%;
+  max-width: 680px;
+}
+.login-page-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  font-size: 10.5px;
+  color: #658178;
+  background: #ffffff;
+  border-top: 1px solid #dce8e1;
+}
+.login-page-footer a {
+  color: #1b6351;
+  text-decoration: none;
+}
+.login-page-footer a:hover {
+  text-decoration: underline;
+}
 .indic-tabs { display: flex; gap: 8px; margin: 12px 0; }
 .indic-tab-btn { padding: 6px 14px; border-radius: 6px; border: 1px solid var(--line-strong); background: #fff; font-size: 11px; font-weight: 700; cursor: pointer; color: var(--navy); }
 .indic-tab-btn.active { border-color: var(--blue); background: var(--blue); color: #fff; }
@@ -507,8 +734,6 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 @media (max-width: 720px) { .submit-form-heading, .submit-form-footer { align-items: flex-start; flex-direction: column; }.submit-form-footer .primary-button { width: 100%; }.form-grid { grid-template-columns: 1fr; }.findings-sidebar { grid-template-columns: 1fr; }.finding-method-row { align-items: flex-start; }.confidence-note { width: 100%; margin-left: 0; }.risk-summary-foot { flex-direction: column; }.highlight-legend { align-items: flex-start; flex-direction: column; gap: 7px; }.legend-helper { margin-left: 0; }.alt-text-review { flex-wrap: wrap; }.alt-text-review .ai-badge { margin-left: 31px; }.enhanced-finding-actions { justify-content: flex-start; }.enhanced-finding-actions .small-button { flex: 1; } }
 
 /* Simple, Intuitive Plain-English UX & Onboarding Styles */
-.preset-sub { display: block; font-size: 8px; font-weight: 500; opacity: 0.85; margin-top: 1px; color: #a8e5d0; }
-.judge-preset-btn { flex-direction: column; align-items: flex-start; gap: 2px; padding: 6px 11px; }
 
 .friendly-role-badge {
   display: inline-flex;
@@ -2077,9 +2302,10 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
   border-color: #1c4b40;
 }
 
-/* Demo Role Modal */
+/* Single Login & Role Switcher Modal */
+.single-login-modal-card,
 .demo-role-modal-card {
-  max-width: 580px;
+  max-width: 680px;
   width: 95%;
 }
 

@@ -14,9 +14,9 @@ import { ReviewContentPreview, suggestionReplacement } from "./components/review
 import { SpanComments, type VersionedSpanComment } from "./components/span-comments";
 import { ComplianceQualityGate, ComplianceCertificateModal } from "./components/compliance-quality-gate";
 import {
-  RoleDashboardShowcase,
+  EnterpriseSingleLogin,
   ActiveRoleWorkflowBanner,
-  DemoRoleModal,
+  SingleLoginModal,
   demoPersonas,
 } from "./components/role-dashboard-showcase";
 import { CreatorPlatformStudioModal } from "./components/creator-platform-studio";
@@ -514,7 +514,15 @@ export default function Home() {
   const [activeRevisionId, setActiveRevisionId] = useState("revision-2");
   const [selectedReviewId, setSelectedReviewId] = useState("novabook-launch");
   const [selectedSpanId, setSelectedSpanId] = useState("battery");
-  const [currentRole, setCurrentRole] = useState<ProoflineRole>("legal_reviewer");
+  const [currentRole, setCurrentRole] = useState<ProoflineRole>(() => {
+    if (typeof window !== "undefined") {
+      const stored = window.sessionStorage.getItem("proofline:active-role") || window.localStorage.getItem("proofline:active-role");
+      if (stored === "creator" || stored === "manager" || stored === "legal_reviewer" || stored === "brand_owner" || stored === "agency") {
+        return stored;
+      }
+    }
+    return "legal_reviewer";
+  });
   const [queueRiskFilter, setQueueRiskFilter] = useState<"all" | QueueRisk>("all");
   const [queueStatusFilter, setQueueStatusFilter] = useState<"all" | QueueStatus>("all");
   const [queueSort, setQueueSort] = useState<QueueSort>("risk");
@@ -807,6 +815,10 @@ export default function Home() {
 
   function changeRole(role: ProoflineRole) {
     setCurrentRole(role);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("proofline:active-role", role);
+      window.localStorage.setItem("proofline:active-role", role);
+    }
     const persona = demoPersonas[role] ?? demoPersonas.legal_reviewer;
     if (activeView === "audit-log" && !rolePermissions[role].canViewAuditLog) setActiveView("overview");
     if (activeView === "insights" && !rolePermissions[role].canViewInsights) setActiveView("overview");
@@ -926,10 +938,10 @@ export default function Home() {
                 role="radio"
                 title="Client-side JavaScript only (offline demo)"
               >
-                <span className="engine-dot local" /> 💻 Local Demo
+                <span className="engine-dot local" /> 💻 Local Engine
               </button>
             </div>
-            <span className="save-state"><span className="health-dot" /> Demo state only</span>
+            <span className="save-state"><span className="health-dot" /> Enterprise workspace</span>
             <label className="role-preview"><span>Role preview</span><select aria-label="Role preview" value={currentRole} onChange={(event) => changeRole(event.target.value as ProoflineRole)}>{(Object.keys(roleLabels) as ProoflineRole[]).map((role) => <option value={role} key={role}>{roleLabels[role]}</option>)}</select></label>
             <button className="icon-button" type="button" aria-label="Open AI and services disclosure" onClick={() => setIsDisclosureOpen(true)}>?</button>
             <button
@@ -937,7 +949,7 @@ export default function Home() {
               type="button"
               aria-label={`Open ${activePersona.name} profile`}
               onClick={() => setIsRoleModalOpen(true)}
-              title="Click to switch demo role / credentials"
+              title="Click to switch account / role"
             >
               {activePersona.initials}
             </button>
@@ -951,112 +963,6 @@ export default function Home() {
             onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
           />
 
-          <div className="judge-demo-bar" role="region" aria-label="Judge Quick-Demo Scenarios">
-            <div className="judge-demo-title">
-              <span>⚖️</span>
-              <span>Judge Quick-Demo</span>
-              <span className="judge-demo-badge">1-Click Scenarios</span>
-            </div>
-            <div className="judge-preset-buttons">
-              <button
-                className="judge-preset-btn"
-                type="button"
-                onClick={() => router.push("/impact")}
-                title="Round 3 Improvement 1: Automated re-audit queue when specs change"
-              >
-                <span>① [IMP-1] Impact Radar</span>
-                <span className="preset-sub">When Specs Change</span>
-              </button>
-              <button
-                className="judge-preset-btn"
-                type="button"
-                onClick={() => {
-                  navigate("reviews");
-                  setSelectedReviewId("novabook-launch");
-                  setDetailTab("findings");
-                  setSelectedSpanId("reliable");
-                  notify("Improvement 2: Evidence-or-Abstain Reliability — 'Missing evidence' abstains from guessing vs. hard contradiction on battery.");
-                }}
-                title="Round 3 Improvement 2: Evidence-or-Abstain Reliability Layer"
-              >
-                <span>② [IMP-2] Evidence-or-Abstain</span>
-                <span className="preset-sub">Zero Fake Guesses</span>
-              </button>
-              <button
-                className="judge-preset-btn"
-                type="button"
-                onClick={() => router.push("/insights")}
-                title="Round 3 Improvement 3: Guideline-Gap Detector & recurring mistake telemetry"
-              >
-                <span>③ [IMP-3] Guideline-Gap Detector</span>
-                <span className="preset-sub">Mistake Trends &amp; Fixes</span>
-              </button>
-              <button
-                className="judge-preset-btn"
-                type="button"
-                onClick={() => {
-                  navigate("reviews");
-                  setSelectedReviewId("novabook-launch");
-                  setDetailTab("findings");
-                  setSelectedSpanId("battery");
-                  notify("Demo 4: Inspecting NovaBook S1 claim findings with side-by-side visual diffs and evidence trace.");
-                }}
-                title="Demo 4: Claim Audit & Visual Diff"
-              >
-                <span>④ Claim Audit &amp; Visual Diff</span>
-                <span className="preset-sub">20h → 12h Battery Diff</span>
-              </button>
-              <button
-                className="judge-preset-btn"
-                type="button"
-                onClick={() => setIsIndicModalOpen(true)}
-                title="Demo 5: Sarvam AI Indic cross-lingual checking (Telugu & Hindi)"
-              >
-                <span>⑤ Indic Verification (Sarvam AI)</span>
-                <span className="preset-sub">Telugu &amp; Hindi Audio/Text</span>
-              </button>
-              <button
-                className="judge-preset-btn"
-                type="button"
-                onClick={() => {
-                  navigate("reviews");
-                  setSelectedReviewId("novabook-launch");
-                  setFindings((current) => current.map((f) => ({ ...f, resolved: true, actionStatus: "accepted" as const })));
-                  setAuditState("approved");
-                  setDispatchReceipts(null);
-                  setIsPublishModalOpen(true);
-                  notify("Demo 6: Compliance verified! Gated dispatch unlocked for multi-platform publishing.");
-                }}
-                title="Demo 6: 1-Click Gated Dispatch (Zernio)"
-              >
-                <span>⑥ 1-Click Gated Dispatch (Zernio)</span>
-                <span className="preset-sub">Multi-Platform Publishing</span>
-              </button>
-              <button
-                className="judge-preset-btn"
-                type="button"
-                onClick={() => {
-                  setCurrentRole("legal_reviewer");
-                  navigate("audit-log");
-                  notify("Demo 7: Cryptographic SHA-256 audit log loaded with verified hash chain.");
-                }}
-                title="Demo 7: Cryptographic SHA-256 Audit Chain"
-              >
-                <span>⑦ Cryptographic Audit Chain</span>
-                <span className="preset-sub">Tamper-Proof Proof</span>
-              </button>
-              <button
-                className="judge-preset-btn"
-                type="button"
-                onClick={() => setIsCreatorStudioOpen(true)}
-                title="Demo 8: Creator Multi-Platform Studio with Groq, Sarvam AI, and Fail-Soft Fallbacks"
-              >
-                <span>⑧ Creator Studio (Groq + Sarvam)</span>
-                <span className="preset-sub">LinkedIn, X, IG + AI Fallback</span>
-              </button>
-            </div>
-          </div>
-
           {activeView === "overview" ? (
             <section className="view-panel" aria-labelledby="overview-heading">
               <div className="page-heading">
@@ -1067,7 +973,7 @@ export default function Home() {
                     className="friendly-role-badge clickable-role-badge"
                     type="button"
                     onClick={() => setIsRoleModalOpen(true)}
-                    title="Click to switch persona / demo credentials"
+                    title="Click to switch account / role"
                   >
                     <span>👤</span>
                     <span>Logged in as <strong>{activePersona.name} ({activePersona.title})</strong> · <code>{activePersona.email}</code></span>
@@ -1114,31 +1020,31 @@ export default function Home() {
                   <button
                     className="primary-button"
                     type="button"
+                    onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
+                  >
+                    Take Guided Interactive Tour
+                  </button>
+                  <button
+                    className="ghost-button"
+                    type="button"
                     onClick={() => {
                       navigate("reviews");
                       setSelectedReviewId("novabook-launch");
                       setDetailTab("findings");
                       setSelectedSpanId("battery");
-                      notify("Starting Golden Flow: Inspecting NovaBook S1 launch email.");
+                      notify("Inspecting NovaBook S1 launch email in review workspace.");
                     }}
                   >
-                    ▶ Launch 60-Second Demo
+                    Open Review Workspace →
                   </button>
                   <Link className="ghost-button" href="/submit" prefetch={false}>
-                    ＋ Test Your Own Copy
+                    ＋ Submit Marketing Copy
                   </Link>
-                  <button
-                    className="ghost-button"
-                    type="button"
-                    onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
-                  >
-                    Take Guided Interactive Tour
-                  </button>
                 </div>
               </div>
 
-              {/* ROLE DASHBOARD SHOWCASE & 1-CLICK DEMO CREDENTIAL LOGIN */}
-              <RoleDashboardShowcase
+              {/* ENTERPRISE WORKSPACE SINGLE LOGIN & ROLE ACCESS */}
+              <EnterpriseSingleLogin
                 currentRole={currentRole}
                 onSelectRole={launchRoleDashboard}
               />
@@ -1147,59 +1053,6 @@ export default function Home() {
                 <article className="signal-card highlight"><div className="signal-label">In review <span className="trend up">↑ 18%</span></div><div className="signal-value">{openReviewCount + 8}</div><div className="signal-foot">content items this week</div><div className="mini-bars" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /><i /></div></article>
                 <article className="signal-card"><div className="signal-label">Open findings <span className="trend down">↓ 6%</span></div><div className="signal-value">{openFindings.length + 4}</div><div className="signal-foot">{highCount} high priority in this review</div><div className="progress-track"><span style={{ width: `${Math.max(26, 100 - openFindings.length * 18)}%` }} /></div></article>
                 <article className="signal-card"><div className="signal-label">Registry coverage <span className="trend up">↑ 4%</span></div><div className="signal-value">86<span className="value-unit">%</span></div><div className="signal-foot">facts with an active source</div><div className="progress-track mint"><span style={{ width: "86%" }} /></div></article>
-              </div>
-
-              {/* 60-Second Self-Guided Golden Journey for Judges */}
-              <div className="judge-guide-card" role="region" aria-label="Quick Start Guide for Judges">
-                <div className="judge-guide-badge">🎯 Judge Quickstart — Try the 60-Second Golden Journey</div>
-                <p className="judge-guide-lede">
-                  Proofline is an automated pre-publication quality gate for brand content. You can experience the complete review workflow on your own without any setup:
-                </p>
-                <div className="judge-guide-steps">
-                  <div className="judge-guide-step">
-                    <span className="step-badge">1</span>
-                    <div>
-                      <strong>Inspect Flagged Claims</strong>
-                      <p>View side-by-side red strike-throughs on contradicted specs (e.g. 20h battery vs. approved 12h).</p>
-                    </div>
-                  </div>
-                  <div className="judge-guide-step">
-                    <span className="step-badge">2</span>
-                    <div>
-                      <strong>Apply 1-Click Fix</strong>
-                      <p>Click &ldquo;Apply&rdquo; to replace inaccuracies with approved specs while preserving creator intent.</p>
-                    </div>
-                  </div>
-                  <div className="judge-guide-step">
-                    <span className="step-badge">3</span>
-                    <div>
-                      <strong>Re-scan &amp; Sign Off</strong>
-                      <p>Run re-scan to confirm 0 open findings, approve as human reviewer, and unlock gated multi-platform dispatch.</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="judge-guide-actions">
-                  <button
-                    className="primary-button"
-                    type="button"
-                    onClick={() => {
-                      navigate("reviews");
-                      setSelectedReviewId("novabook-launch");
-                      setDetailTab("findings");
-                      setSelectedSpanId("battery");
-                      notify("Starting Golden Flow: Inspecting NovaBook S1 launch email.");
-                    }}
-                  >
-                    ▶ Launch 60-Second Golden Flow
-                  </button>
-                  <button
-                    className="ghost-button"
-                    type="button"
-                    onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
-                  >
-                    Take Guided Interactive Tour
-                  </button>
-                </div>
               </div>
 
               <div className="dashboard-grid">
@@ -1584,7 +1437,7 @@ export default function Home() {
         </div>
       ) : null}
 
-      <DemoRoleModal
+      <SingleLoginModal
         isOpen={isRoleModalOpen}
         onClose={() => setIsRoleModalOpen(false)}
         currentRole={currentRole}
