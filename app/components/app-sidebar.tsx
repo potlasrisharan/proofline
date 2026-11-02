@@ -168,6 +168,23 @@ export function AppSidebar({
           </div>
         </div>
 
+        <Link
+          href="/portal"
+          prefetch={false}
+          className="nav-item portal-nav-link"
+          title="Open Separate Main Screen with Role Logins & Dashboards"
+          style={{
+            background: "rgba(168, 238, 225, 0.12)",
+            border: "1px solid rgba(168, 238, 225, 0.25)",
+            color: "var(--aqua, #a8eee1)",
+            margin: "4px 8px",
+            borderRadius: 6,
+          }}
+        >
+          <span aria-hidden="true">🚀</span>
+          <span>Role Portals &amp; Dashboards</span>
+        </Link>
+
         <button
           className="profile-card profile-card-button"
           type="button"

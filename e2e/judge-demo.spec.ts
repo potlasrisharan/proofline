@@ -304,4 +304,42 @@ test.describe("Enterprise Workspaces & Quality Gate Workflows", () => {
     await page.getByRole("button", { name: "Skip tour" }).click();
     await expect(page.getByRole("dialog", { name: /Start with the workspace overview|Submit one draft/ })).not.toBeVisible();
   });
+
+  test("Scenario 13: Separate Main Screen (Portal) with Separate Logins and Separate Dashboards", async ({ page }) => {
+    // 1. Visit separate main portal screen
+    await page.goto("/portal");
+    await expect(page.getByRole("heading", { name: "Select Your Role to Access Your Dedicated Dashboard" })).toBeVisible();
+
+    // 2. Verify all 5 separate logins are rendered
+    await expect(page.getByRole("heading", { name: "Aisha Rahman" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Marcus Vance" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Maya Chen" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Lena Ortiz" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Carlos Mendez" })).toBeVisible();
+
+    // 3. Sign in to Creator Dashboard (Aisha)
+    await page.getByRole("button", { name: /Sign In to Aisha's Dashboard/ }).click();
+    await expect(page.getByRole("heading", { name: /Aisha's Content Lead Dashboard/ })).toBeVisible();
+    await expect(page.getByText("Interactive Claims & Spec Inspector")).toBeVisible();
+
+    // 4. Test 1-click lab fix on Creator Dashboard
+    const fixBtn = page.getByRole("button", { name: /1-Click Fix: Replace with 12h Lab Spec/ });
+    await expect(fixBtn).toBeVisible();
+    await fixBtn.click();
+    await expect(page.getByRole("button", { name: /Approved Lab Spec \(12h\) Applied/ })).toBeVisible();
+
+    // 5. Switch to Legal Dashboard (Maya) via selector
+    await page.getByLabel("Switch to another role dashboard").selectOption("legal_reviewer");
+    await expect(page.getByRole("heading", { name: /Maya's Authorised Legal Reviewer Dashboard/ })).toBeVisible();
+    await expect(page.getByText("4-Pillar Regulatory & Brand Scorecard")).toBeVisible();
+
+    // 6. Return to Main Screen via Switch Login
+    await page.getByRole("button", { name: "← Switch Login / All Roles" }).click();
+    await expect(page.getByRole("heading", { name: "Select Your Role to Access Your Dedicated Dashboard" })).toBeVisible();
+
+    // 7. Test open full workspace link
+    await page.getByRole("button", { name: "⇥ Open Full Workspace" }).click();
+    await expect(page).toHaveURL("/");
+    await expect(page.getByText("Enterprise workspace")).toBeVisible();
+  });
 });

@@ -1,0 +1,928 @@
+.portalWrapper {
+  min-height: 100vh;
+  background: #f4f7f5;
+  color: #123028;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.portalHeader {
+  background: #ffffff;
+  border-bottom: 1px solid #d5e5dd;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: 0 2px 10px rgba(18, 48, 40, 0.03);
+}
+
+.brandLockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brandLogo {
+  border-radius: 8px;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandName {
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: #0d2c25;
+}
+
+.brandSub {
+  font-size: 11px;
+  color: #557269;
+}
+
+.headerPills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.systemBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 4px 10px;
+  background: #ebf7f2;
+  color: #176553;
+  border-radius: 6px;
+  border: 1px solid #cce8de;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #25a87b;
+  box-shadow: 0 0 6px rgba(37, 168, 123, 0.6);
+}
+
+.workspaceLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 750;
+  padding: 6px 14px;
+  background: #143e33;
+  color: #ffffff !important;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.workspaceLink:hover {
+  background: #0d2a23;
+  transform: translateY(-1px);
+}
+
+/* Main Content Area */
+.portalMain {
+  flex: 1;
+  padding: 32px 28px 60px;
+  max-width: 1360px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Hero Section on Main Screen */
+.portalHero {
+  text-align: center;
+  max-width: 840px;
+  margin: 0 auto 36px;
+}
+
+.heroKicker {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #186855;
+  background: #e0f6ee;
+  padding: 3px 10px;
+  border-radius: 5px;
+  margin-bottom: 12px;
+  border: 1px solid #caecdf;
+}
+
+.heroTitle {
+  font-size: 32px;
+  font-weight: 850;
+  color: #0b2922;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+
+.heroSubtitle {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #49685e;
+  margin: 0;
+}
+
+/* SSO Quick Form */
+.ssoBar {
+  background: #ffffff;
+  border: 1px solid #d3e4dc;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 16px rgba(18, 48, 40, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ssoBarTitle {
+  font-size: 13px;
+  font-weight: 750;
+  color: #11362d;
+}
+
+.ssoBarSub {
+  font-size: 11px;
+  color: #5b7970;
+  margin-top: 2px;
+}
+
+.ssoInputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ssoInput {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #c7ded3;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #11362d;
+  background: #fafdfb;
+}
+
+.ssoInput:focus {
+  outline: none;
+  border-color: #1a6654;
+  box-shadow: 0 0 0 3px rgba(26, 102, 84, 0.12);
+}
+
+.ssoSubmitBtn {
+  height: 36px;
+  padding: 0 16px;
+  background: #143e33;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ssoSubmitBtn:hover {
+  background: #0f3028;
+  transform: translateY(-1px);
+}
+
+/* Logins Grid */
+.loginCardsSection {
+  margin-bottom: 36px;
+}
+
+.loginCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 18px;
+}
+
+.loginCard {
+  background: #ffffff;
+  border: 1.5px solid #d5e5dd;
+  border-radius: 14px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(18, 48, 40, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.loginCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(18, 48, 40, 0.08);
+}
+
+.loginCard.coral { border-color: #f2c7be; }
+.loginCard.coral:hover { border-color: #dc7968; }
+.loginCard.amber { border-color: #f1dfbc; }
+.loginCard.amber:hover { border-color: #bd8338; }
+.loginCard.blue { border-color: #ccdaf7; }
+.loginCard.blue:hover { border-color: #5579d7; }
+.loginCard.mint { border-color: #c4ebd9; }
+.loginCard.mint:hover { border-color: #3e9a82; }
+.loginCard.teal { border-color: #bee8df; }
+.loginCard.teal:hover { border-color: #2b8a78; }
+
+.loginCardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.roleAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 850;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.roleAvatar.coral { background: #dc7968; }
+.roleAvatar.amber { background: #bd8338; }
+.roleAvatar.blue { background: #5579d7; }
+.roleAvatar.mint { background: #3e9a82; }
+.roleAvatar.teal { background: #2b8a78; }
+
+.roleMeta {
+  flex: 1;
+}
+
+.roleName {
+  font-size: 16px;
+  font-weight: 850;
+  color: #0e2e25;
+  margin: 0 0 2px;
+}
+
+.roleTitle {
+  font-size: 11px;
+  font-weight: 650;
+  color: #58766e;
+}
+
+.roleDepartment {
+  font-size: 10px;
+  color: #79978f;
+  margin-top: 1px;
+}
+
+.roleEmailBadge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  background: #f0f6f3;
+  padding: 3px 7px;
+  border-radius: 4px;
+  color: #20594a;
+  margin-bottom: 12px;
+  display: inline-block;
+  border: 1px solid #dcebe3;
+}
+
+.roleFocusBox {
+  background: #fafdfb;
+  border: 1px solid #e1eee8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #38584f;
+}
+
+.roleFocusBox strong {
+  color: #0f332a;
+}
+
+.capabilitiesList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.capabilityItem {
+  font-size: 11px;
+  color: #49685e;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  line-height: 1.4;
+}
+
+.capabilityCheck {
+  font-size: 12px;
+  font-weight: 850;
+  color: #1f7762;
+  flex-shrink: 0;
+}
+
+.loginCardAction {
+  margin-top: auto;
+}
+
+.loginLaunchBtn {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.loginLaunchBtn.coral { background: #dc7968; }
+.loginLaunchBtn.coral:hover { background: #cb6554; }
+.loginLaunchBtn.amber { background: #bd8338; }
+.loginLaunchBtn.amber:hover { background: #a6702c; }
+.loginLaunchBtn.blue { background: #5579d7; }
+.loginLaunchBtn.blue:hover { background: #4468c4; }
+.loginLaunchBtn.mint { background: #3e9a82; }
+.loginLaunchBtn.mint:hover { background: #32836f; }
+.loginLaunchBtn.teal { background: #2b8a78; }
+.loginLaunchBtn.teal:hover { background: #207363; }
+
+/* Dashboard View Styling */
+.dashboardContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboardNav {
+  background: #ffffff;
+  border: 1px solid #d5e5dd;
+  border-radius: 12px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 3px 12px rgba(18, 48, 40, 0.03);
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 750;
+  background: #edf5f1;
+  color: #194a3d;
+  border: 1px solid #cce2d7;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.backBtn:hover {
+  background: #dfeee6;
+}
+
+.activePersonaPill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pillAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 850;
+  color: #ffffff;
+}
+
+.pillAvatar.coral { background: #dc7968; }
+.pillAvatar.amber { background: #bd8338; }
+.pillAvatar.blue { background: #5579d7; }
+.pillAvatar.mint { background: #3e9a82; }
+.pillAvatar.teal { background: #2b8a78; }
+
+.pillDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.pillName {
+  font-size: 13px;
+  font-weight: 850;
+  color: #0e2d25;
+}
+
+.pillRoleTag {
+  font-size: 10px;
+  color: #55746b;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.roleSelectDropdown {
+  height: 34px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #c7dfd3;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #154538;
+  cursor: pointer;
+}
+
+/* Dashboard Banner */
+.dashboardBanner {
+  background: #ffffff;
+  border: 1px solid #d5e5dd;
+  border-left-width: 6px;
+  border-radius: 12px;
+  padding: 22px 26px;
+  box-shadow: 0 4px 18px rgba(18, 48, 40, 0.04);
+}
+
+.dashboardBanner.coral { border-left-color: #dc7968; }
+.dashboardBanner.amber { border-left-color: #bd8338; }
+.dashboardBanner.blue { border-left-color: #5579d7; }
+.dashboardBanner.mint { border-left-color: #3e9a82; }
+.dashboardBanner.teal { border-left-color: #2b8a78; }
+
+.bannerEyebrow {
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #196b58;
+  margin-bottom: 6px;
+}
+
+.bannerTitle {
+  font-size: 24px;
+  font-weight: 850;
+  color: #0c2b23;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.bannerDescription {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #496a5f;
+  margin: 0;
+}
+
+/* Metrics Grid */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.metricCard {
+  background: #ffffff;
+  border: 1px solid #d7e7df;
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 3px 12px rgba(18, 48, 40, 0.02);
+}
+
+.metricLabel {
+  font-size: 11px;
+  font-weight: 750;
+  color: #55756c;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.metricValue {
+  font-size: 26px;
+  font-weight: 850;
+  color: #0d2e25;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.metricChange {
+  font-size: 11px;
+  font-weight: 750;
+  color: #1e8369;
+}
+
+.metricSubtext {
+  font-size: 10px;
+  color: #69897f;
+  margin-top: 4px;
+}
+
+/* Split Workbench Layout */
+.dashboardWorkbench {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 960px) {
+  .dashboardWorkbench {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panelCard {
+  background: #ffffff;
+  border: 1px solid #d5e5dd;
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 4px 16px rgba(18, 48, 40, 0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.panelTitle {
+  font-size: 15px;
+  font-weight: 850;
+  color: #0d2c25;
+  margin: 0 0 4px;
+}
+
+.panelSub {
+  font-size: 11px;
+  color: #55746b;
+  margin: 0 0 16px;
+}
+
+/* Creator Studio Specific */
+.diffInspectorBox {
+  background: #fbfdfc;
+  border: 1px solid #d5e6de;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.diffHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.diffTag {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.diffTag.contradiction {
+  background: #ffebe6;
+  color: #bc3b27;
+  border: 1px solid #f7c9bf;
+}
+
+.diffTag.verified {
+  background: #e2f7ed;
+  color: #176d54;
+  border: 1px solid #bde8d4;
+}
+
+.draftTextBox {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #14352b;
+  background: #ffffff;
+  border: 1px solid #d7e7df;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.highlightMismatch {
+  background: #ffded6;
+  color: #a42c19;
+  font-weight: 750;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border-bottom: 2px solid #dc7968;
+}
+
+.highlightApproved {
+  background: #dcf5e9;
+  color: #16684f;
+  font-weight: 750;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border-bottom: 2px solid #3e9a82;
+}
+
+.evidenceComparisonRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.evidenceCompareCard {
+  background: #f4f8f6;
+  border: 1px solid #dbeae2;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+
+.evidenceCompareTitle {
+  font-weight: 750;
+  color: #10332a;
+  margin-bottom: 3px;
+}
+
+.applyFixButton {
+  width: 100%;
+  padding: 10px 14px;
+  background: #176450;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.applyFixButton:hover {
+  background: #104e3e;
+  transform: translateY(-1px);
+}
+
+.applyFixButton.applied {
+  background: #258167;
+  cursor: default;
+}
+
+/* Manager Queue Specific */
+.queueTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.queueTable th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #55776d;
+  border-bottom: 1px solid #dcebe3;
+}
+
+.queueTable td {
+  padding: 10px;
+  border-bottom: 1px solid #eef5f1;
+  color: #153c31;
+}
+
+.riskBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.riskBadge.high {
+  background: #ffece8;
+  color: #bf3f2b;
+}
+
+.riskBadge.medium {
+  background: #fff4e0;
+  color: #a36f23;
+}
+
+.riskBadge.low {
+  background: #e2f7ee;
+  color: #1e7d62;
+}
+
+/* Legal Scorecard Specific */
+.scorecardPillars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.pillarRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pillarMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 750;
+  color: #174236;
+}
+
+.pillarBarBg {
+  height: 8px;
+  background: #e6f1ec;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pillarBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.pillarBarFill.blue { background: #5579d7; }
+.pillarBarFill.mint { background: #3e9a82; }
+.pillarBarFill.teal { background: #2b8a78; }
+
+.cryptoCertCard {
+  background: #0f2c24;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.cryptoCertHash {
+  color: #7ce7ca;
+  word-break: break-all;
+  margin-top: 6px;
+}
+
+.signCertBtn {
+  width: 100%;
+  padding: 10px 14px;
+  background: #5579d7;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.signCertBtn:hover {
+  background: #4468c4;
+}
+
+/* Brand Dispatch Specific */
+.channelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #f7faf8;
+  border: 1px solid #dcece4;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.dispatchBtn {
+  width: 100%;
+  padding: 12px 16px;
+  background: #176553;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  transition: all 0.15s ease;
+}
+
+.dispatchBtn:hover {
+  background: #104e3f;
+  transform: translateY(-1px);
+}
+
+/* Agency Sandboxed Specific */
+.maskedNoticeBox {
+  background: #fff8eb;
+  border: 1px solid #fae2b8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  font-size: 11px;
+  color: #8c5b13;
+  line-height: 1.5;
+}
+
+.maskedItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #ffffff;
+  border: 1px solid #ebd9c0;
+  border-radius: 5px;
+  margin-top: 6px;
+  font-family: monospace;
+}
+
+/* Footer */
+.portalFooter {
+  background: #ffffff;
+  border-top: 1px solid #dbeae2;
+  padding: 18px 28px;
+  font-size: 11px;
+  color: #55756c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.portalFooter a {
+  color: #176450;
+  text-decoration: underline;
+}

@@ -338,7 +338,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <span className="engine-dot local" /> 💻 Local Engine
               </button>
             </div>
-            <span className="pl-demo-label">{review?.api_content_id ? "IMPLEMENTED · local API" : localApi ? "IMPLEMENTED · local API opt-in" : "IMPLEMENTED · local engine"}</span>
+            <span className="pl-demo-label">{review?.api_content_id ? "IMPLEMENTED · local API" : (localApi || executionMode === "api") ? "IMPLEMENTED · local API opt-in" : "IMPLEMENTED · local engine"}</span>
           </div>
         </header>
         <div className="content-wrap pl-content-wrap">
