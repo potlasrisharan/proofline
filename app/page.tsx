@@ -973,22 +973,28 @@ export default function Home() {
 
           {activeView === "overview" ? (
             <section className="view-panel" aria-labelledby="overview-heading">
-              {/* 1. GENERAL ORGANIZATION DASHBOARD HERO */}
-              <div className="what-we-provide-hero" role="region" aria-label="What Proofline Provides" style={{ margin: "0 0 20px" }}>
+              {/* 1. WELCOME TO PROOFLINE HERO */}
+              <div className="what-we-provide-hero" role="region" aria-label="Welcome to Proofline" style={{ margin: "0 0 24px" }}>
                 <div className="what-we-provide-badge">
-                  <span>🏢</span>
-                  <span suppressHydrationWarning>VoltEdge Global Overview · General Command Center · {currentDateStr}</span>
+                  <span>✨</span>
+                  <span suppressHydrationWarning>Automated Brand Truth &amp; Quality Gate Before You Publish · {currentDateStr}</span>
                 </div>
                 <h1 className="what-we-provide-title" id="overview-heading">
-                  Organization Truth &amp; Compliance Command Center
+                  Welcome to Proofline
                 </h1>
                 <p className="what-we-provide-lede">
-                  Neutral enterprise overview monitoring global marketing claims, brand specifications, statutory regulatory rules, and cross-department workflows.
+                  We offer automated claim verification, statutory compliance quality gates, and brand-safe publishing across your entire organization. Check out our core services and dedicated role dashboards below:
                 </p>
 
                 <div className="what-we-provide-actions">
+                  <a href="#services-section" className="primary-button" style={{ textDecoration: "none" }}>
+                    ↓ Check Out Our Services
+                  </a>
+                  <a href="#dashboards-section" className="ghost-button" style={{ textDecoration: "none" }}>
+                    ▦ Explore Role Dashboards
+                  </a>
                   <button
-                    className="primary-button"
+                    className="ghost-button"
                     type="button"
                     onClick={() => {
                       navigate("reviews");
@@ -1018,7 +1024,221 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* 2. GENERAL ORGANIZATION KPIS */}
+              {/* 2. WE OFFER THESE SERVICES (Check Them Out) */}
+              <div id="services-section" style={{ margin: "0 0 32px" }}>
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 750, color: "#176553", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    WHAT WE PROVIDE
+                  </div>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0c2b23", margin: "2px 0 4px" }}>
+                    We Offer These Services
+                  </h2>
+                  <p style={{ fontSize: 12.5, color: "#557269", margin: 0 }}>
+                    Proofline acts as an automated quality gate between content creation and public release. Check them out:
+                  </p>
+                </div>
+
+                <div className="home-services-grid">
+                  <div className="home-service-card">
+                    <div className="home-service-icon">🎯</div>
+                    <div className="home-service-tag">Fact-Checking Engine</div>
+                    <div className="home-service-title">Automated Claim &amp; Spec Verification</div>
+                    <p className="home-service-desc">
+                      Instantly cross-checks marketing claims against immutable product specs, battery hours, performance benchmarks, and pricing rules. Flags unsupported superlatives automatically.
+                    </p>
+                  </div>
+
+                  <div className="home-service-card">
+                    <div className="home-service-icon">⚖️</div>
+                    <div className="home-service-tag">Legal Defensibility</div>
+                    <div className="home-service-title">Regulatory &amp; FTC Quality Gate</div>
+                    <p className="home-service-desc">
+                      Deterministic compliance checks covering FTC §5 deceptive advertising, Lanham Act §43(a), competitor comparisons, and required safe-harbor disclosures before public release.
+                    </p>
+                  </div>
+
+                  <div className="home-service-card">
+                    <div className="home-service-icon">🌐</div>
+                    <div className="home-service-tag">Global Localization</div>
+                    <div className="home-service-title">Multilingual &amp; Indic Copy Proofing</div>
+                    <p className="home-service-desc">
+                      Maintains brand voice and factual accuracy across Hindi, Telugu, Tamil, and international languages powered by Sarvam AI and Groq Llama-3.3-70B with fail-soft local fallbacks.
+                    </p>
+                  </div>
+
+                  <div className="home-service-card">
+                    <div className="home-service-icon">🛡️</div>
+                    <div className="home-service-tag">Audit Trail</div>
+                    <div className="home-service-title">Cryptographic Evidence &amp; Compliance Sign-Off</div>
+                    <p className="home-service-desc">
+                      Every suggestion, edit, approval, and rejection is signed and appended to a tamper-proof SHA-256 hash chain with downloadable certificates for regulatory defensibility.
+                    </p>
+                  </div>
+
+                  <div className="home-service-card">
+                    <div className="home-service-icon">🚀</div>
+                    <div className="home-service-tag">Publishing Control</div>
+                    <div className="home-service-title">Gated Multi-Channel Dispatch</div>
+                    <p className="home-service-desc">
+                      Automated publishing gate prevents unauthorized release to CMS, social feeds, or ad networks until every high-severity claim discrepancy has been resolved by an authorized reviewer.
+                    </p>
+                  </div>
+
+                  <div className="home-service-card">
+                    <div className="home-service-icon">🔒</div>
+                    <div className="home-service-tag">Zero Data Leakage</div>
+                    <div className="home-service-title">Local Processing Boundary</div>
+                    <p className="home-service-desc">
+                      Built on strict tenant isolation with client-side deterministic verification. Confidential brand drafts remain private and never train external foundation models.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. DEDICATED ROLE DASHBOARDS (CLICK ANY TO GO TO THE DASHBOARD) */}
+              <div id="dashboards-section" style={{ margin: "32px 0 28px" }}>
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 750, color: "#176553", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    ROLE PORTALS &amp; DASHBOARDS
+                  </div>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0c2b23", margin: "2px 0 4px" }}>
+                    Dedicated Role Dashboards
+                  </h2>
+                  <p style={{ fontSize: 12.5, color: "#557269", margin: 0 }}>
+                    Here are our tailored dashboards for every department. Click any dashboard below to enter that workspace:
+                  </p>
+                </div>
+
+                <div className="dept-launchpad-grid">
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("creator");
+                      navigate("reviews");
+                      setIsCreatorStudioOpen(true);
+                      notify("Opening Content Creator Studio Dashboard.");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Content Creator Studio Dashboard"
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#fef3c7", color: "#92400e" }}>AV</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Aisha Rahman</div>
+                        <span className="dept-badge">Content Creator</span>
+                      </div>
+                    </div>
+                    <div className="dept-card-title">Content Creator Studio</div>
+                    <div className="dept-card-desc">
+                      <strong>What it does:</strong> Draft copy with automated truth-matching, inspect real-time diffs, apply 1-click safe-harbor rewrites, and run Indic language localization.
+                    </div>
+                    <div className="dept-card-btn">Go to Creator Dashboard →</div>
+                  </div>
+
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("manager");
+                      navigate("reviews");
+                      notify("Opening Campaign Manager Review Queue Dashboard.");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Campaign Manager Review Queue Dashboard"
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#e0e7ff", color: "#3730a3" }}>MV</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Marcus Vance</div>
+                        <span className="dept-badge">Campaign Manager</span>
+                      </div>
+                    </div>
+                    <div className="dept-card-title">Campaign Review Queue</div>
+                    <div className="dept-card-desc">
+                      <strong>What it does:</strong> Triage marketing submissions across channels, filter by risk severity, assign reviewers, and resolve cross-team claim discrepancies.
+                    </div>
+                    <div className="dept-card-btn">Go to Manager Dashboard ({openReviewCount}) →</div>
+                  </div>
+
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("legal_reviewer");
+                      navigate("reviews");
+                      notify("Opening Authorised Legal Reviewer Dashboard.");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Authorised Legal Reviewer Dashboard"
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#dbeafe", color: "#1e40af" }}>MC</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Maya Chen</div>
+                        <span className="dept-badge">Authorised Legal Reviewer</span>
+                      </div>
+                    </div>
+                    <div className="dept-card-title">Regulatory Quality Gate</div>
+                    <div className="dept-card-desc">
+                      <strong>What it does:</strong> Audit FTC §5 and Lanham Act §43(a) rules, verify claim substantiations, resolve legal discrepancies, and sign cryptographic compliance certs.
+                    </div>
+                    <div className="dept-card-btn">Go to Legal Reviewer Dashboard →</div>
+                  </div>
+
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("brand_owner");
+                      navigate("registry");
+                      notify("Opening Brand Truth Registry Dashboard.");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Brand Owner Truth Registry Dashboard"
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#dcfce7", color: "#166534" }}>LO</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Lena Ortiz</div>
+                        <span className="dept-badge">Brand Leadership</span>
+                      </div>
+                    </div>
+                    <div className="dept-card-title">Truth Registry &amp; Dispatch</div>
+                    <div className="dept-card-desc">
+                      <strong>What it does:</strong> Version official product facts, manage approved brand voice rules, approve guideline gaps, and authorize multi-channel publishing dispatch.
+                    </div>
+                    <div className="dept-card-btn">Go to Brand Owner Dashboard →</div>
+                  </div>
+
+                  <div
+                    className="dept-launchpad-card"
+                    onClick={() => {
+                      changeRole("agency");
+                      navigate("reviews");
+                      notify("Opening Sandboxed Agency Partner Dashboard.");
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Agency Partner Portal Dashboard"
+                  >
+                    <div className="dept-card-header">
+                      <div className="dept-avatar" style={{ background: "#f3e8ff", color: "#6b21a8" }}>CM</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Carlos Mendez</div>
+                        <span className="dept-badge">Agency Partner</span>
+                      </div>
+                    </div>
+                    <div className="dept-card-title">Sandboxed Agency Portal</div>
+                    <div className="dept-card-desc">
+                      <strong>What it does:</strong> Submit campaign revisions within locked permissions and test copy against client specs with zero exposure to confidential data.
+                    </div>
+                    <div className="dept-card-btn">Go to Agency Dashboard →</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. REAL-TIME ORGANIZATION METRICS & CAMPAIGN GATE */}
               <div className="general-dash-kpi-grid">
                 <div className="general-kpi-card">
                   <div className="general-kpi-top">
@@ -1057,7 +1277,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* 3. FLAGSHIP CAMPAIGN PUBLISHING GATE BANNER */}
+              {/* Flagship Gate Status Banner */}
               <div className="flagship-gate-banner" role="region" aria-label="Flagship Campaign Gate Status">
                 <div className="gate-banner-info">
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -1086,109 +1306,6 @@ export default function Home() {
                 >
                   Inspect Campaign Gate →
                 </button>
-              </div>
-
-              {/* 4. DEPARTMENT & ROLE LAUNCHPADS (ENTER ANY ROLE WORKFLOW) */}
-              <div style={{ margin: "28px 0 12px" }}>
-                <div className="page-heading-sub" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <div>
-                    <h2 style={{ fontSize: 15, fontWeight: 800, color: "#0c2b23", margin: "0 0 2px" }}>Department Role Launchpads</h2>
-                    <p style={{ fontSize: 11.5, color: "#557269", margin: 0 }}>Select any department workflow to launch tailored tools, guidelines, and review actions.</p>
-                  </div>
-                </div>
-
-                <div className="dept-launchpad-grid">
-                  <div
-                    className="dept-launchpad-card"
-                    onClick={() => {
-                      changeRole("creator");
-                      navigate("reviews");
-                      setIsCreatorStudioOpen(true);
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="dept-card-header">
-                      <div className="dept-avatar" style={{ background: "#fef3c7", color: "#92400e" }}>AV</div>
-                      <span className="dept-badge">Content Creator</span>
-                    </div>
-                    <div className="dept-card-title">Creator Content Studio</div>
-                    <div className="dept-card-desc">Draft copy with automated truth-matching, visual diffs, and Indic localization.</div>
-                    <div className="dept-card-btn">Launch Studio →</div>
-                  </div>
-
-                  <div
-                    className="dept-launchpad-card"
-                    onClick={() => {
-                      changeRole("manager");
-                      navigate("reviews");
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="dept-card-header">
-                      <div className="dept-avatar" style={{ background: "#e0e7ff", color: "#3730a3" }}>PN</div>
-                      <span className="dept-badge">Editorial Manager</span>
-                    </div>
-                    <div className="dept-card-title">Campaign Review Queue</div>
-                    <div className="dept-card-desc">Triage submissions, manage reviewer assignments, and resolve claim discrepancies.</div>
-                    <div className="dept-card-btn">Open Review Queue ({openReviewCount}) →</div>
-                  </div>
-
-                  <div
-                    className="dept-launchpad-card"
-                    onClick={() => {
-                      changeRole("legal_reviewer");
-                      navigate("reviews");
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="dept-card-header">
-                      <div className="dept-avatar" style={{ background: "#dbeafe", color: "#1e40af" }}>MC</div>
-                      <span className="dept-badge">Legal &amp; Regulatory</span>
-                    </div>
-                    <div className="dept-card-title">Regulatory Quality Gate</div>
-                    <div className="dept-card-desc">Audit FTC §5 and Lanham Act rules, apply safe-harbor rewrites, and sign certs.</div>
-                    <div className="dept-card-btn">Audit Quality Gate →</div>
-                  </div>
-
-                  <div
-                    className="dept-launchpad-card"
-                    onClick={() => {
-                      changeRole("brand_owner");
-                      navigate("registry");
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="dept-card-header">
-                      <div className="dept-avatar" style={{ background: "#dcfce7", color: "#166534" }}>LO</div>
-                      <span className="dept-badge">Brand Leadership</span>
-                    </div>
-                    <div className="dept-card-title">Truth Registry &amp; Dispatch</div>
-                    <div className="dept-card-desc">Version official product facts, approve guideline gaps, and dispatch to channels.</div>
-                    <div className="dept-card-btn">Manage Truth Registry →</div>
-                  </div>
-
-                  <div
-                    className="dept-launchpad-card"
-                    onClick={() => {
-                      changeRole("agency");
-                      navigate("reviews");
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="dept-card-header">
-                      <div className="dept-avatar" style={{ background: "#f3e8ff", color: "#6b21a8" }}>CM</div>
-                      <span className="dept-badge">Agency Partner</span>
-                    </div>
-                    <div className="dept-card-title">Sandboxed Agency Portal</div>
-                    <div className="dept-card-desc">Submit revisions within locked permissions and test copy against client specs.</div>
-                    <div className="dept-card-btn">Open Partner Portal →</div>
-                  </div>
-                </div>
               </div>
 
               {/* 5. ROLE-BASED LOGIN GATEWAY (FRONT & CENTER ON HOME PAGE) */}
