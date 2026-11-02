@@ -781,6 +781,120 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
   margin-left: 6px;
 }
 
+/* What We Provide - Home Screen Hero & Feature Suite */
+.what-we-provide-hero {
+  background: #ffffff;
+  border: 1px solid #d5e5dd;
+  border-radius: 12px;
+  padding: 24px 28px 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(18, 48, 42, 0.05);
+}
+.what-we-provide-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  background: #174d3f;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 5px;
+  margin-bottom: 12px;
+}
+.what-we-provide-title {
+  font-size: 20px;
+  font-weight: 850;
+  color: #102e26;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.what-we-provide-lede {
+  font-size: 12px;
+  color: #4f6d64;
+  line-height: 1.55;
+  margin: 0 0 20px;
+  max-width: 820px;
+}
+.what-we-provide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.provide-card {
+  background: #fbfdfc;
+  border: 1px solid #dce8e1;
+  border-radius: 9px;
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.provide-card:hover {
+  border-color: #1b6351;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(27, 99, 81, 0.08);
+}
+.provide-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.provide-icon-box.coral {
+  background: #fdf2f0;
+  border: 1px solid #f9d5ce;
+}
+.provide-icon-box.blue {
+  background: #f0f4fd;
+  border: 1px solid #d4e2fa;
+}
+.provide-icon-box.mint {
+  background: #edf8f4;
+  border: 1px solid #c9ecdd;
+}
+.provide-card h3 {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #12362c;
+  margin: 0 0 6px;
+  line-height: 1.35;
+}
+.provide-card p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #557269;
+  margin: 0 0 14px;
+  flex: 1;
+}
+.provide-badge {
+  align-self: flex-start;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: #ebf7f2;
+  color: #1b6351;
+  border: 1px solid #cbe9dc;
+}
+.what-we-provide-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+  border-top: 1px solid #e5eee9;
+}
+
 .how-it-works-hero {
   background: #ffffff;
   border: 1px solid #cce3d8;

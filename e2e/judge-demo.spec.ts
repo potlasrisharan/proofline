@@ -289,8 +289,8 @@ test.describe("Enterprise Workspaces & Quality Gate Workflows", () => {
   test("Scenario 12: Interactive Guided Tour walks step-by-step through workspace", async ({ page }) => {
     await page.goto("/");
 
-    // Click Take Guided Interactive Tour button on home overview
-    await page.getByRole("button", { name: "Take Guided Interactive Tour" }).click();
+    // Click Take Guided Product Tour button on home overview
+    await page.getByRole("button", { name: /Take Guided (Product|Interactive) Tour/ }).click();
 
     // Verify Guided Tour dialog is active
     await expect(page.getByRole("dialog", { name: "Start with the workspace overview" })).toBeVisible();

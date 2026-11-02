@@ -136,11 +136,7 @@ type PermissionSet = {
   canStartReview: boolean;
 };
 
-const workflow = [
-  { number: "01", title: "Set the truth", detail: "Approved facts, rules, and assets" },
-  { number: "02", title: "Review content", detail: "Evidence-linked checks before publish" },
-  { number: "03", title: "Keep humans in", detail: "Resolve, approve, and learn" },
-];
+
 
 const roleLabels: Record<ProoflineRole, string> = {
   creator: "Creator",
@@ -967,7 +963,7 @@ export default function Home() {
             <section className="view-panel" aria-labelledby="overview-heading">
               <div className="page-heading">
                 <div>
-                  <p className="eyebrow" suppressHydrationWarning>{currentDateStr} <span className="eyebrow-dot" /> Week at a glance</p>
+                  <p className="eyebrow" suppressHydrationWarning>{currentDateStr} <span className="eyebrow-dot" /> VoltEdge Workspace</p>
                   <h1 id="overview-heading" suppressHydrationWarning>{greeting}, {activePersona.name.split(" ")[0]}.</h1>
                   <button
                     className="friendly-role-badge clickable-role-badge"
@@ -981,48 +977,69 @@ export default function Home() {
                   </button>
                   <p className="lede">Your workspace has <strong>{openReviewCount} items</strong> waiting for a human decision.</p>
                 </div>
-                 <div className="overview-actions"><button className="ghost-button" type="button" onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}>Take the guided tour</button>{permissions.canStartReview ? <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}><span>＋</span> Start a review</button> : <span className="permission-note heading-permission">Read-only reviewer view</span>}</div>
+                <div className="overview-actions">
+                  <button className="ghost-button" type="button" onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}>
+                    Take the guided tour
+                  </button>
+                  {permissions.canStartReview ? (
+                    <button className="primary-button" type="button" onClick={() => setIsStartModalOpen(true)}>
+                      <span>＋</span> Start a review
+                    </button>
+                  ) : (
+                    <span className="permission-note heading-permission">Read-only reviewer view</span>
+                  )}
+                </div>
               </div>
 
-              {/* WHAT IS PROOFLINE? 3-SECOND MENTAL MODEL HERO FOR 18-YEAR-OLDS & JUDGES */}
-              <div className="how-it-works-hero" role="region" aria-label="What is Proofline">
-                <div className="how-it-works-header">
-                  <span className="how-it-works-badge">💡 10-Second Summary</span>
-                  <p className="how-it-works-tagline">Think of Proofline as a Fact-Checker for Marketing.</p>
+              {/* WHAT WE PROVIDE - HERO & CORE VALUE PILLARS */}
+              <div className="what-we-provide-hero" role="region" aria-label="What Proofline Provides">
+                <div className="what-we-provide-badge">
+                  <span>🛡️</span>
+                  <span>What Proofline Provides · Automated Brand Truth &amp; Quality Gate</span>
                 </div>
-                <p className="how-it-works-sub">
-                  Before marketing copy is posted, Proofline checks it against your company&apos;s official specs. If you claimed &ldquo;20-hour battery&rdquo; but lab tests say &ldquo;12 hours&rdquo;, it catches the mistake and lets you fix it in 1 click.
+                <h2 className="what-we-provide-title">
+                  The Automated Quality Gate &amp; Fact-Checker Before You Publish.
+                </h2>
+                <p className="what-we-provide-lede">
+                  Proofline protects brands from unverified claims, regulatory fines, and reputational risk. We automatically verify marketing text, product announcements, and creator posts against your company&apos;s approved specifications and legal guidelines with 1-click fixes.
                 </p>
-                <div className="how-it-works-steps">
-                  <div className="how-it-works-step">
-                    <span className="step-number-bubble">1</span>
-                    <div>
-                      <strong>Paste or Pick a Draft</strong>
-                      <p>Add marketing text, an email announcement, or a social post.</p>
-                    </div>
+
+                <div className="what-we-provide-grid">
+                  <div className="provide-card">
+                    <div className="provide-icon-box coral">🎯</div>
+                    <h3>1. Automated Spec &amp; Fact Verification</h3>
+                    <p>
+                      Automatically catches false numbers and specs (like claiming &ldquo;20h battery&rdquo; when lab tests say &ldquo;12 hours&rdquo;). Highlights inaccuracies with visual diffs and applies approved lab specs in 1 click.
+                    </p>
+                    <span className="provide-badge">Zero Hallucinations</span>
                   </div>
-                  <div className="how-it-works-step">
-                    <span className="step-number-bubble">2</span>
-                    <div>
-                      <strong>Spot Mistakes in Red</strong>
-                      <p>We flag false battery claims, expired discounts, &amp; risky promises.</p>
-                    </div>
+
+                  <div className="provide-card">
+                    <div className="provide-icon-box blue">⚖️</div>
+                    <h3>2. Legal &amp; Regulatory Quality Gate</h3>
+                    <p>
+                      Scans copy against statutory rules (FTC 16 CFR § 255 sponsorship tags, Lanham Act § 43(a) superlative risks). Automatically generates tamper-proof cryptographic compliance certificates.
+                    </p>
+                    <span className="provide-badge">Audit-Proof Evidence</span>
                   </div>
-                  <div className="how-it-works-step">
-                    <span className="step-number-bubble">3</span>
-                    <div>
-                      <strong>1-Click Fix &amp; Publish</strong>
-                      <p>Click &ldquo;Apply&rdquo; to update with approved lab specs and unlock dispatch.</p>
-                    </div>
+
+                  <div className="provide-card">
+                    <div className="provide-icon-box mint">🚀</div>
+                    <h3>3. Role Governance &amp; Gated Dispatch</h3>
+                    <p>
+                      Strict separation of duties across Creators, Editorial Managers, Legal Reviewers, and Brand Owners. Unlocks 1-click gated multi-channel dispatch (LinkedIn, X, Instagram) only after human sign-off.
+                    </p>
+                    <span className="provide-badge">5 Role Workspaces</span>
                   </div>
                 </div>
-                <div className="how-it-works-actions">
+
+                <div className="what-we-provide-actions">
                   <button
                     className="primary-button"
                     type="button"
                     onClick={() => window.dispatchEvent(new Event("proofline:open-tour"))}
                   >
-                    Take Guided Interactive Tour
+                    ▶ Take Guided Product Tour
                   </button>
                   <button
                     className="ghost-button"
@@ -1038,38 +1055,23 @@ export default function Home() {
                     Open Review Workspace →
                   </button>
                   <Link className="ghost-button" href="/submit" prefetch={false}>
-                    ＋ Submit Marketing Copy
+                    ＋ Test Marketing Copy Now
                   </Link>
                 </div>
               </div>
 
-              {/* ENTERPRISE WORKSPACE SINGLE LOGIN & ROLE ACCESS */}
+              {/* SINGLE ENTERPRISE LOGIN & QUICK-ROLE ACCESS DIRECTLY BELOW */}
               <EnterpriseSingleLogin
                 currentRole={currentRole}
                 onSelectRole={launchRoleDashboard}
               />
 
-              <div className="signal-grid" aria-label="Workspace signals">
-                <article className="signal-card highlight"><div className="signal-label">In review <span className="trend up">↑ 18%</span></div><div className="signal-value">{openReviewCount + 8}</div><div className="signal-foot">content items this week</div><div className="mini-bars" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /><i /></div></article>
-                <article className="signal-card"><div className="signal-label">Open findings <span className="trend down">↓ 6%</span></div><div className="signal-value">{openFindings.length + 4}</div><div className="signal-foot">{highCount} high priority in this review</div><div className="progress-track"><span style={{ width: `${Math.max(26, 100 - openFindings.length * 18)}%` }} /></div></article>
-                <article className="signal-card"><div className="signal-label">Registry coverage <span className="trend up">↑ 4%</span></div><div className="signal-value">86<span className="value-unit">%</span></div><div className="signal-foot">facts with an active source</div><div className="progress-track mint"><span style={{ width: "86%" }} /></div></article>
-              </div>
-
-              <div className="dashboard-grid">
-                <section className="panel workflow-panel">
-                  <div className="panel-heading"><div><p className="eyebrow">The Proofline method</p><h2>From source to sign-off</h2></div><span className="panel-badge">3 steps</span></div>
-                   <div className="workflow-list">{workflow.map((step) => <button className="workflow-row" key={step.number} type="button" onClick={() => navigate(step.number === "01" ? "registry" : step.number === "02" ? "reviews" : "audit-log")}><span className="step-number">{step.number}</span><span><strong>{step.title}</strong><p className="micro-helper">{step.detail}</p></span><span className="row-arrow" aria-hidden="true">↗</span></button>)}</div>
-                  <div className="workflow-note"><span>✦</span> Every finding keeps its evidence trail.</div>
-                </section>
-
-                <section className="panel activity-panel">
-                  <div className="panel-heading"><div><p className="eyebrow">Needs your attention</p><h2>Recent activity</h2></div><button className="text-link" type="button" onClick={() => navigate("reviews")}>View review <span>↗</span></button></div>
-                  <div className="finding-list">{activity.slice(0, 4).map((item) => <div className="finding-row" key={`${item.title}-${item.time}`}><span className={`finding-icon ${item.tone ?? "blue"}`} aria-hidden="true">{item.icon}</span><div className="finding-copy"><div><span className={`finding-label ${item.tone ?? "blue"}`}>{item.tone === "good" ? "Approved" : item.tone === "alert" ? "Needs review" : "Activity"}</span><time>{item.time}</time></div><strong>{item.title}</strong></div><span className="row-arrow" aria-hidden="true">↗</span></div>)}</div>
-                </section>
-              </div>
-
-              <section className="tip-banner"><div className="tip-icon">✦</div><div><strong>Make your registry work harder.</strong><p className="micro-helper">Add one approved source to unlock automated evidence-linked checks.</p></div><button type="button" className="tip-link" onClick={() => navigate("registry")}>Open truth registry <span>↗</span></button></section>
-              <footer className="footer"><span>Proofline · VoltEdge workspace · Truth Engine active</span><span><Link href="/privacy" prefetch={false}>Privacy and AI disclosure</Link> · Built for confident publishing.</span></footer>
+              <footer className="footer">
+                <span>Proofline · VoltEdge workspace · Truth Engine active</span>
+                <span>
+                  <Link href="/privacy" prefetch={false}>Privacy and AI disclosure</Link> · Built for confident publishing.
+                </span>
+              </footer>
             </section>
           ) : null}
 
