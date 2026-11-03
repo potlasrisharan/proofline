@@ -4177,12 +4177,14 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 }
 
 .multimodal-heading {
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 32px;
+  font-weight: 400;
+  font-style: italic;
+  font-family: var(--ind-font-serif, 'Playfair Display', Georgia, serif);
   color: var(--ind-fg, #18181B);
   margin: 0 0 8px 0;
-  letter-spacing: -0.03em;
-  font-family: var(--ind-font-sans, sans-serif);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .multimodal-sub {
@@ -4204,17 +4206,17 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
   display: flex;
   background: #F4F4F5;
   border: 1px solid #E4E4E7;
-  border-radius: 6px;
+  border-radius: 9999px;
   padding: 3px;
   gap: 4px;
 }
 
 .multimodal-tab {
-  padding: 6px 14px;
+  padding: 6px 16px;
   background: transparent;
   border: none;
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: 9999px;
+  font-size: 11.5px;
   font-weight: 600;
   color: #71717A;
   cursor: pointer;
@@ -4223,30 +4225,30 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 }
 
 .multimodal-tab.active {
-  background: #FFFFFF;
-  color: #18181B;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  background: #18181B;
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   font-weight: 700;
 }
 
 .multimodal-audit-btn {
-  background: #0066FF;
+  background: #18181B;
   color: #FFFFFF;
   font-weight: 700;
-  font-size: 11px;
-  padding: 9px 18px;
-  border: 1px solid #0066FF;
-  border-radius: 4px;
+  font-size: 10.5px;
+  padding: 9px 20px;
+  border: 1px solid #18181B;
+  border-radius: 9999px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: var(--ind-font-mono, monospace);
-  letter-spacing: 0.06em;
+  transition: all 0.2s var(--ind-ease);
+  font-family: var(--ind-font-sans, sans-serif);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .multimodal-audit-btn:hover:not(:disabled) {
-  background: #0052CC;
-  border-color: #0052CC;
+  background: #0066FF;
+  border-color: #0066FF;
   transform: translateY(-1px);
 }
 
@@ -4258,17 +4260,19 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 .multimodal-upload-btn {
   background: #FFFFFF;
   color: #18181B;
-  border: 1px solid #D4D4D8;
-  border-radius: 4px;
-  padding: 8px 14px;
-  font-size: 11px;
-  font-weight: 600;
+  border: 1px solid var(--ind-border, #D4D4D8);
+  border-radius: 9999px;
+  padding: 8px 18px;
+  font-size: 10.5px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: var(--ind-font-mono, monospace);
+  font-family: var(--ind-font-sans, sans-serif);
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .multimodal-upload-btn:hover {
@@ -4789,10 +4793,10 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 
 /* Audit Log */
 .multimodal-audit-log {
-  background: #18181B;
-  border: 1px solid #27272A;
+  background: #F4F4F5;
+  border: 1px solid #E4E4E7;
   border-radius: 4px;
-  padding: 14px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -4802,11 +4806,14 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 .log-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 10px;
-  color: #A1A1AA;
-  letter-spacing: 0.08em;
+  color: #71717A;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  font-weight: 700;
+  border-bottom: 1px solid #E4E4E7;
+  padding-bottom: 6px;
 }
 
 .log-pulse {
@@ -4830,9 +4837,10 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 }
 
 .log-line {
-  font-size: 11px;
-  color: #D4D4D8;
-  line-height: 1.45;
+  font-size: 10.5px;
+  color: #18181B;
+  line-height: 1.5;
+  font-family: var(--ind-font-mono, monospace);
 }
 
 /* =========================================================================
@@ -4908,12 +4916,14 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 }
 
 .drift-heading {
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 32px;
+  font-weight: 400;
+  font-style: italic;
+  font-family: var(--ind-font-serif, 'Playfair Display', Georgia, serif);
   color: var(--ind-fg, #18181B);
   margin: 0 0 8px 0;
-  letter-spacing: -0.03em;
-  font-family: var(--ind-font-sans, sans-serif);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .drift-sub {
@@ -4930,22 +4940,23 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 }
 
 .simulate-drift-btn {
-  background: #FFFBEB;
-  color: #B45309;
-  border: 1px solid #FCD34D;
-  font-size: 11px;
+  background: #18181B;
+  color: #FFFFFF;
+  border: 1px solid #18181B;
+  font-size: 10.5px;
   font-weight: 700;
-  padding: 9px 16px;
-  border-radius: 4px;
+  padding: 9px 20px;
+  border-radius: 9999px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: var(--ind-font-mono, monospace);
+  transition: all 0.2s var(--ind-ease);
+  font-family: var(--ind-font-sans, sans-serif);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.16em;
 }
 
 .simulate-drift-btn:hover:not(:disabled) {
-  background: #FEF3C7;
+  background: #0066FF;
+  border-color: #0066FF;
   transform: translateY(-1px);
 }
 
@@ -5202,34 +5213,35 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 .remediate-comment-btn {
   background: #18181B;
   color: #FFFFFF;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 7px 16px;
+  border-radius: 9999px;
   border: 1px solid #18181B;
   cursor: pointer;
-  font-family: var(--ind-font-mono, monospace);
+  font-family: var(--ind-font-sans, sans-serif);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  transition: all 0.15s ease;
+  letter-spacing: 0.12em;
+  transition: all 0.2s var(--ind-ease);
 }
 
 .remediate-comment-btn:hover {
-  background: #27272A;
+  background: #0066FF;
+  border-color: #0066FF;
 }
 
 .takedown-btn {
   background: #FFFFFF;
   color: #DC2626;
   border: 1px solid #FCA5A5;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 7px 16px;
+  border-radius: 9999px;
   cursor: pointer;
-  font-family: var(--ind-font-mono, monospace);
+  font-family: var(--ind-font-sans, sans-serif);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   transition: all 0.15s ease;
 }
 
@@ -5350,24 +5362,28 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 
 /* Radar Telemetry Box */
 .radar-telemetry-box {
-  background: #18181B;
-  border: 1px solid #27272A;
+  background: #F4F4F5;
+  border: 1px solid #E4E4E7;
   border-radius: 4px;
-  padding: 14px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   font-family: var(--ind-font-mono, monospace);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .telemetry-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 10px;
-  color: #A1A1AA;
+  color: #71717A;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  border-bottom: 1px solid #E4E4E7;
+  padding-bottom: 6px;
 }
 
 .telemetry-body {
@@ -5380,8 +5396,9 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 
 .telemetry-line {
   font-size: 10.5px;
-  color: #D4D4D8;
-  line-height: 1.45;
+  color: #18181B;
+  line-height: 1.5;
+  font-family: var(--ind-font-mono, monospace);
 }
 
 /* =========================================================================
@@ -5779,15 +5796,15 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 
 /* Sync Telemetry Box */
 .sync-telemetry-box {
-  background: #18181B;
-  border: 1px solid #27272A;
-  border-radius: 2px;
-  padding: 14px 16px;
+  background: #F4F4F5;
+  border: 1px solid #E4E4E7;
+  border-radius: 4px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   font-family: var(--ind-font-mono, monospace);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .sync-telemetry-box .telemetry-header {
@@ -5795,11 +5812,12 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
   align-items: center;
   gap: 8px;
   font-size: 10px;
-  color: #A1A1AA;
+  color: #71717A;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  font-weight: 700;
   padding-bottom: 6px;
-  border-bottom: 1px solid #27272A;
+  border-bottom: 1px solid #E4E4E7;
 }
 
 .sync-telemetry-box .telemetry-body {
@@ -5812,8 +5830,9 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 
 .sync-telemetry-box .telemetry-line {
   font-size: 10.5px;
-  color: #34D399;
-  line-height: 1.45;
+  color: #18181B;
+  line-height: 1.5;
+  font-family: var(--ind-font-mono, monospace);
 }
 
 

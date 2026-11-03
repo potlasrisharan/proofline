@@ -268,7 +268,7 @@ export function DynamicTruthSync() {
               NOTION &amp; GOOGLE DOCS CONNECTED
             </span>
           </div>
-          <h2 className="sync-heading">Live Spec Sync &amp; Automatic Document Import</h2>
+          <h2 className="sync-heading">Dynamic Brand Truth Sync &amp; Enterprise Doc Ingestion</h2>
           <p className="sync-sub">
             Automatically syncs your approved specs from Notion, Google Docs, and Shopify inventory so marketing drafts are always checked against the latest facts without manual copy-pasting.
           </p>
