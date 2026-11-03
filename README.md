@@ -31,10 +31,21 @@ for the detailed boundary.
 
 ## What is implemented
 
-### Frontend — **IMPLEMENTED (local/demo)**
+### Frontend — **IMPLEMENTED (local/demo & edge)**
 
 - Seeded fictional VoltEdge workspace with review queue, findings, corrections, re-scan,
   comments, revision history, role preview, approval transitions, and audit-log views.
+- **Enterprise 1-Click Role Login:** Clean "What We Provide" hero and instant role-switcher
+  for Creator, Campaign Manager, Authorised Reviewer, Brand Owner, and Agency workspaces.
+- **Multimodal Visual & Video Compliance Engine at `/multimodal`:** Canvas-based frame scrubber
+  powered by Gemini 2.5 Flash, measuring FTC § 255 disclaimer font height ratios (flagging <2.5%),
+  spec contradiction bounding-box overlays, and 1-click visual frame remediation.
+- **Publishing & Post-Publish Drift Radar at `/drift`:** Automated 60-second heartbeat radar
+  monitoring live posts on LinkedIn, Instagram, X, and Webflow; detects retroactive drift when
+  promotional codes expire or engineering specs change, with 1-click clarification comment dispatch
+  and emergency social takedowns.
+- **Dynamic Brand Truth Sync at `/sync`:** Enterprise data sync connecting Notion team databases,
+  Google Docs legal briefs, and Shopify real-time inventory to the Brand Truth Registry.
 - Brand Source Vault with versioning, source drafts, approval controls, and role-scoped demo
   behavior.
 - Fact-Change Impact Radar at `/impact`, including synthetic fact-change scenarios and local
@@ -143,6 +154,9 @@ curl http://127.0.0.1:8000/v1/facts \
 | `/dashboards` | Demonstration role dashboards. |
 | `/submit` | Bounded content intake and local checks. |
 | `/findings` | Evidence gaps, findings, corrections, comments, and revisions. |
+| `/multimodal` | Visual & video frame compliance radar, FTC § 255 font gauge, and 1-click remediation. |
+| `/drift` | Multi-platform publishing and 60s post-publish drift radar with emergency takedowns. |
+| `/sync` | Dynamic Brand Truth Sync connecting Notion, Google Docs, and Shopify inventory. |
 | `/impact` | Synthetic fact-change and expiry re-review demonstration. |
 | `/insights` | Synthetic governance trends and guideline-gap proposals. |
 | `/vault` | Brand Source Vault / Truth Registry surface. |
@@ -159,8 +173,8 @@ npm test
 The latest checked run completed with:
 
 - ESLint, TypeScript typecheck, and Next.js production build passing;
-- **46 Playwright browser tests passed, 1 skipped** (the opt-in local API test);
-- **162 backend/report-safety tests passed, 2 skipped**;
+- **49 Playwright browser tests passed, 1 skipped** (50 tests total across 5 parallel workers);
+- **159 backend/report-safety tests passed, 2 skipped** (161 tests total);
 - **194** generated VoltEdge cases matching the committed fixture; and
 - the evaluation report passing its read-only consistency check.
 
@@ -246,6 +260,8 @@ Important implementation boundaries:
 - [`docs/LIMITATIONS_ROADMAP.md`](docs/LIMITATIONS_ROADMAP.md) — known limitations and next work.
 - [`cloudflare/README.md`](cloudflare/README.md) — deployment target and setup gaps.
 - [`docs/ROUND_3_SUBMISSION.md`](docs/ROUND_3_SUBMISSION.md) — submission package.
+- [`docs/Proofline_Round_3_Final_Product.pdf`](docs/Proofline_Round_3_Final_Product.pdf) — final compiled product PDF document.
+- [`docs/Proofline_Round_3_Slide_by_Slide_Changes.pdf`](docs/Proofline_Round_3_Slide_by_Slide_Changes.pdf) — slide-by-slide PPT transformation guide.
 
 ## License and contribution status
 
