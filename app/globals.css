@@ -619,38 +619,38 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
    ========================================================================== */
 .home-services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin: 16px 0 28px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  margin: 16px 0 24px;
 }
 
 .home-service-card {
   background: #ffffff;
-  border: 1px solid #dce8e1;
-  border-radius: 12px;
-  padding: 20px 22px;
+  border: 1px solid #e2ede7;
+  border-radius: 14px;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 10px rgba(18, 48, 40, 0.03);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 2px 8px rgba(18, 48, 40, 0.02);
 }
 
 .home-service-card:hover {
   border-color: #176553;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(23, 101, 83, 0.08);
+  box-shadow: 0 8px 24px rgba(23, 101, 83, 0.07);
 }
 
 .home-service-icon {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
   background: #edf8f4;
   border: 1px solid #c9ecdd;
   display: grid;
   place-items: center;
-  font-size: 22px;
-  margin-bottom: 14px;
+  font-size: 20px;
+  margin-bottom: 12px;
 }
 
 .home-service-tag {
@@ -671,7 +671,7 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 }
 
 .home-service-desc {
-  font-size: 12px;
+  font-size: 12.5px;
   color: #557269;
   line-height: 1.5;
   margin: 0;
@@ -1015,30 +1015,32 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
 }
 .single-login-role-buttons {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
 }
 .single-role-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: #fbfdfc;
-  border: 1px solid #dce8e1;
-  border-radius: 8px;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid #e2ede7;
+  border-radius: 12px;
   cursor: pointer;
   text-align: left;
-  transition: all .15s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 1px 4px rgba(18, 48, 40, 0.02);
 }
 .single-role-btn:hover {
-  border-color: #1b6351;
-  background: #f3faf6;
-  transform: translateY(-1px);
+  border-color: #176553;
+  background: #f7fbf9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(23, 101, 83, 0.08);
 }
 .single-role-btn.active {
   border-color: #176352;
-  background: #eef8f4;
-  box-shadow: 0 2px 8px rgba(23, 99, 82, 0.08);
+  background: #edf8f4;
+  box-shadow: 0 2px 10px rgba(23, 99, 82, 0.09);
 }
 .single-role-avatar {
   width: 32px;
@@ -2882,11 +2884,12 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 720; le
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 10px 16px;
-  border-radius: 9px;
+  padding: 8px 16px;
+  border-radius: 10px;
   margin-bottom: 16px;
-  border: 1px solid #cce2d6;
-  background: #f1f8f4;
+  border: 1px solid #d8e8df;
+  background: #f7faf8;
+  box-shadow: 0 1px 4px rgba(18, 48, 40, 0.02);
   animation: panel-in 140ms ease-out;
 }
 

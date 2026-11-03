@@ -162,15 +162,56 @@ export function EnterpriseSingleLogin({
       <div className="single-login-card">
         <div className="single-login-header">
           <div className="single-login-kicker-row">
-            <span className="single-login-badge">ENTERPRISE IDENTITY &amp; ACCESS</span>
+            <span className="single-login-badge">ROLE DASHBOARDS &amp; ACCESS</span>
             <span className="single-login-active-tag">
-              ● Currently Active: <strong>{activePersona.name}</strong> ({activePersona.role})
+              ● Active: <strong>{activePersona.name}</strong> ({activePersona.role})
             </span>
           </div>
           <h2 className="single-login-title" id="single-login-modal-title">Sign In to VoltEdge Workspace</h2>
           <p className="single-login-sub">
-            Access your role-governed workspace with corporate credentials, or click any account below to sign in instantly with tailored permissions and dashboard views.
+            Click any department role below to launch directly into that workspace, or use corporate credentials.
           </p>
+        </div>
+
+        {/* Unified 1-Click Role Login Buttons Upfront */}
+        <div className="single-login-role-buttons" role="region" aria-label="1-Click Enterprise Role Logins">
+          {personas.map((p) => {
+            const isActive = currentRole === p.role;
+            return (
+              <button
+                key={p.role}
+                type="button"
+                className={`single-role-btn ${p.badgeTone} ${isActive ? "active" : ""}`}
+                onClick={() => handleQuickLogin(p.role)}
+                title={`Sign in as ${p.name} (${p.title})`}
+                aria-label={`Sign in as ${p.name} (${p.title})`}
+              >
+                <div className={`single-role-avatar ${p.badgeTone}`}>{p.initials}</div>
+                <div className="single-role-info">
+                  <div className="single-role-top">
+                    <span className="single-role-name">{p.name}</span>
+                    <span className="single-role-tag">{p.title}</span>
+                  </div>
+                  <div className="single-role-email">{p.email}</div>
+                  <div className="single-role-focus">
+                    {p.focus}
+                  </div>
+                </div>
+                <div className="single-role-action">
+                  {isActive ? (
+                    <span className="active-pill">✓ Active Session</span>
+                  ) : (
+                    <span className="login-arrow">Sign in as {p.name.split(" ")[0]} →</span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Divider */}
+        <div className="single-login-divider">
+          <span>Or sign in with corporate credentials</span>
         </div>
 
         {/* Standard Corporate Login Form */}
@@ -210,47 +251,6 @@ export function EnterpriseSingleLogin({
             </div>
           ) : null}
         </form>
-
-        {/* Divider */}
-        <div className="single-login-divider">
-          <span>Or sign in instantly with an enterprise role</span>
-        </div>
-
-        {/* Unified 1-Click Role Login Buttons Below Form */}
-        <div className="single-login-role-buttons" role="region" aria-label="1-Click Enterprise Role Logins">
-          {personas.map((p) => {
-            const isActive = currentRole === p.role;
-            return (
-              <button
-                key={p.role}
-                type="button"
-                className={`single-role-btn ${p.badgeTone} ${isActive ? "active" : ""}`}
-                onClick={() => handleQuickLogin(p.role)}
-                title={`Sign in as ${p.name} (${p.title})`}
-                aria-label={`Sign in as ${p.name} (${p.title})`}
-              >
-                <div className={`single-role-avatar ${p.badgeTone}`}>{p.initials}</div>
-                <div className="single-role-info">
-                  <div className="single-role-top">
-                    <span className="single-role-name">{p.name}</span>
-                    <span className="single-role-tag">{p.title}</span>
-                  </div>
-                  <div className="single-role-email">{p.email}</div>
-                  <div className="single-role-focus">
-                    <strong>Focus:</strong> {p.focus}
-                  </div>
-                </div>
-                <div className="single-role-action">
-                  {isActive ? (
-                    <span className="active-pill">✓ Active Session</span>
-                  ) : (
-                    <span className="login-arrow">Launch as {p.name.split(" ")[0]} →</span>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
       </div>
     </section>
   );
@@ -280,9 +280,6 @@ export function ActiveRoleWorkflowBanner({
             <span className="role-banner-pill">{persona.title}</span>
             <code className="role-banner-email">{persona.email}</code>
           </div>
-          <p className="role-banner-guidance">
-            <strong>Active Workflow:</strong> {persona.description}
-          </p>
         </div>
       </div>
       <div className="role-banner-right">

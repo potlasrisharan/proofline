@@ -1006,7 +1006,7 @@ export default function Home() {
             </h1>
 
             <p className="landing-hero-subtitle">
-              One continuous automated quality gate from first draft to public release. Built for copywriters, legal reviewers, brand leaders, and everyone in between.
+              Automated quality gate from draft to publish. Built for copywriters, legal reviewers, and brand teams.
             </p>
 
             <div className="landing-hero-cta-row">
@@ -1072,7 +1072,7 @@ export default function Home() {
                 <div className="hero-mission-kicker">✨ Shared Enterprise Mission</div>
                 <div className="hero-mission-title">Confident publishing, together.</div>
                 <p className="hero-mission-sub">
-                  Zero unverified claims. Every marketing promise verified against immutable specifications before public distribution.
+                  Every claim cross-checked against immutable specifications before release.
                 </p>
               </div>
             </div>
@@ -1088,250 +1088,103 @@ export default function Home() {
           />
         </div>
 
-        {/* 4. WE OFFER THESE SERVICES (Matching user request) */}
+        {/* 4. WE OFFER THESE SERVICES */}
         <section id="services-section" className="landing-section-wrap" style={{ background: "#fcfefd", borderTop: "1px solid #eef5f1", borderBottom: "1px solid #eef5f1" }}>
           <div className="landing-section-header">
             <div className="landing-section-kicker">WHAT WE PROVIDE</div>
             <h2 className="landing-section-title">We Offer These Services</h2>
             <p className="landing-section-subtitle">
-              Proofline acts as an automated quality gate between content creation and public release. Check them out:
+              Automated quality gates and deterministic fact-checking before public release:
             </p>
           </div>
 
           <div className="home-services-grid">
             <div className="home-service-card">
               <div className="home-service-icon">🎯</div>
-              <div className="home-service-tag">Fact-Checking Engine</div>
-              <div className="home-service-title">Automated Claim &amp; Spec Verification</div>
+              <div className="home-service-title">Claim &amp; Spec Verification</div>
               <p className="home-service-desc">
-                Instantly cross-checks marketing claims against immutable product specs, battery hours, performance benchmarks, and pricing rules. Flags unsupported superlatives automatically.
+                Cross-checks marketing claims against immutable product specs, battery hours, and benchmarks.
               </p>
             </div>
 
             <div className="home-service-card">
               <div className="home-service-icon">⚖️</div>
-              <div className="home-service-tag">Legal Defensibility</div>
-              <div className="home-service-title">Regulatory &amp; FTC Quality Gate</div>
+              <div className="home-service-title">Regulatory Quality Gate</div>
               <p className="home-service-desc">
-                Deterministic compliance checks covering FTC §5 deceptive advertising, Lanham Act §43(a), competitor comparisons, and required safe-harbor disclosures before public release.
+                Deterministic compliance checks for FTC §5 deceptive claims and Lanham Act §43(a).
               </p>
             </div>
 
             <div className="home-service-card">
               <div className="home-service-icon">🌐</div>
-              <div className="home-service-tag">Global Localization</div>
-              <div className="home-service-title">Multilingual &amp; Indic Copy Proofing</div>
+              <div className="home-service-title">Indic Language Proofing</div>
               <p className="home-service-desc">
-                Maintains brand voice and factual accuracy across Hindi, Telugu, Tamil, and international languages powered by Sarvam AI and Groq Llama-3.3-70B with fail-soft local fallbacks.
+                Maintains factual accuracy and brand voice across Hindi, Telugu, and Indic languages.
               </p>
             </div>
 
             <div className="home-service-card">
               <div className="home-service-icon">🛡️</div>
-              <div className="home-service-tag">Audit Trail</div>
-              <div className="home-service-title">Cryptographic Evidence &amp; Compliance Sign-Off</div>
+              <div className="home-service-title">Cryptographic Audit Chain</div>
               <p className="home-service-desc">
-                Every suggestion, edit, approval, and rejection is signed and appended to a tamper-proof SHA-256 hash chain with downloadable certificates for regulatory defensibility.
+                Every suggestion, edit, and approval is anchored to a tamper-proof SHA-256 hash log.
               </p>
             </div>
 
             <div className="home-service-card">
               <div className="home-service-icon">🚀</div>
-              <div className="home-service-tag">Publishing Control</div>
-              <div className="home-service-title">Gated Multi-Channel Dispatch</div>
+              <div className="home-service-title">Gated Multi-Channel Release</div>
               <p className="home-service-desc">
-                Automated publishing gate prevents unauthorized release to CMS, social feeds, or ad networks until every high-severity claim discrepancy has been resolved by an authorized reviewer.
+                Locks social and ad dispatch until all high-risk claim discrepancies are resolved.
               </p>
             </div>
 
             <div className="home-service-card">
               <div className="home-service-icon">🔒</div>
-              <div className="home-service-tag">Zero Data Leakage</div>
-              <div className="home-service-title">Local Processing Boundary</div>
+              <div className="home-service-title">Private Execution Boundary</div>
               <p className="home-service-desc">
-                Built on strict tenant isolation with client-side deterministic verification. Confidential brand drafts remain private and never train external foundation models.
+                Client-side deterministic evaluation. Confidential drafts never leak or train external models.
               </p>
             </div>
           </div>
         </section>
 
-        {/* 5. DEDICATED ROLE DASHBOARDS (Matching user request) */}
-        <section id="dashboards-section" className="landing-section-wrap">
-          <div className="landing-section-header">
-            <div className="landing-section-kicker">CONNECTED WORKSPACES</div>
-            <h2 className="landing-section-title">Dedicated Role Dashboards</h2>
-            <p className="landing-section-subtitle">
-              All your teams connected to a single source of truth. Click any dashboard below to enter that workspace:
-            </p>
-          </div>
-
-          <div className="dept-launchpad-grid">
-            <div
-              className="dept-launchpad-card"
-              onClick={() => {
-                changeRole("creator");
-                navigate("reviews");
-                setIsCreatorStudioOpen(true);
-                notify("Opening Content Creator Studio Dashboard.");
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="Content Creator Studio Dashboard"
-            >
-              <div className="dept-card-header">
-                <div className="dept-avatar" style={{ background: "#fef3c7", color: "#92400e" }}>AV</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Aisha Rahman</div>
-                  <span className="dept-badge">Content Creator</span>
-                </div>
-              </div>
-              <div className="dept-card-title">Content Creator Studio</div>
-              <div className="dept-card-desc">
-                <strong>What it does:</strong> Draft copy with automated truth-matching, inspect real-time diffs, apply 1-click safe-harbor rewrites, and run Indic language localization.
-              </div>
-              <div className="dept-card-btn">Go to Creator Dashboard →</div>
-            </div>
-
-            <div
-              className="dept-launchpad-card"
-              onClick={() => {
-                changeRole("manager");
-                navigate("reviews");
-                notify("Opening Campaign Manager Review Queue Dashboard.");
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="Campaign Manager Review Queue Dashboard"
-            >
-              <div className="dept-card-header">
-                <div className="dept-avatar" style={{ background: "#e0e7ff", color: "#3730a3" }}>MV</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Marcus Vance</div>
-                  <span className="dept-badge">Campaign Manager</span>
-                </div>
-              </div>
-              <div className="dept-card-title">Campaign Review Queue</div>
-              <div className="dept-card-desc">
-                <strong>What it does:</strong> Triage marketing submissions across channels, filter by risk severity, assign reviewers, and resolve cross-team claim discrepancies.
-              </div>
-              <div className="dept-card-btn">Go to Manager Dashboard ({openReviewCount}) →</div>
-            </div>
-
-            <div
-              className="dept-launchpad-card"
-              onClick={() => {
-                changeRole("legal_reviewer");
-                navigate("reviews");
-                notify("Opening Authorised Legal Reviewer Dashboard.");
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="Authorised Legal Reviewer Dashboard"
-            >
-              <div className="dept-card-header">
-                <div className="dept-avatar" style={{ background: "#dbeafe", color: "#1e40af" }}>MC</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Maya Chen</div>
-                  <span className="dept-badge">Authorised Legal Reviewer</span>
-                </div>
-              </div>
-              <div className="dept-card-title">Regulatory Quality Gate</div>
-              <div className="dept-card-desc">
-                <strong>What it does:</strong> Audit FTC §5 and Lanham Act §43(a) rules, verify claim substantiations, resolve legal discrepancies, and sign cryptographic compliance certs.
-              </div>
-              <div className="dept-card-btn">Go to Legal Reviewer Dashboard →</div>
-            </div>
-
-            <div
-              className="dept-launchpad-card"
-              onClick={() => {
-                changeRole("brand_owner");
-                navigate("registry");
-                notify("Opening Brand Truth Registry Dashboard.");
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="Brand Owner Truth Registry Dashboard"
-            >
-              <div className="dept-card-header">
-                <div className="dept-avatar" style={{ background: "#dcfce7", color: "#166534" }}>LO</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Lena Ortiz</div>
-                  <span className="dept-badge">Brand Leadership</span>
-                </div>
-              </div>
-              <div className="dept-card-title">Truth Registry &amp; Dispatch</div>
-              <div className="dept-card-desc">
-                <strong>What it does:</strong> Version official product facts, manage approved brand voice rules, approve guideline gaps, and authorize multi-channel publishing dispatch.
-              </div>
-              <div className="dept-card-btn">Go to Brand Owner Dashboard →</div>
-            </div>
-
-            <div
-              className="dept-launchpad-card"
-              onClick={() => {
-                changeRole("agency");
-                navigate("reviews");
-                notify("Opening Sandboxed Agency Partner Dashboard.");
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="Agency Partner Portal Dashboard"
-            >
-              <div className="dept-card-header">
-                <div className="dept-avatar" style={{ background: "#f3e8ff", color: "#6b21a8" }}>CM</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0c2b23" }}>Carlos Mendez</div>
-                  <span className="dept-badge">Agency Partner</span>
-                </div>
-              </div>
-              <div className="dept-card-title">Sandboxed Agency Portal</div>
-              <div className="dept-card-desc">
-                <strong>What it does:</strong> Submit campaign revisions within locked permissions and test copy against client specs with zero exposure to confidential data.
-              </div>
-              <div className="dept-card-btn">Go to Agency Dashboard →</div>
-            </div>
-          </div>
-        </section>
-
-        {/* 6. ENTERPRISE LOGIN & SSO */}
-        <section className="landing-section-wrap" style={{ background: "#fafdfc", borderTop: "1px solid #eef5f1" }}>
+        {/* 5. ROLE DASHBOARDS & ACCESS (Unified) */}
+        <section id="dashboards-section" className="landing-section-wrap" style={{ background: "#ffffff" }}>
           <EnterpriseSingleLogin
             currentRole={currentRole}
             onSelectRole={launchRoleDashboard}
           />
         </section>
 
-        {/* 7. RECENT ORGANIZATION ACTIVITY */}
-        <section className="landing-section-wrap">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        {/* 6. RECENT ORGANIZATION ACTIVITY */}
+        <section className="landing-section-wrap" style={{ paddingBottom: 60 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
             <div>
-              <h2 style={{ fontSize: 18, fontWeight: 850, color: "#0c2b23", margin: "0 0 4px" }}>Recent Organization Activity</h2>
-              <p style={{ fontSize: 12.5, color: "#557269", margin: 0 }}>Cryptographically linked decision log recorded across all departments.</p>
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: "#0c2b23", margin: "0 0 2px" }}>Recent Organization Activity</h2>
+              <p style={{ fontSize: 12, color: "#617c74", margin: 0 }}>Cryptographically linked decision log recorded across departments.</p>
             </div>
             <button
               type="button"
               className="ghost-button"
-              style={{ fontSize: 11.5 }}
+              style={{ fontSize: 11 }}
               onClick={() => navigate("audit-log")}
             >
               View Complete Audit Log ({auditLog.length}) →
             </button>
           </div>
 
-          <div className="activity-list" style={{ background: "#ffffff", border: "1px solid #dce8e1", borderRadius: 12, padding: "12px 18px" }}>
-            {auditLog.slice(-4).reverse().map((event) => (
-              <div key={event.id} className="activity-item" style={{ padding: "10px 4px", borderBottom: "1px solid #f0f5f2" }}>
-                <span className="activity-icon">🛡️</span>
-                <div className="activity-body">
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <strong>{event.summary}</strong>
-                    <span className="badge-pill pill-pass" style={{ fontSize: 8.5 }}>{auditKindLabels[event.kind]}</span>
-                  </div>
-                  <p style={{ fontSize: 11, color: "#617c74", margin: "2px 0 0" }}>
-                    Actor: <strong>{event.actor}</strong> ({roleLabels[event.role]}) · Version: {event.contentVersion} · {event.timestamp.replace("T", " · ").replace("Z", " UTC")}
-                  </p>
+          <div style={{ background: "#ffffff", border: "1px solid #e7efe9", borderRadius: 10, padding: "4px 16px" }}>
+            {auditLog.slice(-3).reverse().map((event) => (
+              <div key={event.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #f2f7f4", fontSize: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 13 }}>🛡️</span>
+                  <span style={{ fontWeight: 650, color: "#13352c" }}>{event.summary}</span>
+                  <span className="badge-pill pill-pass" style={{ fontSize: 8 }}>{auditKindLabels[event.kind]}</span>
                 </div>
+                <span style={{ fontSize: 11, color: "#7a968e" }}>
+                  {event.actor} · {event.contentVersion}
+                </span>
               </div>
             ))}
           </div>
