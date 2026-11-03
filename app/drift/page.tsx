@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { AppSidebar } from "../components/app-sidebar";
 import { PublishingDriftRadar } from "../components/publishing-drift-radar";
+import { WorkflowStepper } from "../components/workflow-stepper";
 
 export const metadata: Metadata = {
-  title: "Multi-Platform Publishing & Post-Publish Drift Radar | Proofline",
+  title: "Safe Publishing & 24/7 Live Post Monitor | Proofline",
   description:
-    "Live production multi-platform publishing (Meta, X, LinkedIn) with active drift monitoring that continuously watches live published content against the Brand Truth Registry.",
+    "Publish approved content to social channels and monitor live posts 24/7 for updates when specs change.",
 };
 
 export default function DriftRadarPage() {
@@ -17,10 +18,10 @@ export default function DriftRadarPage() {
       <AppSidebar activeKey="drift" />
       <section
         id="main-content"
-        className="main-content"
+        className="main-content page-container-section"
         tabIndex={-1}
-        style={{ padding: "24px 32px", overflowY: "auto", flex: 1 }}
       >
+        <WorkflowStepper currentStage={4} />
         <PublishingDriftRadar />
       </section>
     </main>

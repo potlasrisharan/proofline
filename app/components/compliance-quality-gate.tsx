@@ -137,11 +137,11 @@ export function ComplianceQualityGate({
       <div className="quality-gate-top">
         <div className="gate-title-block">
           <div className="gate-kicker-row">
-            <span className="gate-kicker">ENTERPRISE COMPLIANCE SUITE</span>
-            <span className="gate-benchmark-chip">Statutory Rules · Quality Index · Claim Validation · Stakeholder Sign-Off</span>
+            <span className="gate-kicker">CONTENT QUALITY &amp; SAFETY GATE</span>
+            <span className="gate-benchmark-chip">Accuracy · Ad Rules · Disclaimers · Approvals</span>
             <span className="gate-benchmark-chip">· Role: {currentRoleLabel}</span>
           </div>
-          <h3 className="gate-headline">Multi-Dimensional Quality Gate &amp; Legal Audit</h3>
+          <h3 className="gate-headline">Content Quality Gate &amp; Compliance Review</h3>
         </div>
 
         {/* Binary Publishing Gate Status */}
@@ -152,8 +152,8 @@ export function ComplianceQualityGate({
               <strong>{isGateUnlocked ? "PUBLISHING GATE: UNLOCKED" : "PUBLISHING GATE: BLOCKED"}</strong>
               <small>
                 {isGateUnlocked
-                  ? "Composite score ≥ 85 · 0 critical mismatches"
-                  : `Score ${compositeScore}/100 · ${openHighCount} high-risk finding open`}
+                  ? "Quality score ≥ 85 · 0 unresolved issues"
+                  : `Score ${compositeScore}/100 · ${openHighCount} issue needs attention`}
               </small>
             </div>
           </div>
@@ -161,7 +161,7 @@ export function ComplianceQualityGate({
             type="button"
             className="certificate-trigger-btn"
             onClick={onViewCertificate}
-            title="Inspect cryptographic compliance certificate"
+            title="View official compliance certificate"
           >
             <span>📜</span> View Certificate
           </button>
@@ -206,7 +206,7 @@ export function ComplianceQualityGate({
           className={`gate-tab-btn ${activeTab === "signoff" ? "active" : ""}`}
           onClick={() => setActiveTab("signoff")}
         >
-          <span>🤝</span> Multi-Stakeholder Sign-Off Matrix
+          <span>🤝</span> Stakeholder Sign-Off Checklist
         </button>
       </div>
 
@@ -220,8 +220,8 @@ export function ComplianceQualityGate({
                 <span className="radial-total">/100</span>
               </div>
               <div className="radial-caption">
-                <strong>Composite Score</strong>
-                <small>Threshold: 85+</small>
+                <strong>Quality Score</strong>
+                <small>Pass threshold: 85+</small>
               </div>
             </div>
 
@@ -241,19 +241,19 @@ export function ComplianceQualityGate({
               {/* Pillar 2: Regulatory Compliance */}
               <div className="pillar-metric-card">
                 <div className="pillar-header">
-                  <span className="pillar-title">2. Regulatory &amp; Legal</span>
+                  <span className="pillar-title">2. Legal &amp; Disclaimers</span>
                   <span className={`pillar-score ${regulatoryScore >= 85 ? "good" : "warn"}`}>{regulatoryScore}%</span>
                 </div>
                 <div className="pillar-bar-track">
                   <div className={`pillar-bar-fill ${regulatoryScore >= 85 ? "good" : "warn"}`} style={{ width: `${regulatoryScore}%` }} />
                 </div>
-                <p className="pillar-note">FTC §5 &amp; Lanham Act §43(a) compliance</p>
+                <p className="pillar-note">Advertising truth and required disclosures</p>
               </div>
 
               {/* Pillar 3: Brand & Voice */}
               <div className="pillar-metric-card">
                 <div className="pillar-header">
-                  <span className="pillar-title">3. Brand &amp; Voice</span>
+                  <span className="pillar-title">3. Brand Voice &amp; Tone</span>
                   <span className={`pillar-score ${brandScore >= 85 ? "good" : "warn"}`}>{brandScore}%</span>
                 </div>
                 <div className="pillar-bar-track">
@@ -265,13 +265,13 @@ export function ComplianceQualityGate({
               {/* Pillar 4: Accessibility */}
               <div className="pillar-metric-card">
                 <div className="pillar-header">
-                  <span className="pillar-title">4. Accessibility</span>
+                  <span className="pillar-title">4. Clear &amp; Readable Text</span>
                   <span className="pillar-score good">{accessibilityScore}%</span>
                 </div>
                 <div className="pillar-bar-track">
                   <div className="pillar-bar-fill good" style={{ width: `${accessibilityScore}%` }} />
                 </div>
-                <p className="pillar-note">WCAG 2.1 AA · Contrast ratio 4.8:1</p>
+                <p className="pillar-note">Easy to read · Good contrast ratio</p>
               </div>
             </div>
           </div>
@@ -285,34 +285,34 @@ export function ComplianceQualityGate({
             {/* Statute Card 1 */}
             <div className="statute-card">
               <div className="statute-top">
-                <span className="statute-code">FTC 16 CFR § 255</span>
+                <span className="statute-code">FTC 16 CFR § 255 · Consumer Protection</span>
                 <span className={`statute-badge ${superlativeClean ? "pass" : "flagged"}`}>
-                  {superlativeClean ? "✓ Substantiated" : "⚠️ Scrutiny Required"}
+                  {superlativeClean ? "✓ Verified" : "⚠️ Needs Evidence"}
                 </span>
               </div>
-              <h4 className="statute-title">Deceptive &amp; Unsubstantiated Claims</h4>
+              <h4 className="statute-title">Accurate &amp; Proven Claims</h4>
               <p className="statute-description">
-                Advertising claims must be substantiated by competent and reliable laboratory or consumer testing evidence prior to publication.
+                All claims must be backed by official lab tests or verified specs before publishing.
               </p>
               <div className="statute-footer">
-                <small>Coverage: Objective &amp; Comparative Claims</small>
+                <small>Applies to: Performance &amp; battery claims</small>
               </div>
             </div>
 
             {/* Statute Card 2 */}
             <div className="statute-card">
               <div className="statute-top">
-                <span className="statute-code">Lanham Act § 43(a)</span>
+                <span className="statute-code">Lanham Act § 43(a) · Fair Comparison</span>
                 <span className={`statute-badge ${superlativeClean ? "pass" : "flagged"}`}>
-                  {superlativeClean ? "✓ Risk Mitigated" : "⚠️ Competitor Exposure"}
+                  {superlativeClean ? "✓ Safe wording" : "⚠️ Unverified Superlative"}
                 </span>
               </div>
-              <h4 className="statute-title">Comparative Advertising &amp; Misleading Statements</h4>
+              <h4 className="statute-title">Comparisons &amp; Superlatives</h4>
               <p className="statute-description">
-                Protects against commercial claims misrepresenting the nature, characteristics, or qualities of goods without head-to-head empirical evidence.
+                Claims like &ldquo;most reliable&rdquo; or &ldquo;twice as fast&rdquo; require test proof or must be rephrased safely.
               </p>
               <div className="statute-footer">
-                <small>Coverage: Superlatives (&ldquo;most reliable&rdquo;)</small>
+                <small>Applies to: Comparative words (&ldquo;most&rdquo;, &ldquo;best&rdquo;)</small>
               </div>
             </div>
 
@@ -321,7 +321,7 @@ export function ComplianceQualityGate({
               <div className="disclaimer-header">
                 <div>
                   <span className="statute-code">Mandatory Disclosure Rule</span>
-                  <h4 className="disclaimer-title">Legal Terms &amp; Conditions Qualifier</h4>
+                  <h4 className="disclaimer-title">Offer Terms &amp; Qualifier Link</h4>
                 </div>
                 <span className={`disclaimer-status-tag ${hasDisclaimer ? "pass" : "missing"}`}>
                   {hasDisclaimer ? "✓ Footnote Detected" : "! Missing Footnote"}
@@ -330,7 +330,7 @@ export function ComplianceQualityGate({
               <p className="disclaimer-body">
                 {hasDisclaimer
                   ? "Standard disclosure found in draft: terms disclaimer correctly links to novacore.io/terms for US launch eligibility."
-                  : "Promotional product announcements require a qualifying terms disclosure (*Terms apply. Full details at novacore.io/terms)."}
+                  : "Promotional announcements require a clear footnote linking to full terms (*Terms apply. Full details at novacore.io/terms)."}
               </p>
               {!hasDisclaimer && onAddDisclaimer ? (
                 <button
@@ -338,7 +338,7 @@ export function ComplianceQualityGate({
                   className="add-disclaimer-btn"
                   onClick={onAddDisclaimer}
                 >
-                  ⚡ 1-Click: Insert Mandatory Disclaimer
+                  ⚡ 1-Click: Add Terms Footnote
                 </button>
               ) : null}
             </div>
@@ -354,7 +354,7 @@ export function ComplianceQualityGate({
               <div>
                 <h4 className="scanner-title">High-Risk Superlative &amp; Absolute Scanner</h4>
                 <p className="scanner-sub">
-                  Flags non-factual absolute claims (&ldquo;most reliable&rdquo;, &ldquo;unbreakable&rdquo;, &ldquo;best in class&rdquo;) that trigger FTC investigations.
+                  Flags extreme words (&ldquo;most reliable&rdquo;, &ldquo;best in class&rdquo;) that need test proof or safe rewrites.
                 </p>
               </div>
               <span className={`scanner-counter ${detectedSuperlative ? "alert" : "clear"}`}>
@@ -365,12 +365,12 @@ export function ComplianceQualityGate({
             {detectedSuperlative ? (
               <div className="trigger-detail-card">
                 <div className="trigger-row">
-                  <span className="trigger-pill">Trigger Phrase</span>
+                  <span className="trigger-pill">Flagged Phrase</span>
                   <strong className="trigger-text">&ldquo;our most reliable laptop yet&rdquo;</strong>
-                  <span className="risk-level-tag high">Tier 1: High Regulatory Scrutiny</span>
+                  <span className="risk-level-tag high">Needs Evidence or Safe Rephrasing</span>
                 </div>
                 <p className="trigger-rationale">
-                  <strong>Statutory Rule:</strong> Superlative claim requires an active third-party audited MTBF (Mean Time Between Failures) benchmark on file. No benchmark source found in Novacore registry.
+                  <strong>Rule:</strong> A claim like &ldquo;most reliable&rdquo; requires independent lab test proof on file. No benchmark was found in your approved facts.
                 </p>
                 {onApplySafeHarbor ? (
                   <div className="safe-harbor-action-bar">
@@ -379,7 +379,7 @@ export function ComplianceQualityGate({
                       className="safe-harbor-btn"
                       onClick={onApplySafeHarbor}
                     >
-                      ⚡ Apply Safe-Harbor Rewrite: &ldquo;built for dependable, all-day performance&rdquo;
+                      ⚡ Apply Safe Rewrite: &ldquo;built for dependable, all-day performance&rdquo;
                     </button>
                   </div>
                 ) : null}
@@ -388,8 +388,8 @@ export function ComplianceQualityGate({
               <div className="clean-superlatives-state">
                 <span className="clean-icon">✓</span>
                 <div>
-                  <strong>All comparative statements are qualified.</strong>
-                  <p>No unverified absolutes detected in current draft content.</p>
+                  <strong>All statements are verified and clear.</strong>
+                  <p>No unproven exaggerations or false promises detected in current draft content.</p>
                 </div>
               </div>
             )}
@@ -414,20 +414,20 @@ export function ComplianceQualityGate({
 
             {/* Step 2: Automated Proofline Engine */}
             <div className="signoff-step-card complete">
-              <div className="step-badge">2. Proofline Engine</div>
-              <h5 className="step-name">Truth Engine v3.1</h5>
-              <span className="step-role">Deterministic Spec &amp; Rule Audit</span>
+              <div className="step-badge">2. Proofline Check</div>
+              <h5 className="step-name">Proofline Fact Checker</h5>
+              <span className="step-role">Checked against approved specs</span>
               <div className="step-status">
                 <span className="step-check">✓</span> {isGateUnlocked ? "Gate Cleared" : "Scan Completed"}
               </div>
-              <small className="step-timestamp">SHA-256 Chain Locked</small>
+              <small className="step-timestamp">Specs verified</small>
             </div>
 
             {/* Step 3: Legal & Regulatory Reviewer */}
             <div className={`signoff-step-card ${auditState === "approved" ? "complete" : "active"}`}>
               <div className="step-badge">3. Legal Reviewer</div>
               <h5 className="step-name">Maya Chen</h5>
-              <span className="step-role">Authorised Reviewer · Legal Ops</span>
+              <span className="step-role">Legal &amp; Regulatory Reviewer</span>
               <div className="step-status">
                 {auditState === "approved" ? (
                   <>
@@ -448,20 +448,20 @@ export function ComplianceQualityGate({
             <div className={`signoff-step-card ${auditState === "approved" ? "complete" : "pending"}`}>
               <div className="step-badge">4. Brand Owner</div>
               <h5 className="step-name">Lena Ortiz</h5>
-              <span className="step-role">VP Brand &amp; Marketing</span>
+              <span className="step-role">Brand &amp; Product Truth Lead</span>
               <div className="step-status">
                 {auditState === "approved" ? (
                   <>
-                    <span className="step-check">✓</span> Cleared for Dispatch
+                    <span className="step-check">✓</span> Ready to Publish
                   </>
                 ) : (
                   <>
-                    <span className="step-lock">🔒</span> Gated
+                    <span className="step-spin">⏳</span> Awaiting Legal Sign-Off
                   </>
                 )}
               </div>
               <small className="step-timestamp">
-                {auditState === "approved" ? "Multi-Channel Dispatch Active" : "Unlocks upon legal approval"}
+                {auditState === "approved" ? "Publishing unlocked" : "Pending prior steps"}
               </small>
             </div>
           </div>
@@ -516,8 +516,8 @@ export function ComplianceCertificateModal({
       accessibility: `${scoreData.accessibilityScore}%`,
     },
     statutoryClearances: [
-      "FTC 16 CFR Part 255 (§5 Unfair/Deceptive Claim Clearance)",
-      "Lanham Act §43(a) Comparative Claim Verification",
+      "Consumer Protection FTC §255 (Truth in Advertising)",
+      "Fair Comparison Advertising Guidelines (§43a)",
       "Novacore Specification Registry v3 Validation",
       "WCAG 2.1 AA Visual Contrast Baseline",
     ],
@@ -589,14 +589,14 @@ export function ComplianceCertificateModal({
               />
               <div>
                 <span className="cert-app-name">PROOFLINE TRUTH ENGINE</span>
-                <span className="cert-sub-caption">Enterprise Brand Compliance &amp; Regulatory Gate</span>
+                <span className="cert-sub-caption">Enterprise Brand Compliance &amp; Regulatory Truth</span>
               </div>
             </div>
             <div className="cert-seal-badge">
               <span className="cert-seal-icon">🛡️</span>
               <div>
                 <strong>OFFICIALLY SEALED</strong>
-                <small>Tamper-Evident SHA-256</small>
+                <small>Tamper-Proof Verification</small>
               </div>
             </div>
           </div>
@@ -625,13 +625,13 @@ export function ComplianceCertificateModal({
               <strong>{contentVersion} ({auditState.toUpperCase()})</strong>
             </div>
             <div className="cert-meta-cell">
-              <span className="meta-cell-label">Composite Quality Score</span>
+              <span className="meta-cell-label">Quality Score</span>
               <strong className={scoreData.compositeScore >= 85 ? "cert-score-good" : "cert-score-bad"}>
                 {scoreData.compositeScore} / 100 ({scoreData.isGateUnlocked ? "PASS" : "FAIL"})
               </strong>
             </div>
             <div className="cert-meta-cell">
-              <span className="meta-cell-label">Publishing Gate</span>
+              <span className="meta-cell-label">Publishing Status</span>
               <strong className={scoreData.isGateUnlocked ? "gate-unlocked-text" : "gate-blocked-text"}>
                 {scoreData.isGateUnlocked ? "✓ UNLOCKED" : "⛔ BLOCKED"}
               </strong>
@@ -666,7 +666,7 @@ export function ComplianceCertificateModal({
                 <tr>
                   <td>
                     <strong>2. Regulatory &amp; Legal</strong>
-                    <div className="cert-dim-sub">FTC §5 &amp; Lanham Act §43(a)</div>
+                    <div className="cert-dim-sub">Truth in Advertising &amp; Fair Comparison</div>
                   </td>
                   <td>≥ 85%</td>
                   <td>{scoreData.regulatoryScore}%</td>
@@ -690,7 +690,7 @@ export function ComplianceCertificateModal({
                 <tr>
                   <td>
                     <strong>4. Accessibility &amp; Readability</strong>
-                    <div className="cert-dim-sub">WCAG 2.1 AA · Contrast ≥ 4.5:1</div>
+                    <div className="cert-dim-sub">Easy to read · Good contrast ratio</div>
                   </td>
                   <td>≥ 90%</td>
                   <td>{scoreData.accessibilityScore}%</td>
@@ -702,9 +702,9 @@ export function ComplianceCertificateModal({
             </table>
           </div>
 
-          {/* Cryptographic Hash Seal */}
+          {/* Tamper-Proof Digital Verification Seal */}
           <div className="cert-hash-box">
-            <span className="hash-box-label">Tamper-Proof Cryptographic Content Digest</span>
+            <span className="hash-box-label">Tamper-Proof Digital Verification Seal</span>
             <code className="cert-hash-value">{contentHash}</code>
           </div>
 

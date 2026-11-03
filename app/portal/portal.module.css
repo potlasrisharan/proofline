@@ -476,11 +476,11 @@
   background: #FFFFFF;
   border: 1px solid var(--ind-border, #D4D4D8);
   border-radius: 8px;
-  padding: 14px 22px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
   box-shadow: 0 4px 16px rgba(24, 24, 27, 0.02);
 }
@@ -488,24 +488,29 @@
 .navLeft {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .backBtn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 7px 12px;
   font-family: var(--ind-font-mono, 'JetBrains Mono', monospace);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   background: #F4F4F5;
   color: var(--ind-fg, #18181B);
   border: 1px solid var(--ind-border, #D4D4D8);
   border-radius: 9999px;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s var(--ind-ease);
 }
 
@@ -517,7 +522,7 @@
 .roleQuickTabs {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
@@ -525,7 +530,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 11px;
   border-radius: 9999px;
   border: 1px solid var(--ind-border, #D4D4D8);
   background: #F4F4F5;
@@ -534,6 +539,8 @@
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1216,15 +1223,38 @@
 /* ==========================================================================
    Responsive Breakpoints & Low-RAM Compositing Optimizations
    ========================================================================== */
+@media (max-width: 1280px) {
+  .tabRoleShort {
+    display: none;
+  }
+}
+
 @media (max-width: 1024px) {
   .portalMain {
-    padding: 32px 20px 60px;
+    padding: 24px 16px 60px;
   }
   .metricsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
   .evidenceComparisonRow {
     grid-template-columns: 1fr;
+  }
+  .dashboardNav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  .navLeft {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .navRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .roleSelectDropdown {
+    flex: 1;
   }
 }
 
@@ -1284,11 +1314,18 @@
   .loginCardsGrid {
     grid-template-columns: 1fr;
   }
+  .roleQuickTabs {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
   .dashboardNav {
     flex-direction: column;
     align-items: stretch;
-    gap: 14px;
-    padding: 14px 16px;
+    gap: 12px;
+    padding: 12px 14px;
   }
   .navLeft, .navRight {
     width: 100%;

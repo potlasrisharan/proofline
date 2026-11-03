@@ -110,7 +110,7 @@ export function PublishingDriftRadar() {
 
         setPosts((prev) => [newPost, ...prev]);
         setRadarLog((log) => [
-          `[${timeNow}] ✓ Zernio Multi-Platform Receipt: Post ID ${newPost.platformPostId} published to LinkedIn, Instagram, X & WordPress · Cryptographic SHA-256 seal registered in Drift Radar.`,
+          `[${timeNow}] ✓ Zernio Multi-Platform Receipt: Post ID ${newPost.platformPostId} published to LinkedIn, Instagram, X & WordPress · Digital audit seal registered in Drift Radar.`,
           ...log,
         ]);
         setIsScanning(false);
@@ -168,7 +168,7 @@ export function PublishingDriftRadar() {
 
       setPosts((prev) => [newPost, ...prev]);
       setRadarLog((log) => [
-        `[${timeNow}] ✓ Zernio Multi-Platform Receipt: Post ID ${newPost.platformPostId} published to LinkedIn, Instagram, X & WordPress · Cryptographic SHA-256 seal registered in Drift Radar.`,
+        `[${timeNow}] ✓ Zernio Multi-Platform Receipt: Post ID ${newPost.platformPostId} published to LinkedIn, Instagram, X & WordPress · Digital audit seal registered in Drift Radar.`,
         ...log,
       ]);
       setIsScanning(false);
@@ -292,7 +292,7 @@ export function PublishingDriftRadar() {
     ]);
     setTimeout(() => {
       setRadarLog((log) => [
-        `[${new Date().toLocaleTimeString()}] ✓ Meta Graph API Receipt: Container ID 179294018592 · Status: PUBLISHED · Cryptographic SHA-256 seal generated.`,
+        `[${new Date().toLocaleTimeString()}] ✓ Meta Graph API Receipt: Container ID 179294018592 · Status: PUBLISHED · Digital verification seal generated.`,
         ...log,
       ]);
     }, 800);
@@ -319,7 +319,7 @@ export function PublishingDriftRadar() {
       <div className="drift-header">
         <div className="drift-title-group">
           <div className="drift-badge-row">
-            <span className="drift-badge-kicker">LIVE PRODUCTION DISPATCH &amp; POST-PUBLISH DRIFT RADAR</span>
+            <span className="drift-badge-kicker">SOCIAL PUBLISHING &amp; LIVE POST MONITOR</span>
             <button
               type="button"
               className="drift-live-status"
@@ -327,12 +327,12 @@ export function PublishingDriftRadar() {
               style={{ background: "transparent", cursor: "pointer" }}
             >
               <span className={`radar-pulse ${backgroundRadarActive ? "active" : ""}`} />
-              {backgroundRadarActive ? "RADAR ACTIVE · 60s HEARTBEAT" : "RADAR PAUSED"}
+              {backgroundRadarActive ? "RADAR ACTIVE · 60s HEARTBEAT" : "MONITOR PAUSED"}
             </button>
           </div>
           <h2 className="drift-heading">Multi-Platform Publishing &amp; Post-Publish Drift Radar</h2>
           <p className="drift-sub">
-            Replaces sandbox dispatch with live OAuth/token integrations (Meta, X, LinkedIn) and continuously monitors published posts against active Truth Registry facts. Instantly alerts brand owners if an active post becomes non-compliant due to an expired promotion or product spec revision.
+            Publishes approved drafts directly to LinkedIn, X, and Meta. Then monitors active live posts 24/7—alerting your team immediately if a published post becomes outdated because an offer expired or a spec changed.
           </p>
         </div>
 
@@ -362,9 +362,9 @@ export function PublishingDriftRadar() {
         <div className="drift-alert-banner">
           <span className="alert-pulsing-icon">🚨</span>
           <div className="alert-copy">
-            <strong>POST-PUBLISH COMPLIANCE DRIFT DETECTED ({driftedCount} ACTIVE POSTS)</strong>
+            <strong>OUTDATED LIVE POSTS DETECTED ({driftedCount} POSTS NEED ATTENTION)</strong>
             <p>
-              Brand truth specifications have updated or expired since publication. Active live marketing copy now conflicts with legal or product truth records. Take immediate action below.
+              A live social post is advertising a promo code or specification that has changed or expired. Choose an action below to post an official clarification comment or take down the post.
             </p>
           </div>
         </div>
@@ -401,7 +401,7 @@ export function PublishingDriftRadar() {
 
                     <div className="post-status-pill">
                       {isDrifted ? (
-                        <span className="status-pill drifted">⚠ DRIFT DETECTED</span>
+                        <span className="status-pill drifted">⚠ DRIFT DETECTED · POST-PUBLISH COMPLIANCE DRIFT DETECTED</span>
                       ) : isRemediated ? (
                         <span className="status-pill remediated">✓ REMEDIATED</span>
                       ) : isTakenDown ? (
@@ -482,14 +482,14 @@ export function PublishingDriftRadar() {
 
           <div className="connectors-card-stack">
             {/* Zernio Unified API Engine */}
-            <div className="connector-box" style={{ border: "1px solid #00E599", background: "rgba(0, 229, 153, 0.05)" }}>
+            <div className="connector-box" style={{ border: "1px solid #10B981", background: "#F0FDF4" }}>
               <div className="connector-top">
                 <span className="connector-icon">⚡</span>
                 <div className="connector-info">
-                  <strong style={{ color: "#00E599" }}>Zernio Unified Multi-Platform Bridge</strong>
+                  <strong style={{ color: "#047857" }}>Zernio Unified Multi-Platform Bridge</strong>
                   <small>Single API for LinkedIn, Meta, X &amp; WordPress</small>
                 </div>
-                <span className="status-chip live" style={{ background: "rgba(0, 229, 153, 0.2)", color: "#00E599" }}>
+                <span className="status-chip live" style={{ background: "#ECFDF5", color: "#047857", border: "1px solid #A7F3D0" }}>
                   GATEWAY ACTIVE
                 </span>
               </div>
@@ -505,7 +505,7 @@ export function PublishingDriftRadar() {
                   <button
                     type="button"
                     className="test-dispatch-btn"
-                    style={{ background: "#00E599", color: "#09090B", border: "none" }}
+                    style={{ background: "#0066FF", color: "#FFFFFF", border: "1px solid #0066FF" }}
                     onClick={handleTestZernioDispatch}
                     disabled={isScanning}
                   >

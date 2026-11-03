@@ -31,229 +31,229 @@ export const WORKFLOW_MODULES: WorkflowModule[] = [
   {
     id: "dynamic-sync",
     code: "MOD 01",
-    name: "Dynamic Brand Truth Sync",
+    name: "Live Document Sync",
     stage: "stage-01",
-    stageName: "Stage 01 · Ingestion & Truth",
+    stageName: "Stage 01 · Approved Facts & Specs",
     ownerRole: "Fact Owner & Brand Lead",
     ownerPersona: "Carlos Mendez & Lena Ortiz",
     statusText: "CONNECTED · NOTION & DOCS",
     statusVariant: "green",
-    badge: "INPUT LAYER",
-    description: "Ingests and synchronizes live corporate documentation from Notion workspaces, Google Docs, and Shopify ERP into immutable truth records.",
+    badge: "INPUT",
+    description: "Automatically syncs product specs from Notion workspaces, Google Docs, and Shopify inventory into approved facts.",
     routeHref: "/sync",
     actionType: "navigate",
     actionTarget: "/sync",
-    keyOutputs: ["Live Notion Blocks", "Google Docs Clauses", "ERP Inventory Tiers"],
+    keyOutputs: ["Live Notion Specs", "Google Docs Policies", "Inventory & Pricing"],
   },
   {
     id: "truth-registry",
     code: "MOD 02",
-    name: "Brand Truth Registry",
+    name: "Approved Fact Registry",
     stage: "stage-01",
-    stageName: "Stage 01 · Ingestion & Truth",
+    stageName: "Stage 01 · Approved Facts & Specs",
     ownerRole: "Brand Owner",
     ownerPersona: "Lena Ortiz",
-    statusText: "IMMUTABLE · VERSIONED",
+    statusText: "APPROVED · VERSIONED",
     statusVariant: "blue",
-    badge: "SPEC LEDGER",
-    description: "The authoritative repository of versioned product specifications, 12h battery benchmarks, approved qualifiers, and validity windows.",
+    badge: "OFFICIAL FACTS",
+    description: "The official catalog of product specifications, verified battery benchmarks, pricing rules, and offer dates.",
     routeHref: "/#registry",
     actionType: "actionTarget",
     actionTarget: "registry",
-    keyOutputs: ["12h Battery Benchmarks", "IEEE Standard Hashes", "Validity Expiry Windows"],
+    keyOutputs: ["12h Battery Benchmark", "Official Specs", "Offer Expiry Dates"],
   },
   {
     id: "impact-radar",
     code: "MOD 03",
-    name: "Fact-Change Impact Radar",
+    name: "Spec Change Radar",
     stage: "stage-01",
-    stageName: "Stage 01 · Ingestion & Truth",
-    ownerRole: "Enterprise Governance",
-    ownerPersona: "All Stakeholders",
-    statusText: "ACTIVE · 3 DOWNSTREAM DRIFTS",
+    stageName: "Stage 01 · Approved Facts & Specs",
+    ownerRole: "Team Governance",
+    ownerPersona: "All Team Roles",
+    statusText: "ACTIVE · 3 AFFECTED DRAFTS",
     statusVariant: "amber",
-    badge: "DEPENDENCY ENGINE",
-    description: "Monitors specification revisions (e.g. 12h → 14h) and automatically traces and flags all marketing collateral affected downstream.",
+    badge: "SPEC UPDATES",
+    description: "Detects when a product spec updates (e.g. 12h → 14h) and shows every draft or ad that needs to be updated.",
     routeHref: "/impact",
     actionType: "navigate",
     actionTarget: "/impact",
-    keyOutputs: ["Blast Radius Tracing", "Affected Draft Flagger", "1-Click Bulk Re-Audit"],
+    keyOutputs: ["Affected Drafts List", "1-Click Re-Check", "Instant Update Alerts"],
   },
 
   // STAGE 02: CONTENT CREATION & MULTIMODAL CAPTURE
   {
     id: "creator-studio",
     code: "MOD 04",
-    name: "Creator Content Studio",
+    name: "Creator Writing Studio",
     stage: "stage-02",
-    stageName: "Stage 02 · Creation & Vision",
+    stageName: "Stage 02 · Drafting & Visual Checks",
     ownerRole: "Content Creator Lead",
     ownerPersona: "Aisha Rahman",
-    statusText: "READY · GROQ & GEMINI",
+    statusText: "READY · INSTANT AI CHECKS",
     statusVariant: "green",
-    badge: "PRE-FLIGHT DRAFT",
-    description: "Authoring studio with real-time claim-diffing, 1-click lab spec replacement (e.g. 20h → 12h), and pre-submission compliance scores.",
+    badge: "WRITING STUDIO",
+    description: "Write marketing copy with real-time fact checks, 1-click fixes for wrong claims, and a readiness score.",
     routeHref: "/submit",
     actionType: "studio",
     actionTarget: "studio",
-    keyOutputs: ["Live Spec-Matching", "1-Click 12h Replacement", "100/100 Pre-Flight Score"],
+    keyOutputs: ["Instant Fact Checks", "1-Click Fixes (20h → 12h)", "Readiness Score"],
   },
   {
     id: "indic-engine",
     code: "MOD 05",
-    name: "Indic Multilingual Engine",
+    name: "Multi-Language Checks",
     stage: "stage-02",
-    stageName: "Stage 02 · Creation & Vision",
+    stageName: "Stage 02 · Drafting & Visual Checks",
     ownerRole: "Regional Marketing Lead",
     ownerPersona: "Aisha Rahman",
     statusText: "ONLINE · SARVAM AI",
     statusVariant: "purple",
-    badge: "REGIONAL LOCALIZATION",
-    description: "Guarantees factual integrity in Hindi and Telugu translations via Sarvam AI, ensuring localized claims never exceed technical truth specs.",
+    badge: "HINDI & TELUGU",
+    description: "Ensures Hindi and Telugu translations preserve exact battery hours and technical specs using Sarvam AI.",
     routeHref: "/submit",
     actionType: "studio",
     actionTarget: "studio",
-    keyOutputs: ["Sarvam-105b Hindi Translation", "Telugu Nuance Calibration", "Zero-Distortion Guarantee"],
+    keyOutputs: ["Accurate Hindi Specs", "Accurate Telugu Specs", "Zero Spec Distortion"],
   },
   {
     id: "multimodal-radar",
     code: "MOD 06",
-    name: "Multimodal Video & Visual Radar",
+    name: "Video & Visual Scanner",
     stage: "stage-02",
-    stageName: "Stage 02 · Creation & Vision",
+    stageName: "Stage 02 · Drafting & Visual Checks",
     ownerRole: "Creative & Video Lead",
     ownerPersona: "Aisha Rahman & Marcus Vance",
-    statusText: "ACTIVE · GEMINI 2.5 FLASH",
+    statusText: "ACTIVE · VISUAL OCR",
     statusVariant: "blue",
     badge: "VIDEO & CAROUSEL",
-    description: "Frame-by-frame multimodal OCR verifying claim truth in Instagram Reels, TikTok shorts, and carousels, with FTC mandatory font ratio calculation (≥ 2.5%).",
+    description: "Scans video frames (Reels/Shorts) and image carousels to verify on-screen claims and readable disclaimer fonts.",
     routeHref: "/multimodal",
     actionType: "navigate",
     actionTarget: "/multimodal",
-    keyOutputs: ["Frame Scrubber OCR", "FTC 2.5% Font Ratio Gauge", "1-Click Visual Remediation"],
+    keyOutputs: ["Video Frame Scanner", "Readable Disclaimer Test", "1-Click Visual Fixes"],
   },
 
   // STAGE 03: DETERMINISTIC & LEGAL AUDIT GATE
   {
     id: "review-queue",
     code: "MOD 07",
-    name: "Campaign Review Queue & Triage",
+    name: "Campaign Review Queue",
     stage: "stage-03",
-    stageName: "Stage 03 · Quality Gate",
+    stageName: "Stage 03 · Review & Legal Quality Gate",
     ownerRole: "Editorial Manager",
     ownerPersona: "Marcus Vance",
     statusText: "LIVE QUEUE · 4 CAMPAIGNS",
     statusVariant: "amber",
-    badge: "TRIAGE WORKBENCH",
-    description: "Triages marketing submissions by risk score, inspects evidence-or-abstain span flags, and manages cross-functional reviewer assignment.",
+    badge: "REVIEW QUEUE",
+    description: "Organizes submissions by risk level, flags unverified claims, and lets editors assign reviews.",
     routeHref: "/#reviews",
     actionType: "actionTarget",
     actionTarget: "reviews",
-    keyOutputs: ["Span-Level Citations", "Risk-Scored Queue", "Evidence-or-Abstain Flags"],
+    keyOutputs: ["Numbered Claim Flags", "Risk-Sorted Queue", "Source Evidence Links"],
   },
   {
     id: "regulatory-gate",
     code: "MOD 08",
-    name: "Regulatory Quality Gate",
+    name: "Advertising & Legal Gate",
     stage: "stage-03",
-    stageName: "Stage 03 · Quality Gate",
+    stageName: "Stage 03 · Review & Legal Quality Gate",
     ownerRole: "Authorised Legal Reviewer",
     ownerPersona: "Maya Chen",
-    statusText: "LOCKED · STATUTORY STANDARD",
+    statusText: "ACTIVE · AD STANDARDS",
     statusVariant: "green",
-    badge: "STATUTORY COMPLIANCE",
-    description: "Audits claims for FTC § 5 deceptive marketing, Lanham Act § 43(a) false advertising, and FTC 16 CFR § 255 influencer endorsement disclosures.",
+    badge: "LEGAL & RULES",
+    description: "Checks claims against FTC advertising rules, catches unverified superlatives ('most reliable'), and suggests safe rewrites.",
     routeHref: "/findings",
     actionType: "navigate",
     actionTarget: "/findings",
-    keyOutputs: ["FTC § 5 Deceptive Check", "Lanham Act Benchmark Audit", "Statutory Safe-Harbor Rewrites"],
+    keyOutputs: ["Truth in Advertising Check", "Unproven Hype Scanner", "Safe-Harbor Rewrites"],
   },
   {
     id: "audit-trail",
     code: "MOD 09",
-    name: "Collaborative Revision Ledger",
+    name: "Team Revision History",
     stage: "stage-03",
-    stageName: "Stage 03 · Quality Gate",
-    ownerRole: "Compliance & Governance",
+    stageName: "Stage 03 · Review & Legal Quality Gate",
+    ownerRole: "Team & Legal Ops",
     ownerPersona: "All Stakeholders",
-    statusText: "IMMUTABLE · REDLINE DIFF",
+    statusText: "COMPLETE · SIDE-BY-SIDE",
     statusVariant: "blue",
-    badge: "DECISION LINEAGE",
-    description: "Retains full side-by-side revision history, span-level annotations, reviewer comments, and cryptographic actor sign-offs.",
+    badge: "VERSION HISTORY",
+    description: "Keeps a side-by-side history of every edit, comment, and sign-off so teams stay aligned.",
     routeHref: "/#audit-log",
     actionType: "actionTarget",
     actionTarget: "audit-log",
-    keyOutputs: ["Side-by-Side Redline Diff", "Span-Level Comment Threads", "Auditable Change Requests"],
+    keyOutputs: ["Side-by-Side Comparison", "Reviewer Comments", "Complete Change History"],
   },
 
   // STAGE 04: GOVERNANCE, DISPATCH & CONTINUOUS RADAR
   {
     id: "role-portal",
     code: "MOD 10",
-    name: "Enterprise Multi-Role Governance",
+    name: "Dedicated Role Workspaces",
     stage: "stage-04",
-    stageName: "Stage 04 · Dispatch & Ledger",
-    ownerRole: "Enterprise Admin",
+    stageName: "Stage 04 · Approvals, Publishing & Monitoring",
+    ownerRole: "Team Admin",
     ownerPersona: "5 Verified Personas",
-    statusText: "ENFORCED · LEAST PRIVILEGE",
+    statusText: "ENFORCED · 5 ROLES",
     statusVariant: "green",
-    badge: "ACCESS CONTROL",
-    description: "Strict deterministic role-based boundaries with 5 distinct stakeholder portals: Content Lead, Editorial Manager, Legal Counsel, Brand Owner, Fact Owner.",
+    badge: "TEAM WORKSPACES",
+    description: "Custom workspaces for Writers, Editors, Legal Reviewers, Brand Leads, and External Partners.",
     routeHref: "/dashboards",
     actionType: "navigate",
     actionTarget: "/dashboards",
-    keyOutputs: ["5 Specialized Dashboards", "Role Privilege Scoping", "Zero Unauthorized Approvals"],
+    keyOutputs: ["5 Specialized Dashboards", "Role-Based Access", "No Unauthorized Approvals"],
   },
   {
     id: "gated-dispatch",
     code: "MOD 11",
-    name: "Gated Multi-Platform Dispatch",
+    name: "Safe Multi-Channel Publishing",
     stage: "stage-04",
-    stageName: "Stage 04 · Dispatch & Ledger",
+    stageName: "Stage 04 · Approvals, Publishing & Monitoring",
     ownerRole: "Authorized Reviewer",
     ownerPersona: "Maya Chen",
     statusText: "LIVE GATEWAY · ZERNIO",
     statusVariant: "purple",
-    badge: "OUTPUT GATE",
-    description: "Dispatches approved revisions across LinkedIn, X (Twitter), Meta, and Facebook via Zernio multi-channel API with cryptographic verification tokens.",
+    badge: "PUBLISH GATE",
+    description: "Publishes approved posts to LinkedIn, X (Twitter), Meta, and Instagram with 1 click.",
     routeHref: "/#dispatch",
     actionType: "dispatchModal",
     actionTarget: "dispatch",
-    keyOutputs: ["Multi-Channel Push (LinkedIn, X, Meta)", "Gated Sign-Off Check", "Receipt Payload Hashes"],
+    keyOutputs: ["Publish to LinkedIn, X, Meta", "Approval Verification Check", "Delivery Confirmation"],
   },
   {
     id: "drift-radar",
     code: "MOD 12",
-    name: "Post-Publish Drift Radar",
+    name: "Live Post Monitor",
     stage: "stage-04",
-    stageName: "Stage 04 · Dispatch & Ledger",
+    stageName: "Stage 04 · Approvals, Publishing & Monitoring",
     ownerRole: "Continuous Compliance",
     ownerPersona: "Marcus Vance & Maya Chen",
-    statusText: "HEARTBEAT · 60s INTERVAL",
+    statusText: "LIVE MONITOR · 24/7",
     statusVariant: "amber",
-    badge: "POST-PUBLISH MONITOR",
-    description: "Actively monitors live published social posts, instantly raising drift alerts if an expired claim or revised specification makes a live post legally non-compliant.",
+    badge: "POST MONITOR",
+    description: "Monitors published posts 24/7 and alerts you if an expired promotion or changed spec makes a live post outdated.",
     routeHref: "/drift",
     actionType: "navigate",
     actionTarget: "/drift",
-    keyOutputs: ["60s Background Heartbeat", "1-Click Clarification Tweets", "Emergency Post Takedown"],
+    keyOutputs: ["24/7 Live Monitoring", "1-Click Clarification Posts", "Quick Takedown Action"],
   },
   {
     id: "proof-vault",
     code: "MOD 13",
-    name: "Cryptographic Proof Vault",
+    name: "Compliance Proof Vault",
     stage: "stage-04",
-    stageName: "Stage 04 · Dispatch & Ledger",
+    stageName: "Stage 04 · Approvals, Publishing & Monitoring",
     ownerRole: "Legal Counsel & Auditors",
     ownerPersona: "Maya Chen & Lena Ortiz",
-    statusText: "ENCRYPTED · SHA-256 LEDGER",
+    statusText: "PERMANENT · TAMPER-PROOF",
     statusVariant: "blue",
-    badge: "COURT-READY PROVENANCE",
-    description: "Permanent vault maintaining SHA-256 hash chains of every source, rule, edit, and sign-off. Exports court-ready compliance verification packages.",
+    badge: "APPROVAL ARCHIVE",
+    description: "Stores a permanent, tamper-evident record of all approvals, ready to export for legal audits.",
     routeHref: "/vault",
     actionType: "navigate",
     actionTarget: "/vault",
-    keyOutputs: ["SHA-256 Hash Verification", "Tamper-Evident ZIP Export", "Court-Admissible Evidence"],
+    keyOutputs: ["Verified Approval History", "Downloadable Report (ZIP)", "Audit-Ready Records"],
   },
 ];
 
@@ -261,9 +261,9 @@ export const WORKFLOW_STAGES = [
   {
     id: "stage-01" as WorkflowStageId,
     num: "01",
-    label: "STAGE 01 · TRUTH INGESTION",
-    sub: "Source Grounding & Specs",
-    description: "Ingests raw benchmarks from Notion, Docs & ERP into versioned specifications.",
+    label: "STAGE 01 · APPROVED SPECS",
+    sub: "Approved Facts & Specs",
+    description: "Connects official product facts and specs from Notion, Google Docs & Shopify.",
     role: "Fact & Brand Owners",
     color: "#0066FF",
     count: 3,
@@ -271,9 +271,9 @@ export const WORKFLOW_STAGES = [
   {
     id: "stage-02" as WorkflowStageId,
     num: "02",
-    label: "STAGE 02 · CREATION & VISION",
-    sub: "Drafting & Multimodal Radar",
-    description: "Pre-flight creator studio with 12h battery diffing, Sarvam AI Indic, and Gemini frame OCR.",
+    label: "STAGE 02 · DRAFTING & VIDEO",
+    sub: "Drafting & Visual Checks",
+    description: "Creator studio with instant fact checking, multi-language support, and video reel scanning.",
     role: "Content Creators & Designers",
     color: "#22C55E",
     count: 3,
@@ -281,9 +281,9 @@ export const WORKFLOW_STAGES = [
   {
     id: "stage-03" as WorkflowStageId,
     num: "03",
-    label: "STAGE 03 · AUDIT & LEGAL GATE",
-    sub: "Deterministic Proof & Revisions",
-    description: "Span-level claim audit, FTC §5 statutory checks, and side-by-side redline reviews.",
+    label: "STAGE 03 · REVIEW & QUALITY GATE",
+    sub: "Fact Checks & Approvals",
+    description: "Side-by-side draft reviews, advertising truth rules, and 1-click fixes.",
     role: "Managers & Legal Reviewers",
     color: "#F59E0B",
     count: 3,
@@ -291,9 +291,9 @@ export const WORKFLOW_STAGES = [
   {
     id: "stage-04" as WorkflowStageId,
     num: "04",
-    label: "STAGE 04 · DISPATCH & DRIFT",
-    sub: "Multi-Channel & Provenance",
-    description: "Gated Zernio social publishing, 60s post-publish drift radar, and SHA-256 Proof Vault.",
+    label: "STAGE 04 · PUBLISHING & MONITORING",
+    sub: "Publishing & Live Alerts",
+    description: "1-click social posting, 24/7 post monitoring, and permanent approval records.",
     role: "Authorised Signers & Counsel",
     color: "#8B5CF6",
     count: 3,
@@ -428,13 +428,13 @@ export function ProductWorkflowSitemap({
         <div>
           <div className="sitemap-eyebrow-row">
             <span className="industrial-status-pulse" />
-            <span className="industrial-mono-10">01 // PRODUCT ARCHITECTURE &amp; LIFECYCLE SITEMAP</span>
+            <span className="industrial-mono-10">01 // PRODUCT WORKFLOW OVERVIEW</span>
           </div>
           <h2 id="sitemap-heading" className="sitemap-main-title">
-            End-to-End Content Governance Workflow
+            How Proofline Works (The 4-Stage Workflow)
           </h2>
           <p className="sitemap-subtitle">
-            Every feature in Proofline has an exact place in the 4-stage lifecycle. No orphaned tools or random placements.
+            Follow your content from first draft to safe publishing. Clear, simple steps for writers, editors, and legal teams.
           </p>
         </div>
 
@@ -451,12 +451,12 @@ export function ProductWorkflowSitemap({
           <div className="sitemap-stat-pill">
             <span className="stat-num">{filteredModules.length}</span>
             <span className="stat-label">
-              {activeStageFilter === "all" && selectedPersonaFilter === "all" ? "GOVERNANCE MODULES" : "ACTIVE MODULES"}
+              {activeStageFilter === "all" && selectedPersonaFilter === "all" ? "FEATURE MODULES" : "ACTIVE MODULES"}
             </span>
           </div>
           <div className="sitemap-stat-pill">
             <span className="stat-num">5</span>
-            <span className="stat-label">ROLE BOUNDARIES</span>
+            <span className="stat-label">TEAM ROLES</span>
           </div>
         </div>
       </div>
@@ -468,11 +468,11 @@ export function ProductWorkflowSitemap({
           className={`flow-step-node ${activeStageFilter === "stage-01" ? "active" : ""}`}
           onClick={() => setActiveStageFilter((prev) => (prev === "stage-01" ? "all" : "stage-01"))}
           aria-pressed={activeStageFilter === "stage-01"}
-          title="Filter to Stage 01 · Truth Ingestion"
+          title="Filter to Stage 01 · Approved Specs"
         >
-          <div className="flow-badge">INPUT 01</div>
-          <span className="flow-title">Truth Ingestion</span>
-          <span className="flow-sub">Notion, Docs &amp; ERP</span>
+          <div className="flow-badge">STEP 01</div>
+          <span className="flow-title">Approved Specs</span>
+          <span className="flow-sub">Notion, Docs &amp; Store</span>
         </button>
         <div className="flow-arrow" aria-hidden="true">⟶</div>
 
@@ -481,11 +481,11 @@ export function ProductWorkflowSitemap({
           className={`flow-step-node ${activeStageFilter === "stage-02" ? "active" : ""}`}
           onClick={() => setActiveStageFilter((prev) => (prev === "stage-02" ? "all" : "stage-02"))}
           aria-pressed={activeStageFilter === "stage-02"}
-          title="Filter to Stage 02 · Creator Studio"
+          title="Filter to Stage 02 · Writing & Video"
         >
-          <div className="flow-badge">CREATION 02</div>
-          <span className="flow-title">Creator Studio</span>
-          <span className="flow-sub">Spec-Diff &amp; Multimodal</span>
+          <div className="flow-badge">STEP 02</div>
+          <span className="flow-title">Writing &amp; Video</span>
+          <span className="flow-sub">Instant Check &amp; OCR</span>
         </button>
         <div className="flow-arrow" aria-hidden="true">⟶</div>
 
@@ -494,11 +494,11 @@ export function ProductWorkflowSitemap({
           className={`flow-step-node ${activeStageFilter === "stage-03" ? "active" : ""}`}
           onClick={() => setActiveStageFilter((prev) => (prev === "stage-03" ? "all" : "stage-03"))}
           aria-pressed={activeStageFilter === "stage-03"}
-          title="Filter to Stage 03 · Deterministic Audit"
+          title="Filter to Stage 03 · Review & Quality"
         >
-          <div className="flow-badge">QUALITY GATE 03</div>
-          <span className="flow-title">Deterministic Audit</span>
-          <span className="flow-sub">FTC §5 &amp; Citations</span>
+          <div className="flow-badge">STEP 03</div>
+          <span className="flow-title">Review &amp; Quality</span>
+          <span className="flow-sub">Fact Check &amp; Approvals</span>
         </button>
         <div className="flow-arrow" aria-hidden="true">⟶</div>
 
@@ -507,11 +507,11 @@ export function ProductWorkflowSitemap({
           className={`flow-step-node ${activeStageFilter === "stage-04" ? "active" : ""}`}
           onClick={() => setActiveStageFilter((prev) => (prev === "stage-04" ? "all" : "stage-04"))}
           aria-pressed={activeStageFilter === "stage-04"}
-          title="Filter to Stage 04 · Dispatch &amp; Drift"
+          title="Filter to Stage 04 · Publish & Monitor"
         >
-          <div className="flow-badge">OUTPUT 04</div>
-          <span className="flow-title">Dispatch &amp; Drift</span>
-          <span className="flow-sub">Zernio &amp; 60s Radar</span>
+          <div className="flow-badge">STEP 04</div>
+          <span className="flow-title">Publish &amp; Monitor</span>
+          <span className="flow-sub">Social Post &amp; 24/7 Alerts</span>
         </button>
       </div>
 
@@ -650,7 +650,7 @@ export function ProductWorkflowSitemap({
         <div
           className="sitemap-vault-banner"
           role="region"
-          aria-label="Cryptographic Proof Vault Foundation"
+          aria-label="Proof Vault & Audit Trail Foundation"
         >
           <div className="sitemap-vault-left">
             <div className="sitemap-vault-header-row">
@@ -685,7 +685,7 @@ export function ProductWorkflowSitemap({
               type="button"
               className="module-launch-btn"
               onClick={() => handleModuleAction(vaultModule)}
-              title="Open Cryptographic Proof Vault & Audit Ledger"
+              title="Open Proof Vault & Audit Ledger"
               style={{ width: "100%", justifyContent: "center" }}
             >
               Launch Proof Vault (/vault) →
@@ -696,7 +696,7 @@ export function ProductWorkflowSitemap({
                 className="industrial-ghost-btn"
                 style={{ padding: "8px 14px", fontSize: 10, width: "100%", justifyContent: "center" }}
                 onClick={onOpenCertificateModal}
-                title="Inspect Tamper-Proof Cryptographic Certificate"
+                title="Inspect Tamper-Proof Audit Certificate"
               >
                 📜 Inspect Certificate
               </button>

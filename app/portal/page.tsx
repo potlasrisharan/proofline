@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import styles from "./portal.module.css";
 import { demoPersonas, type DemoPersona } from "../components/role-dashboard-showcase";
+import { WorkflowStepper } from "../components/workflow-stepper";
 import type { ProoflineRole } from "../lib/proofline-api";
 
 function getInitialPortalRole(): ProoflineRole | null {
@@ -21,6 +22,20 @@ function getInitialPortalRole(): ProoflineRole | null {
   return null;
 }
 
+const portalListeners = new Set<() => void>();
+function subscribePortal(callback: () => void) {
+  portalListeners.add(callback);
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", callback);
+  }
+  return () => {
+    portalListeners.delete(callback);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("storage", callback);
+    }
+  };
+}
+
 export type PortalPageProps = {
   activeRole?: ProoflineRole;
   onRoleChange?: (role: ProoflineRole) => void;
@@ -33,21 +48,19 @@ export default function PortalPage({
   isEmbedded = false,
 }: PortalPageProps = {}) {
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<ProoflineRole | null>(() => {
-    if (activeRole) return activeRole;
-    return getInitialPortalRole();
-  });
-  const [prevActiveRole, setPrevActiveRole] = useState(activeRole);
+  const [localRole, setLocalRole] = useState<ProoflineRole | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  if (activeRole !== prevActiveRole) {
-    setPrevActiveRole(activeRole);
-    if (activeRole) {
-      setSelectedRole(activeRole);
-    }
-  }
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(handle);
+  }, []);
+
+  const storedRole = useSyncExternalStore(subscribePortal, getInitialPortalRole, () => null);
+  const selectedRole = activeRole ?? localRole ?? (mounted ? storedRole : null);
 
   const handleLogin = (role: ProoflineRole) => {
-    setSelectedRole(role);
+    setLocalRole(role);
     if (onRoleChange) {
       onRoleChange(role);
     }
@@ -60,16 +73,18 @@ export default function PortalPage({
       url.searchParams.set("role", role);
       window.history.pushState({}, "", url.toString());
     }
+    portalListeners.forEach((l) => l());
   };
 
   const handleLogout = () => {
-    setSelectedRole(null);
+    setLocalRole(null);
     if (typeof window !== "undefined") {
       window.sessionStorage.removeItem("proofline:portal-active-role");
       const url = new URL(window.location.href);
       url.searchParams.delete("role");
       window.history.pushState({}, "", url.toString());
     }
+    portalListeners.forEach((l) => l());
   };
 
   const handleOpenWorkspace = (targetRole?: ProoflineRole) => {
@@ -83,7 +98,7 @@ export default function PortalPage({
   };
 
   return (
-    <div className={`${styles.portalWrapper} ${isEmbedded ? styles.embeddedWrapper : ""}`}>
+    <div className={`${styles.portalWrapper} ${isEmbedded ? styles.embeddedWrapper : ""}`} suppressHydrationWarning>
       {/* Background and Header ONLY if standalone (not embedded in workspace) */}
       {!isEmbedded && (
         <>
@@ -149,7 +164,7 @@ export default function PortalPage({
 
       {!isEmbedded && (
         <footer className={styles.portalFooter}>
-          <span>Proofline Enterprise Portal · Novacore Production Workspace · Cryptographic Evidence Engine</span>
+          <span>Proofline Enterprise Portal · Novacore Production Workspace · Tamper-Proof Verification Engine</span>
           <span>
             <Link href="/privacy">AI &amp; Data Disclosure</Link> · Novacore Brand Safety Standards
           </span>
@@ -176,13 +191,13 @@ function PortalMainLoginView({
       <div className={styles.portalHero} style={{ marginBottom: 24 }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", background: "#FFFFFF", border: "1px solid var(--ind-border, #D4D4D8)", borderRadius: 9999, fontSize: 10, fontFamily: "var(--ind-font-mono)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 12 }}>
           <span className="industrial-status-pulse" />
-          <span>Architecture: 5 Dedicated Role Dashboards + 1 Common Judge Cockpit</span>
+          <span>5 Dedicated Team Workspaces + 1 Unified Review Cockpit</span>
         </div>
         <h1 className={styles.heroTitle} style={{ fontSize: 26, margin: "0 0 8px" }}>
           Select Your Role to Access Your Dedicated Dashboard
         </h1>
         <p className={styles.heroSubtitle} style={{ fontSize: 13, margin: "0 auto 16px", maxWidth: 760, lineHeight: 1.6 }}>
-          Each enterprise stakeholder (Creator, Editorial Manager, Legal Counsel, Brand Owner, Agency Partner) operates in an isolated, role-scoped dashboard. Or, launch the <strong>Common Judge Review Cockpit</strong> to evaluate the entire continuous quality gate in one unified screen.
+          Choose a team role below to see their tailored dashboard. Or, launch the <strong>Unified Review Cockpit</strong> to test all 4 stages of the workflow together in one screen.
         </p>
 
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 12 }}>
@@ -338,6 +353,9 @@ function RoleDedicatedDashboard({
           )}
         </div>
       </div>
+
+      {/* Universal 4-Stage Enterprise Pipeline Stepper */}
+      <WorkflowStepper activeRole={role} />
 
       {/* Role Banner */}
       <section className={`${styles.dashboardBanner} ${styles[persona.badgeTone]}`}>
@@ -562,36 +580,39 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
             <div style={{ fontSize: 11, fontWeight: 800, color: "#18181B", marginBottom: 8, fontFamily: "var(--ind-font-sans, sans-serif)" }}>
               Recent Creator Submissions (Click to Inspect)
             </div>
-            <div
+            <button
+              type="button"
               className={styles.interactiveRow}
               onClick={() => setActiveDraftKey("novabook")}
-              style={{ background: activeDraftKey === "novabook" ? "rgba(0, 102, 255, 0.08)" : undefined }}
+              style={{ width: "100%", textAlign: "left", border: "none", background: activeDraftKey === "novabook" ? "rgba(0, 102, 255, 0.08)" : undefined }}
             >
               <span style={{ fontSize: 11, fontWeight: 600 }}>NovaBook S1 Launch Email</span>
               <span style={{ color: "#F59E0B", fontWeight: 700, fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)" }}>
                 {submittedToTriage ? "In Review (Risk 24)" : "In Review (Risk 78)"}
               </span>
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className={styles.interactiveRow}
               onClick={() => setActiveDraftKey("teaser")}
-              style={{ background: activeDraftKey === "teaser" ? "rgba(0, 102, 255, 0.08)" : undefined }}
+              style={{ width: "100%", textAlign: "left", border: "none", background: activeDraftKey === "teaser" ? "rgba(0, 102, 255, 0.08)" : undefined }}
             >
               <span style={{ fontSize: 11, fontWeight: 600 }}>Q4 Spring Laptop Teaser</span>
               <span style={{ color: "#22C55E", fontWeight: 700, fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)" }}>
                 Approved
               </span>
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className={styles.interactiveRow}
               onClick={() => setActiveDraftKey("charger")}
-              style={{ background: activeDraftKey === "charger" ? "rgba(0, 102, 255, 0.08)" : undefined }}
+              style={{ width: "100%", textAlign: "left", border: "none", background: activeDraftKey === "charger" ? "rgba(0, 102, 255, 0.08)" : undefined }}
             >
               <span style={{ fontSize: 11, fontWeight: 600 }}>UltraSpeed Charger Social Post</span>
               <span style={{ color: "#0066FF", fontWeight: 700, fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)" }}>
                 Submitted
               </span>
-            </div>
+            </button>
           </div>
         </section>
       </div>
@@ -624,7 +645,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
       riskScore: 52,
       riskLevel: "medium",
       status: "In Review",
-      notes: "Superlative phrase needs substantiation before client partner release.",
+      notes: "Claims like 'most reliable' need test proof before partner release.",
     },
     {
       id: "sustainability-whitepaper",
@@ -713,11 +734,20 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
               {queueRows.map((row) => (
                 <tr
                   key={row.id}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Select campaign ${row.title}`}
                   style={{
                     background: selectedQueueId === row.id ? "rgba(0, 102, 255, 0.04)" : undefined,
                     cursor: "pointer",
                   }}
                   onClick={() => setSelectedQueueId(row.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelectedQueueId(row.id);
+                    }
+                  }}
                 >
                   <td><strong>{row.title}</strong></td>
                   <td>{row.author}</td>
@@ -858,35 +888,35 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
     <>
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>FTC §5 Compliance</div>
+          <div className={styles.metricLabel}>Advertising Truth (FTC)</div>
           <div className={styles.metricValue}>100% <span className={styles.metricChange}>Clear</span></div>
-          <div className={styles.metricSubtext}>16 CFR § 255 sponsorship rules</div>
+          <div className={styles.metricSubtext}>Clear &amp; substantiated claims</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Lanham Act §43(a) Risk</div>
+          <div className={styles.metricLabel}>Unverified Comparisons</div>
           <div className={styles.metricValue}>
             {safeHarborApplied ? "0" : "1"}
             <span className={styles.metricChange} style={{ color: safeHarborApplied ? "#22C55E" : "#EF4444" }}>
-              {safeHarborApplied ? "Mitigated" : "Superlative"}
+              {safeHarborApplied ? "Mitigated" : "Needs proof"}
             </span>
           </div>
           <div className={styles.metricSubtext}>&ldquo;most reliable&rdquo; claim</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Quality Score Index</div>
+          <div className={styles.metricLabel}>Overall Quality Score</div>
           <div className={styles.metricValue}>
             {safeHarborApplied ? "98.4" : "95.2"}
             <span className={styles.metricChange}>/ 100</span>
           </div>
-          <div className={styles.metricSubtext}>Accuracy + Legal + A11y</div>
+          <div className={styles.metricSubtext}>Accuracy + Legal + Clear Text</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Signed Certificates</div>
+          <div className={styles.metricLabel}>Approved Certificates</div>
           <div className={styles.metricValue}>
             {certSigned ? "15" : "14"}
-            <span className={styles.metricChange}>SHA-256</span>
+            <span className={styles.metricChange}>Issued</span>
           </div>
-          <div className={styles.metricSubtext}>Audit-proof legal gate</div>
+          <div className={styles.metricSubtext}>Permanent audit record</div>
         </div>
       </div>
 
@@ -894,12 +924,12 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
         {/* Left: 4-Pillar Quality Scorecard */}
         <section className={styles.panelCard}>
           <h2 className={styles.panelTitle}>4-Pillar Regulatory &amp; Brand Scorecard</h2>
-          <p className={styles.panelSub}>Statutory clearinghouse for Novacore marketing copy</p>
+          <p className={styles.panelSub}>Automated quality and truth check for marketing copy</p>
 
           <div className={styles.scorecardPillars}>
             <div className={styles.pillarRow}>
               <div className={styles.pillarMeta}>
-                <span>1. Spec Accuracy &amp; Lab Benchmarking</span>
+                <span>1. Product Spec Accuracy</span>
                 <span style={{ color: "#22C55E", fontWeight: 800 }}>96% (PASS)</span>
               </div>
               <div className={styles.pillarBarBg}>
@@ -909,7 +939,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
 
             <div className={styles.pillarRow}>
               <div className={styles.pillarMeta}>
-                <span>2. Statutory Legal Rules (FTC §5 &amp; Lanham Act)</span>
+                <span>2. Advertising &amp; Legal Rules</span>
                 <span style={{ color: safeHarborApplied ? "#22C55E" : "#F59E0B", fontWeight: 800 }}>
                   {safeHarborApplied ? "98% (CLEARED)" : "92% (REVIEW)"}
                 </span>
@@ -931,7 +961,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
 
             <div className={styles.pillarRow}>
               <div className={styles.pillarMeta}>
-                <span>4. Accessibility &amp; Non-Deceptive Pricing</span>
+                <span>4. Clear Text &amp; Pricing Transparency</span>
                 <span style={{ color: "#22C55E", fontWeight: 800 }}>98% (PASS)</span>
               </div>
               <div className={styles.pillarBarBg}>
@@ -942,10 +972,10 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
 
           <div className={styles.subtleCard}>
             <div style={{ fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#18181B", marginBottom: 6 }}>
-              Superlative &amp; Comparative Claim Scanner
+              Unverified Claims &amp; Hype Scanner
             </div>
             <p style={{ fontSize: 12, margin: 0, color: "#52525B", lineHeight: 1.55 }}>
-              Claim flagged: <em>&ldquo;our most reliable laptop yet&rdquo;</em> (High-risk comparative claim under Lanham Act §43(a)).
+              Claim flagged: <em>&ldquo;our most reliable laptop yet&rdquo;</em> (Unverified comparative claim that requires lab test proof or safe phrasing).
             </p>
             <div style={{ marginTop: 12 }}>
               <button
@@ -955,17 +985,17 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
                 onClick={() => setSafeHarborApplied(true)}
               >
                 {safeHarborApplied
-                  ? "✓ Safe-Harbor Clause Applied (IEEE Std 1621-2024)"
-                  : "⚡ Apply Safe-Harbor Rewrite with IEEE Benchmark"}
+                  ? "✓ Safe Rewrite Applied (Lab Benchmark Attached)"
+                  : "⚡ Apply Safe Rewrite with Lab Benchmark"}
               </button>
             </div>
           </div>
         </section>
 
-        {/* Right: Cryptographic Compliance Certificate Signer */}
+        {/* Right: Verified Compliance Certificate Signer */}
         <section className={styles.panelCard}>
-          <h2 className={styles.panelTitle}>Cryptographic Compliance Gate</h2>
-          <p className={styles.panelSub}>Tamper-proof audit certificate for publication</p>
+          <h2 className={styles.panelTitle}>Compliance Approval Certificate</h2>
+          <p className={styles.panelSub}>Tamper-proof audit record for publication</p>
 
           <div className={styles.cryptoCertCard}>
             <div>CERTIFICATE STATUS: {certSigned ? "SIGNED & ISSUED (LOCKED)" : "PENDING LEGAL AUTHORISATION"}</div>
@@ -1251,7 +1281,7 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
           <p className={styles.panelSub}>Client telemetry isolation for third-party partners</p>
 
           <div className={styles.maskedNoticeBox}>
-            <strong>Enterprise Privacy Boundary:</strong> In compliance with Novacore security policies, internal telemetry, financial margins, and confidential roadmap documents are cryptographically masked in this partner view.
+            <strong>Enterprise Privacy Boundary:</strong> In compliance with Novacore security policies, internal financial margins and confidential roadmap notes are securely hidden in this guest partner view.
             <div className={styles.maskedItem}>
               <span>Internal Margin Data</span>
               <span>🔒 PROTECTED</span>

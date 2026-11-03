@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { AppSidebar } from "../components/app-sidebar";
 import { DynamicTruthSync } from "../components/dynamic-truth-sync";
+import { WorkflowStepper } from "../components/workflow-stepper";
 
 export const metadata: Metadata = {
-  title: "Dynamic Brand Truth Sync & Enterprise Doc Ingestion | Proofline",
+  title: "Live Spec Sync (Notion, Google Docs & Shopify) | Proofline",
   description:
-    "Automates Brand Truth Registry ingestion by syncing with live corporate data sources (Notion, Google Docs, Shopify ERP, and product spec sheets).",
+    "Automatically syncs approved specs from Notion, Google Docs, and Shopify inventory into Proofline.",
 };
 
 export default function DynamicSyncPage() {
@@ -17,10 +18,10 @@ export default function DynamicSyncPage() {
       <AppSidebar activeKey="sync" />
       <section
         id="main-content"
-        className="main-content"
+        className="main-content page-container-section"
         tabIndex={-1}
-        style={{ padding: "24px 32px", overflowY: "auto", flex: 1 }}
       >
+        <WorkflowStepper currentStage={1} />
         <DynamicTruthSync />
       </section>
     </main>

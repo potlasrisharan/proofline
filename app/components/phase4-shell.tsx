@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { AppSidebar } from "./app-sidebar";
+import { WorkflowStepper } from "./workflow-stepper";
 
 type Phase4Page = "impact" | "insights";
 
@@ -24,6 +25,7 @@ export function Phase4Shell({ current, eyebrow, title, description, children }: 
           <span className="pl-demo-label">IMPLEMENTED · local synthetic demo</span>
         </header>
         <div className="content-wrap">
+          <WorkflowStepper currentStage={current === "impact" ? 1 : 3} />
           <div className="page-heading compact-heading">
             <div>
               <p className="eyebrow">{eyebrow}</p>

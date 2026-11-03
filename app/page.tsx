@@ -21,6 +21,7 @@ import {
 } from "./components/role-dashboard-showcase";
 import { CreatorPlatformStudioModal } from "./components/creator-platform-studio";
 import { ProductWorkflowSitemap } from "./components/workflow-sitemap";
+import { WorkflowStepper } from "./components/workflow-stepper";
 import PortalPage from "./portal/page";
 import type { ProoflineRole } from "./lib/proofline-api";
 
@@ -1019,7 +1020,7 @@ export default function Home() {
           <div className="industrial-hero-left">
             <div className="industrial-hero-status-bar">
               <span className="industrial-status-pulse" />
-              <span className="industrial-mono-10">CONTINUOUS BRAND TRUTH GATE · DETERMINISTIC EVIDENCE AUDIT</span>
+              <span className="industrial-mono-10">ACCURACY &amp; COMPLIANCE PLATFORM · BRAND TRUTH BEFORE YOU PUBLISH</span>
             </div>
 
             <h1 className="industrial-hero-heading">
@@ -1030,7 +1031,7 @@ export default function Home() {
             </h1>
 
             <p className="industrial-hero-subcopy">
-              One continuous quality gate from draft to publish. Deterministic claim verification, statutory safe-harbor compliance, and cryptographic auditability for copywriters, legal counsel, and marketing leaders.
+              Check marketing claims against approved product specs before you publish. Catch inaccurate numbers, flag risky claims, and protect your brand across emails, social posts, and videos.
             </p>
 
             <div className="industrial-hero-cta-box">
@@ -1072,20 +1073,20 @@ export default function Home() {
             {/* Technical Readout Labels (10px Mono) */}
             <div className="industrial-readout-row">
               <div className="industrial-readout-item">
-                <span className="industrial-mono-10-muted">SPEC HASH CHAIN</span>
-                <span className="industrial-mono-10">SHA-256 (3 EDITIONS VERIFIED)</span>
+                <span className="industrial-mono-10-muted">FACT TRACKING</span>
+                <span className="industrial-mono-10">APPROVED SPECS MATCHED</span>
               </div>
               <div className="industrial-readout-item">
-                <span className="industrial-mono-10-muted">STATUTORY STANDARD</span>
-                <span className="industrial-mono-10">FTC §5 &amp; LANHAM §43(A)</span>
+                <span className="industrial-mono-10-muted">AD STANDARDS</span>
+                <span className="industrial-mono-10">FTC &amp; TRUTH-IN-ADVERTISING</span>
               </div>
               <div className="industrial-readout-item">
-                <span className="industrial-mono-10-muted">PARSING LATENCY</span>
-                <span className="industrial-mono-10">&lt; 14MS EDGE EXECUTION</span>
+                <span className="industrial-mono-10-muted">SPEED</span>
+                <span className="industrial-mono-10">INSTANT (&lt; 14MS) CHECKS</span>
               </div>
               <div className="industrial-readout-item">
-                <span className="industrial-mono-10-muted">INDIC COVERAGE</span>
-                <span className="industrial-mono-10">SARVAM AI (HI, TE)</span>
+                <span className="industrial-mono-10-muted">LANGUAGES</span>
+                <span className="industrial-mono-10">ENGLISH, HINDI &amp; TELUGU</span>
               </div>
             </div>
           </div>
@@ -1139,39 +1140,39 @@ export default function Home() {
         <div className="industrial-marquee-wrap" aria-hidden="true">
           <div className="industrial-marquee-track">
             <span className="industrial-marquee-item">
-              <span className="industrial-stroke-text">PROOF OF TRUTH</span>
+              <span className="industrial-stroke-text">VERIFIED CLAIMS</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-serif-italic">Brand Governance</span>
+              <span className="industrial-serif-italic">Approved Specs</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-stroke-text">IMMUTABLE SPECS</span>
+              <span className="industrial-stroke-text">ZERO FALSE CLAIMS</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-serif-italic">Deterministic Verification</span>
+              <span className="industrial-serif-italic">1-Click Fixes</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-stroke-text">ZERO DECEPTION</span>
+              <span className="industrial-stroke-text">AD COMPLIANCE</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-serif-italic">FTC §5 Compliant</span>
+              <span className="industrial-serif-italic">Multi-Language</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-stroke-text">CRYPTOGRAPHIC HASH</span>
+              <span className="industrial-stroke-text">COMPLETE AUDIT HISTORY</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-serif-italic">Indic Localization</span>
+              <span className="industrial-serif-italic">Safe Publishing</span>
               <span className="industrial-star-icon">✦</span>
             </span>
             <span className="industrial-marquee-item">
-              <span className="industrial-stroke-text">PROOF OF TRUTH</span>
+              <span className="industrial-stroke-text">VERIFIED CLAIMS</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-serif-italic">Brand Governance</span>
+              <span className="industrial-serif-italic">Approved Specs</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-stroke-text">IMMUTABLE SPECS</span>
+              <span className="industrial-stroke-text">ZERO FALSE CLAIMS</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-serif-italic">Deterministic Verification</span>
+              <span className="industrial-serif-italic">1-Click Fixes</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-stroke-text">ZERO DECEPTION</span>
+              <span className="industrial-stroke-text">AD COMPLIANCE</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-serif-italic">FTC §5 Compliant</span>
+              <span className="industrial-serif-italic">Multi-Language</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-stroke-text">CRYPTOGRAPHIC HASH</span>
+              <span className="industrial-stroke-text">COMPLETE AUDIT HISTORY</span>
               <span className="industrial-star-icon">✦</span>
-              <span className="industrial-serif-italic">Indic Localization</span>
+              <span className="industrial-serif-italic">Safe Publishing</span>
               <span className="industrial-star-icon">✦</span>
             </span>
           </div>
@@ -1194,19 +1195,19 @@ export default function Home() {
         {/* 8. SEQUENTIAL WORKFLOW STAGE PIPELINE */}
         <section id="services-section" className="industrial-project-section">
           <div className="industrial-section-label-bar">
-            <span className="industrial-mono-10">01 // PRODUCT SERVICES &amp; WORKFLOW PIPELINE</span>
-            <span className="industrial-mono-10-muted">EXPLORE HOW CLAIMS FLOW FROM INGESTION TO VERIFIED DISPATCH</span>
+            <span className="industrial-mono-10">01 // PRODUCT WORKFLOW PIPELINE</span>
+            <span className="industrial-mono-10-muted">SEE HOW DRAFTS FLOW FROM APPROVED SPECS TO SAFE PUBLISHING</span>
           </div>
 
           {/* ==============================================================
-              STAGE 01 · TRUTH INGESTION & GROUNDING (INPUT LAYER)
+              STAGE 01 · APPROVED SPECS & FACTS (INPUT LAYER)
               ============================================================== */}
           <div id="stage-01" className="industrial-stage-divider-bar">
             <div className="stage-divider-left">
               <span className="stage-divider-badge">STAGE 01</span>
-              <span className="stage-divider-title">TRUTH INGESTION &amp; GROUNDING (INPUT LAYER)</span>
+              <span className="stage-divider-title">APPROVED SPECS &amp; FACTS (INPUT LAYER)</span>
             </div>
-            <span className="stage-divider-right">OWNER: FACT &amp; BRAND OWNERS · NOTION, DOCS &amp; ERP</span>
+            <span className="stage-divider-right">OWNER: FACT &amp; BRAND OWNERS · NOTION, DOCS &amp; SHOPIFY</span>
           </div>
 
           {/* Row 01: Dynamic Brand Truth Sync */}
@@ -1219,11 +1220,11 @@ export default function Home() {
           >
             <span className="industrial-project-idx">01 / SYNC</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">ENTERPRISE INGESTION · NOTION, GOOGLE DOCS &amp; SHOPIFY</span>
-              <h2 className="industrial-project-title">Dynamic Brand Truth Sync</h2>
+              <span className="industrial-mono-10-muted">DOCUMENT SYNC · NOTION, GOOGLE DOCS &amp; SHOPIFY</span>
+              <h2 className="industrial-project-title">Live Document Sync</h2>
             </div>
             <p className="industrial-project-desc">
-              Live corporate data ingestion syncing specs from Notion, Google Docs, and real-time inventory from Shopify ERP into versioned truth records.
+              Automatically syncs product specs from Notion, Google Docs, and live inventory so marketing always has the latest facts.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1239,10 +1240,10 @@ export default function Home() {
             <span className="industrial-project-idx">02 / REGISTRY</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">BRAND LEADERSHIP · LENA ORTIZ</span>
-              <h2 className="industrial-project-title">Brand Truth Registry</h2>
+              <h2 className="industrial-project-title">Approved Fact Registry</h2>
             </div>
             <p className="industrial-project-desc">
-              Maintain immutable product specifications, 12h IEEE battery hours, approved pricing qualifiers, and strict validity windows.
+              The single source of truth for approved specs, battery hours, official pricing, and offer expiration dates.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1257,24 +1258,24 @@ export default function Home() {
           >
             <span className="industrial-project-idx">03 / IMPACT</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">ENTERPRISE WIDE · ALL ROLES</span>
-              <h2 className="industrial-project-title">Fact-Change Impact Radar</h2>
+              <span className="industrial-mono-10-muted">TEAM WIDE · ALL ROLES</span>
+              <h2 className="industrial-project-title">Spec Change Radar</h2>
             </div>
             <p className="industrial-project-desc">
-              When an engineering specification updates (e.g. 12h → 14h), automatically trace and flag all marketing and support collateral affected downstream.
+              When an engineer updates a spec (e.g., 12h → 14h), instantly see and update every marketing draft that references it.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
 
           {/* ==============================================================
-              STAGE 02 · CONTENT CREATION & MULTIMODAL CAPTURE (DRAFTING LAYER)
+              STAGE 02 · DRAFTING & VISUAL CHECKS (CREATION LAYER)
               ============================================================== */}
           <div id="stage-02" className="industrial-stage-divider-bar">
             <div className="stage-divider-left">
               <span className="stage-divider-badge" style={{ background: "#22C55E" }}>STAGE 02</span>
-              <span className="stage-divider-title">CONTENT CREATION &amp; MULTIMODAL CAPTURE (DRAFTING LAYER)</span>
+              <span className="stage-divider-title">DRAFTING &amp; VISUAL CHECKS (CREATION LAYER)</span>
             </div>
-            <span className="stage-divider-right">OWNER: CONTENT CREATORS &amp; DESIGNERS · GROQ, GEMINI &amp; SARVAM</span>
+            <span className="stage-divider-right">OWNER: CONTENT CREATORS &amp; DESIGNERS</span>
           </div>
 
           {/* Row 04: Creator Content Studio */}
@@ -1288,10 +1289,10 @@ export default function Home() {
             <span className="industrial-project-idx">04 / STUDIO</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">CONTENT CREATOR LEAD · AISHA RAHMAN</span>
-              <h2 className="industrial-project-title">Creator Content Studio</h2>
+              <h2 className="industrial-project-title">Creator Writing Studio</h2>
             </div>
             <p className="industrial-project-desc">
-              Draft pre-flight copy with real-time spec-diffing, 1-click 12h battery lab replacements, and pre-submission compliance scorecards.
+              Write copy with instant fact checks, 1-click fixes for wrong claims, and a readiness score before submitting.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1307,10 +1308,10 @@ export default function Home() {
             <span className="industrial-project-idx">05 / INDIC</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">REGIONAL LOCALIZATION · SARVAM AI</span>
-              <h2 className="industrial-project-title">Indic Multilingual Localization</h2>
+              <h2 className="industrial-project-title">Multi-Language Checks (Hindi &amp; Telugu)</h2>
             </div>
             <p className="industrial-project-desc">
-              Guarantees factual compliance across Hindi and Telugu marketing assets, ensuring translated technical claims strictly match verified specifications.
+              Checks translated posts in Hindi and Telugu so localized marketing never exaggerates or distorts product specs.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1325,24 +1326,24 @@ export default function Home() {
           >
             <span className="industrial-project-idx">06 / VISION</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">MULTIMODAL AI · GEMINI 2.5 FLASH</span>
-              <h2 className="industrial-project-title">Multimodal Video &amp; Carousel Radar</h2>
+              <span className="industrial-mono-10-muted">VISUAL AI · GEMINI 2.5 FLASH</span>
+              <h2 className="industrial-project-title">Video &amp; Visual Scanner</h2>
             </div>
             <p className="industrial-project-desc">
-              Audits image carousels, Figma exports, and video frames (Reels/Shorts) for claim veracity and FTC mandatory disclaimer font height ratios (≥ 2.5%).
+              Scans video frames (Reels/Shorts) and image carousels to verify on-screen claims and ensure disclaimer text is easy to read.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
 
           {/* ==============================================================
-              STAGE 03 · DETERMINISTIC CLAIM AUDIT & LEGAL GATE (VERIFICATION LAYER)
+              STAGE 03 · CLAIM VERIFICATION & QUALITY GATE (REVIEW LAYER)
               ============================================================== */}
           <div id="stage-03" className="industrial-stage-divider-bar">
             <div className="stage-divider-left">
               <span className="stage-divider-badge" style={{ background: "#F59E0B" }}>STAGE 03</span>
-              <span className="stage-divider-title">DETERMINISTIC CLAIM AUDIT &amp; LEGAL GATE (VERIFICATION LAYER)</span>
+              <span className="stage-divider-title">CLAIM VERIFICATION &amp; QUALITY GATE (REVIEW LAYER)</span>
             </div>
-            <span className="stage-divider-right">OWNER: EDITORIAL MANAGERS &amp; LEGAL COUNSEL · FTC §5 &amp; LANHAM §43(A)</span>
+            <span className="stage-divider-right">OWNER: EDITORIAL MANAGERS &amp; LEGAL COUNSEL</span>
           </div>
 
           {/* Row 07: Campaign Review Queue */}
@@ -1368,10 +1369,10 @@ export default function Home() {
             <span className="industrial-project-idx">07 / TRIAGE</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">EDITORIAL MANAGER · MARCUS VANCE</span>
-              <h2 className="industrial-project-title">Campaign Review Queue &amp; Triage</h2>
+              <h2 className="industrial-project-title">Campaign Review Queue</h2>
             </div>
             <p className="industrial-project-desc">
-              Triage marketing submissions by risk score, resolve claim discrepancies against immutable specs, and inspect evidence-linked source spans.
+              Sort marketing drafts by risk, review flagged claims side-by-side with official specs, and assign reviewers.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1387,10 +1388,10 @@ export default function Home() {
             <span className="industrial-project-idx">08 / AUDIT</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">AUTHORISED LEGAL REVIEWER · MAYA CHEN</span>
-              <h2 className="industrial-project-title">Regulatory Quality Gate</h2>
+              <h2 className="industrial-project-title">Advertising &amp; Legal Gate</h2>
             </div>
             <p className="industrial-project-desc">
-              Deterministic statutory compliance checks for FTC §5 deceptive claims, Lanham Act §43(a) comparative claims, and safe-harbor rewrites.
+              Catches misleading claims, unverified superlatives (&ldquo;most reliable&rdquo;), and suggests safer, legally sound rewrites.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1405,24 +1406,24 @@ export default function Home() {
           >
             <span className="industrial-project-idx">09 / LEDGER</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">COMPLIANCE &amp; GOVERNANCE · ALL STAKEHOLDERS</span>
-              <h2 className="industrial-project-title">Collaborative Revision Ledger</h2>
+              <span className="industrial-mono-10-muted">TEAM &amp; LEGAL OPS · ALL STAKEHOLDERS</span>
+              <h2 className="industrial-project-title">Team Revision History</h2>
             </div>
             <p className="industrial-project-desc">
-              Immutable SHA-256 hash ledger linking every suggestion, redline diff, span comment, and sign-off into a tamper-evident audit record.
+              Tracks every suggestion, edit, comment, and sign-off in a complete, tamper-proof history.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
 
           {/* ==============================================================
-              STAGE 04 · ROLE GOVERNANCE, DISPATCH & CONTINUOUS RADAR (OUTPUT LAYER)
+              STAGE 04 · APPROVALS, PUBLISHING & MONITORING (OUTPUT LAYER)
               ============================================================== */}
           <div id="stage-04" className="industrial-stage-divider-bar">
             <div className="stage-divider-left">
               <span className="stage-divider-badge" style={{ background: "#8B5CF6" }}>STAGE 04</span>
-              <span className="stage-divider-title">ROLE GOVERNANCE, DISPATCH &amp; DRIFT RADAR (OUTPUT LAYER)</span>
+              <span className="stage-divider-title">APPROVALS, PUBLISHING &amp; MONITORING (OUTPUT LAYER)</span>
             </div>
-            <span className="stage-divider-right">OWNER: AUTHORISED SIGNERS &amp; COUNSEL · ZERNIO, 60S RADAR &amp; VAULT</span>
+            <span className="stage-divider-right">OWNER: AUTHORISED SIGNERS &amp; LEGAL COUNSEL</span>
           </div>
 
           {/* Row 10: Enterprise Multi-Role Governance */}
@@ -1435,11 +1436,11 @@ export default function Home() {
           >
             <span className="industrial-project-idx">10 / PORTAL</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">STAKEHOLDER ACCESS · 5 PERSONAS</span>
-              <h2 className="industrial-project-title">Enterprise Multi-Role Governance</h2>
+              <span className="industrial-mono-10-muted">TEAM ACCESS · 5 WORKSPACES</span>
+              <h2 className="industrial-project-title">Dedicated Role Workspaces</h2>
             </div>
             <p className="industrial-project-desc">
-              Deterministic, least-privilege role boundaries providing dedicated portals for Content Creator, Editorial Manager, Legal Counsel, and Brand Owner.
+              Dedicated workspaces for Writers, Editors, Legal Counsel, and Brand Leads so everyone sees exactly what they need.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1454,11 +1455,11 @@ export default function Home() {
           >
             <span className="industrial-project-idx">11 / DISPATCH</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">PRODUCTION PUBLISHING · ZERNIO LIVE GATEWAY</span>
-              <h2 className="industrial-project-title">Gated Multi-Platform Dispatch</h2>
+              <span className="industrial-mono-10-muted">SOCIAL PUBLISHING · ONE-CLICK GATEWAY</span>
+              <h2 className="industrial-project-title">Safe Multi-Channel Publishing</h2>
             </div>
             <p className="industrial-project-desc">
-              Dispatches cryptographically approved revisions across LinkedIn, X (Twitter), Meta, and Instagram via Zernio multi-channel APIs.
+              Publish approved, verified posts directly to LinkedIn, X (Twitter), Meta, and Instagram with 1 click.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1473,11 +1474,11 @@ export default function Home() {
           >
             <span className="industrial-project-idx">12 / DRIFT</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">CONTINUOUS SURVEILLANCE · 60s INTERVAL</span>
-              <h2 className="industrial-project-title">Post-Publish Drift Radar</h2>
+              <span className="industrial-mono-10-muted">LIVE MONITORING · 24/7 CHECKS</span>
+              <h2 className="industrial-project-title">Live Post Monitor</h2>
             </div>
             <p className="industrial-project-desc">
-              Continuously monitors live published social posts and raises automated compliance drift alerts when underlying product specifications change or expire.
+              Monitors live published posts 24/7 and alerts your team if an active post becomes inaccurate because a spec or promo expired.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1492,11 +1493,11 @@ export default function Home() {
           >
             <span className="industrial-project-idx">13 / VAULT</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">PROVENANCE &amp; AUDIT ARCHIVE · LEGAL DEFENSE</span>
-              <h2 className="industrial-project-title">Cryptographic Proof Vault</h2>
+              <span className="industrial-mono-10-muted">APPROVAL ARCHIVE · AUDIT RECORDS</span>
+              <h2 className="industrial-project-title">Compliance Proof Vault</h2>
             </div>
             <p className="industrial-project-desc">
-              Permanent vault maintaining SHA-256 hash chains of every source, rule, edit, and sign-off. Exports tamper-evident audit packages for regulatory review.
+              Secure archive of every approved draft and decision, ready to export for compliance and audits.
             </p>
             <div className="industrial-project-view-btn">→</div>
           </div>
@@ -1539,13 +1540,13 @@ export default function Home() {
           >
             <div>
               <div style={{ fontSize: 10, fontFamily: "var(--ind-font-mono)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#0066FF", marginBottom: 4 }}>
-                Architecture: 5 Dedicated Role Dashboards + 1 Common Judge Review Cockpit
+                How to Test: 5 Dedicated Team Dashboards + 1 Unified Review Cockpit
               </div>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#18181B", marginBottom: 4 }}>
-                Distinct Stakeholder Portals (Least Privilege) vs Unified Evaluation Cockpit
+                Individual Team Views vs Full End-to-End Review Cockpit
               </div>
               <p style={{ fontSize: 12, color: "#52525B", margin: 0, maxWidth: 840, lineHeight: 1.5 }}>
-                Each enterprise stakeholder (Aisha, Marcus, Maya, Lena, Carlos) operates in a dedicated dashboard with strict role boundaries. For end-to-end evaluation, the <strong>Common Judge Cockpit</strong> connects all 4 stages into one continuous quality gate.
+                Each team member (Aisha, Marcus, Maya, Lena, Carlos) has a tailored view matching their job. For judging and testing the whole flow from start to finish, the <strong>Judge Review Cockpit</strong> lets you experience all 4 stages in one place.
               </p>
             </div>
             <div style={{ display: "flex", gap: 10 }}>
@@ -1570,49 +1571,49 @@ export default function Home() {
         {/* 9. PHILOSOPHICAL PARALLAX & STATUTORY MATRIX */}
         <section className="industrial-philosophy-section">
           <div className="industrial-philosophy-left">
-            <span className="industrial-mono-10">02 // ARCHITECTURAL PREMISE</span>
+            <span className="industrial-mono-10">02 // WHY PROOFLINE</span>
             <h2 className="industrial-philosophy-heading">
-              Truth is not a matter of consensus. It is a deterministic proof.
+              Don&apos;t guess what&apos;s true. Verify against real specs.
             </h2>
             <p className="industrial-hero-subcopy" style={{ fontSize: 14 }}>
-              Traditional generative AI guesses what sounds plausible. Proofline proves what is verifiable. By grounding every claim against frozen specification registers and legal safe harbors, brand decisions become mathematically defensible.
+              Generative AI often invents details that sound plausible. Proofline checks claims directly against approved company specs and advertising rules, ensuring every promise you publish is 100% verified.
             </p>
             <div style={{ display: "flex", gap: 16 }}>
-              <span className="industrial-mono-10-muted">CORE PHILOSOPHY: EVIDENCE-OR-ABSTAIN</span>
+              <span className="industrial-mono-10-muted">CORE PHILOSOPHY: EVIDENCE BEFORE CLAIM</span>
             </div>
           </div>
 
           <div className="industrial-philosophy-right">
-            <span className="industrial-mono-10">COMPARATIVE SPECIFICATION MATRIX</span>
+            <span className="industrial-mono-10">HOW PROOFLINE COMPARES</span>
             <div className="industrial-comparison-table-wrap">
               <table className="industrial-comparison-table">
                 <thead>
                   <tr>
-                    <th>EVALUATION DIMENSION</th>
-                    <th>PROBABILISTIC AI (TYPICAL)</th>
-                    <th>PROOFLINE TRUTH ENGINE</th>
+                    <th>FEATURE</th>
+                    <th>STANDARD AI (CHATGPT / COPILOT)</th>
+                    <th>PROOFLINE</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>SPECIFICATION PRECISION</td>
-                    <td>82% – 89% (Hallucination risk)</td>
-                    <td style={{ color: "#0066FF", fontWeight: 700 }}>100.0% DETERMINISTIC MATCH</td>
+                    <td>FACT CHECK ACCURACY</td>
+                    <td>May invent or guess numbers</td>
+                    <td style={{ color: "#0066FF", fontWeight: 700 }}>100% VERIFIED WITH COMPANY SPECS</td>
                   </tr>
                   <tr>
-                    <td>REGULATORY ADMISSIBILITY</td>
-                    <td>None (Inadmissible in court)</td>
-                    <td style={{ color: "#0066FF", fontWeight: 700 }}>FTC §5 &amp; LANHAM SAFE-HARBOR</td>
+                    <td>LEGAL &amp; AD SAFETY</td>
+                    <td>No ad rule or disclaimer checks</td>
+                    <td style={{ color: "#0066FF", fontWeight: 700 }}>CHECKS FTC RULES &amp; SAFE REWRITES</td>
                   </tr>
                   <tr>
-                    <td>TAMPER-EVIDENT RECORD</td>
-                    <td>Ephemeral session log</td>
-                    <td style={{ color: "#0066FF", fontWeight: 700 }}>SHA-256 MERKLE LINKED</td>
+                    <td>APPROVAL RECORD</td>
+                    <td>Lost after chat ends</td>
+                    <td style={{ color: "#0066FF", fontWeight: 700 }}>PERMANENT AUDIT TRAIL</td>
                   </tr>
                   <tr>
-                    <td>EXECUTION SPEED</td>
-                    <td>1,800ms – 4,500ms</td>
-                    <td style={{ color: "#0066FF", fontWeight: 700 }}>&lt; 14MS CLOUDFLARE EDGE</td>
+                    <td>SPEED</td>
+                    <td>Slow (2 – 5 seconds)</td>
+                    <td style={{ color: "#0066FF", fontWeight: 700 }}>INSTANT (&lt; 14MS EDGE ENGINE)</td>
                   </tr>
                 </tbody>
               </table>
@@ -1623,53 +1624,53 @@ export default function Home() {
         {/* 10. TECHNICAL JOURNAL (Architectural Pillars) */}
         <section className="industrial-journal-section">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-            <span className="industrial-mono-10">03 // TECHNICAL JOURNAL</span>
-            <span className="industrial-mono-10-muted">FOUR PILLARS OF ENTERPRISE GOVERNANCE</span>
+            <span className="industrial-mono-10">03 // CORE CAPABILITIES</span>
+            <span className="industrial-mono-10-muted">FOUR BUILT-IN CAPABILITIES</span>
           </div>
 
           <div className="industrial-journal-grid">
             <div className="industrial-journal-card">
               <div>
-                <span className="industrial-mono-10-muted">PILLAR 01</span>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "12px 0 8px" }}>Deterministic Parser</h3>
+                <span className="industrial-mono-10-muted">CAPABILITY 01</span>
+                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "12px 0 8px" }}>Accurate Spec Matching</h3>
                 <p style={{ fontSize: 13, color: "#52525B", lineHeight: 1.5, margin: 0 }}>
-                  Extracts numbers, qualifiers, comparative adjectives, and technical specs without hallucinating ungrounded assertions.
+                  Pulls out numbers, dates, and claims and checks them against official specs—never guessing or making up facts.
                 </p>
               </div>
-              <span className="industrial-mono-10" style={{ marginTop: 24, fontSize: 8 }}>BYTE-LEVEL REGISTRY MATCH</span>
+              <span className="industrial-mono-10" style={{ marginTop: 24, fontSize: 8 }}>CHECKED AGAINST APPROVED SPECS</span>
             </div>
 
             <div className="industrial-journal-card">
               <div>
-                <span className="industrial-mono-10-muted">PILLAR 02</span>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "12px 0 8px" }}>Statutory Quality Gate</h3>
+                <span className="industrial-mono-10-muted">CAPABILITY 02</span>
+                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "12px 0 8px" }}>Advertising &amp; Legal Checks</h3>
                 <p style={{ fontSize: 13, color: "#52525B", lineHeight: 1.5, margin: 0 }}>
-                  Enforces FTC 16 CFR § 255 compliance and Lanham Act § 43(a) rules before marketing copy can clear publishing gates.
+                  Flags risky promises, missing disclaimers, and unproven claims before anything goes live.
                 </p>
               </div>
-              <span className="industrial-mono-10" style={{ marginTop: 24, fontSize: 8 }}>AUTOMATED SAFE-HARBOR REWRITES</span>
+              <span className="industrial-mono-10" style={{ marginTop: 24, fontSize: 8 }}>ONE-CLICK SAFE REWRITES</span>
             </div>
 
             <div className="industrial-journal-card">
               <div>
-                <span className="industrial-mono-10-muted">PILLAR 03</span>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "12px 0 8px" }}>Indic Language Proofing</h3>
+                <span className="industrial-mono-10-muted">CAPABILITY 03</span>
+                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "12px 0 8px" }}>Multi-Language Accuracy</h3>
                 <p style={{ fontSize: 13, color: "#52525B", lineHeight: 1.5, margin: 0 }}>
-                  Integrated Sarvam AI preserves factual battery hours and performance claims during Telugu and Hindi localization.
+                  Uses Sarvam AI to ensure Hindi and Telugu translations preserve exact battery hours and specs.
                 </p>
               </div>
-              <span className="industrial-mono-10" style={{ marginTop: 24, fontSize: 8 }}>CROSS-LINGUAL CONSISTENCY</span>
+              <span className="industrial-mono-10" style={{ marginTop: 24, fontSize: 8 }}>ACCURATE IN HINDI &amp; TELUGU</span>
             </div>
 
             <div className="industrial-journal-card">
               <div>
-                <span className="industrial-mono-10-muted">PILLAR 04</span>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "12px 0 8px" }}>Cryptographic Ledger</h3>
+                <span className="industrial-mono-10-muted">CAPABILITY 04</span>
+                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "12px 0 8px" }}>Tamper-Proof Audit History</h3>
                 <p style={{ fontSize: 13, color: "#52525B", lineHeight: 1.5, margin: 0 }}>
-                  Anchors every finding, review override, and approval hash into an immutable audit chain signed with actor timestamps.
+                  Records every edit, reviewer comment, and sign-off with clear timestamps so you can trace any decision.
                 </p>
               </div>
-              <span className="industrial-mono-10" style={{ marginTop: 24, fontSize: 8 }}>SHA-256 HASH VERIFICATION</span>
+              <span className="industrial-mono-10" style={{ marginTop: 24, fontSize: 8 }}>PERMANENT TIMELINED HISTORY</span>
             </div>
           </div>
         </section>
@@ -1678,7 +1679,7 @@ export default function Home() {
         <section className="industrial-journal-section" style={{ paddingBottom: 60 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20 }}>
             <div>
-              <span className="industrial-mono-10">04 // CRYPTOGRAPHIC LEDGER READOUT</span>
+              <span className="industrial-mono-10">04 // RECENT ACTIVITY</span>
               <h3 style={{ fontSize: 18, fontWeight: 800, margin: "6px 0 0" }}>Recent Organization Activity</h3>
             </div>
             <button
@@ -1723,7 +1724,7 @@ export default function Home() {
           <div className="industrial-footer-inner">
             <div className="industrial-footer-top">
               <div>
-                <span className="industrial-mono-10" style={{ color: "#A1A1AA" }}>PROOFLINE TRUTH ENGINE // SYSTEM DISPATCH</span>
+                <span className="industrial-mono-10" style={{ color: "#A1A1AA" }}>PROOFLINE // CONTENT ACCURACY PLATFORM</span>
                 <div style={{ marginTop: 12 }}>
                   <button
                     type="button"
@@ -1759,49 +1760,49 @@ export default function Home() {
             <div className="industrial-footer-sitemap-grid">
               <div className="footer-sitemap-col">
                 <span className="footer-col-title">
-                  <span className="footer-sitemap-badge">01</span> TRUTH &amp; INGESTION
+                  <span className="footer-sitemap-badge">01</span> APPROVED SPECS
                 </span>
                 <div className="footer-col-links">
-                  <Link href="/sync" className="footer-sitemap-item">Dynamic Truth Sync (Notion/ERP)</Link>
-                  <button type="button" onClick={() => navigate("registry")} className="footer-sitemap-item">Brand Truth Registry</button>
-                  <Link href="/impact" className="footer-sitemap-item">Dependency Impact Tree</Link>
+                  <Link href="/sync" className="footer-sitemap-item">Live Document Sync</Link>
+                  <button type="button" onClick={() => navigate("registry")} className="footer-sitemap-item">Approved Fact Registry</button>
+                  <Link href="/impact" className="footer-sitemap-item">Spec Change Radar</Link>
                 </div>
               </div>
 
               <div className="footer-sitemap-col">
                 <span className="footer-col-title">
-                  <span className="footer-sitemap-badge">02</span> CREATION &amp; VISION
+                  <span className="footer-sitemap-badge">02</span> DRAFTING &amp; VIDEO
                 </span>
                 <div className="footer-col-links">
-                  <button type="button" onClick={() => setIsCreatorStudioOpen(true)} className="footer-sitemap-item">Creator Content Studio</button>
-                  <button type="button" onClick={() => setIsCreatorStudioOpen(true)} className="footer-sitemap-item">Indic Localization (Sarvam AI)</button>
-                  <Link href="/multimodal" className="footer-sitemap-item">Multimodal Video &amp; Frame Radar</Link>
+                  <button type="button" onClick={() => setIsCreatorStudioOpen(true)} className="footer-sitemap-item">Creator Writing Studio</button>
+                  <button type="button" onClick={() => setIsCreatorStudioOpen(true)} className="footer-sitemap-item">Multi-Language (Sarvam AI)</button>
+                  <Link href="/multimodal" className="footer-sitemap-item">Video &amp; Visual Scanner</Link>
                   <Link href="/submit" className="footer-sitemap-item">Quick Draft Intake</Link>
                 </div>
               </div>
 
               <div className="footer-sitemap-col">
                 <span className="footer-col-title">
-                  <span className="footer-sitemap-badge">03</span> AUDIT &amp; QUALITY GATE
+                  <span className="footer-sitemap-badge">03</span> REVIEW &amp; QUALITY
                 </span>
                 <div className="footer-col-links">
                   <button type="button" onClick={() => { navigate("reviews"); setSelectedReviewId("novabook-launch"); }} className="footer-sitemap-item">Campaign Review Queue</button>
-                  <Link href="/findings" className="footer-sitemap-item">Regulatory Quality Gate (FTC §5)</Link>
-                  <button type="button" onClick={() => navigate("audit-log")} className="footer-sitemap-item">Collaborative Revision Ledger</button>
-                  <button type="button" onClick={() => navigate("insights")} className="footer-sitemap-item">Governance Analytics</button>
+                  <Link href="/findings" className="footer-sitemap-item">Advertising &amp; Legal Gate</Link>
+                  <button type="button" onClick={() => navigate("audit-log")} className="footer-sitemap-item">Team Revision History</button>
+                  <button type="button" onClick={() => navigate("insights")} className="footer-sitemap-item">Team Insights</button>
                 </div>
               </div>
 
               <div className="footer-sitemap-col">
                 <span className="footer-col-title">
-                  <span className="footer-sitemap-badge">04</span> DISPATCH &amp; DRIFT
+                  <span className="footer-sitemap-badge">04</span> PUBLISHING &amp; MONITORING
                 </span>
                 <div className="footer-col-links">
-                  <Link href="/portal" className="footer-sitemap-item">Enterprise Role Access Portal</Link>
-                  <button type="button" onClick={() => setIsPublishModalOpen(true)} className="footer-sitemap-item">Gated Multi-Channel Dispatch</button>
-                  <Link href="/drift" className="footer-sitemap-item">Post-Publish Drift Radar</Link>
-                  <Link href="/vault" className="footer-sitemap-item">Cryptographic Proof Vault</Link>
-                  <Link href="/privacy" className="footer-sitemap-item">Security &amp; AI Disclosure</Link>
+                  <Link href="/portal" className="footer-sitemap-item">Role Dashboards</Link>
+                  <button type="button" onClick={() => setIsPublishModalOpen(true)} className="footer-sitemap-item">Safe Social Publishing</button>
+                  <Link href="/drift" className="footer-sitemap-item">Live Post Monitor</Link>
+                  <Link href="/vault" className="footer-sitemap-item">Compliance Proof Vault</Link>
+                  <Link href="/privacy" className="footer-sitemap-item">Privacy &amp; AI Disclosure</Link>
                 </div>
               </div>
             </div>
@@ -1810,7 +1811,7 @@ export default function Home() {
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <span className="industrial-status-pulse" />
                 <span className="industrial-mono-10" style={{ color: "#A1A1AA" }}>
-                  PROOFLINE ENTERPRISE · SPEC V3.4.1 · IMMUTABLE EVIDENCE GUARANTEE
+                  PROOFLINE · ACCURATE MARKETING, BEFORE YOU PUBLISH
                 </span>
               </div>
 
@@ -1899,7 +1900,7 @@ export default function Home() {
                 <span className="engine-dot local" /> 💻 Local Engine
               </button>
             </div>
-            <span className="save-state"><span className="health-dot" /> Enterprise workspace</span>
+            <span className="save-state"><span className="health-dot" /> {engineMode === "api" ? "IMPLEMENTED · Cloudflare API" : "IMPLEMENTED · local engine"}</span>
             <label className="role-preview"><span>Role preview</span><select aria-label="Role preview" value={currentRole} onChange={(event) => changeRole(event.target.value as ProoflineRole)}>{(Object.keys(roleLabels) as ProoflineRole[]).map((role) => <option value={role} key={role}>{roleLabels[role]}</option>)}</select></label>
             <button className="icon-button" type="button" aria-label="Open AI and services disclosure" onClick={() => setIsDisclosureOpen(true)}>?</button>
             <button
@@ -1916,13 +1917,16 @@ export default function Home() {
 
         <div className="content-wrap">
           {activeView !== "portal" ? (
-            <ActiveRoleWorkflowBanner
-              currentRole={currentRole}
-              onOpenSwitchRole={() => setIsRoleModalOpen(true)}
-              onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
-              contextBadge="⚖️ Review Cockpit"
-              showDashboardLink={true}
-            />
+            <>
+              <ActiveRoleWorkflowBanner
+                currentRole={currentRole}
+                onOpenSwitchRole={() => setIsRoleModalOpen(true)}
+                onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
+                contextBadge="⚖️ Review Cockpit"
+                showDashboardLink={true}
+              />
+              <WorkflowStepper activeRole={currentRole} />
+            </>
           ) : null}
 
           {activeView === "reviews" ? (
@@ -2117,7 +2121,37 @@ export default function Home() {
 
           {activeView === "insights" ? <section className="view-panel" aria-labelledby="insights-heading"><div className="page-heading compact-heading"><div><p className="eyebrow">Governance insights</p><h1 id="insights-heading">See where your guidelines need help.</h1><p className="lede">Patterns come from saved findings and reviewer decisions, not model confidence scores.</p></div><div className="heading-actions"><span className="review-summary-chip"><span className="status-dot blue" /> Last 30 days</span><Link className="ghost-button pl-link-button" href="/insights" prefetch={false}>Open insights dashboard</Link></div></div><div className="insights-grid"><section className="panel insight-chart-card"><div className="panel-heading"><div><p className="eyebrow">Issue mix</p><h2>What keeps surfacing</h2></div></div><div className="bar-chart">{issueMix.map((item) => <div className="bar-row" key={item.label}><label>{item.label}</label><div className="bar-track"><span className={item.tone} style={{ width: `${item.value}%` }} /></div><strong>{item.count}</strong></div>)}</div></section><section className="panel insight-list-card"><div className="panel-heading"><div><p className="eyebrow">Guideline health</p><h2>Clarity opportunities</h2></div></div><div className="clarity-list">{clarityOpportunities.map(([title, copy]) => <div className="clarity-item" key={title}><span className="clarity-marker" /><div><strong>{title}</strong><p>{copy}</p></div></div>)}</div></section></div><div className="privacy-note"><span>◌</span><p><strong>Human review stays in the loop.</strong> Insights suggest where a rule may need clarification; only an authorised brand owner can update the registry.</p></div></section> : null}
 
-          {activeView === "audit-log" && permissions.canViewAuditLog ? <ReviewAuditLog events={auditLog} chainState={chainState} chainError={chainError} kindLabels={auditKindLabels} roleLabels={roleLabels} /> : null}
+          {activeView === "audit-log" ? (
+            permissions.canViewAuditLog ? (
+              <ReviewAuditLog events={auditLog} chainState={chainState} chainError={chainError} kindLabels={auditKindLabels} roleLabels={roleLabels} />
+            ) : (
+              <section className="view-panel" aria-labelledby="restricted-heading">
+                <div className="page-heading">
+                  <div>
+                    <p className="eyebrow">Access Boundary</p>
+                    <h1 id="restricted-heading">Audit Trail Restricted for {roleLabels[currentRole]}</h1>
+                    <p className="lede">
+                      By company safety policy, full audit logs and tamper-proof verification history require Legal Reviewer, Manager, or Brand Owner access.
+                    </p>
+                  </div>
+                </div>
+                <div className="empty-panel" style={{ textAlign: "center", padding: "48px 24px", background: "#FFFFFF", border: "1px solid var(--ind-border, #E4E4E7)", borderRadius: 6 }}>
+                  <span style={{ fontSize: 32, display: "block", marginBottom: 12 }}>🔒</span>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#18181B", marginBottom: 8 }}>Restricted to Authorized Reviewers</h3>
+                  <p style={{ fontSize: 13, color: "#71717A", maxWidth: 460, margin: "0 auto 20px" }}>
+                    Switch to Legal Reviewer (Maya Chen) or Campaign Manager (Marcus Thorne) to inspect the complete verified history and tamper-proof decision logs.
+                  </p>
+                  <button
+                    type="button"
+                    className="primary-button"
+                    onClick={() => changeRole("legal_reviewer")}
+                  >
+                    Switch to Legal Reviewer (Maya Chen) →
+                  </button>
+                </div>
+              </section>
+            )
+          ) : null}
 
           {activeView === "portal" ? (
             <PortalPage

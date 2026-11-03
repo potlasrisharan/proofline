@@ -22,9 +22,9 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     sampleText:
       "Thrilled to announce the official release of the Novacore NovaBook S1! 🚀\n\nEngineered from the ground up for software developers and creative pros, it delivers up to 20 hours of battery life and is twice as fast as all competitor ultrabooks.\n\nOur most reliable laptop yet. Built with unibody titanium and whisper-quiet cooling.\n\nPre-orders are live today at novacore.io/novabook.\n\n#TechNews #Productivity #Engineering #LaptopLaunch",
     primaryRules: [
-      "Lanham Act § 43(a) comparative claims require approved lab benchmarks",
-      "Truth Registry Spec Lock (20h claimed vs 12h approved lab test)",
-      "Unsubstantiated absolute ('most reliable') requires safe-harbor qualification",
+      "Comparative claims require verified test benchmarks",
+      "Battery spec check (20h claimed vs 12h approved lab test)",
+      "Extreme words ('most reliable') require evidence or safe rephrasing",
     ],
   },
   twitter: {
@@ -36,8 +36,8 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
       "The wait is finally over: meet the Novacore NovaBook S1 🧵👇\n\n1/ Delivering up to 20 hours of battery life and twice as fast as previous generations. Our most reliable laptop yet.\n\n2/ Pre-order now with code NOVA20 for 20% off!",
     primaryRules: [
       "280 character limit per post",
-      "FTC 16 CFR § 255: Promotional promo codes must disclose sponsorship (#ad)",
-      "Truth Registry Spec Lock on battery life",
+      "Promo codes require clear sponsorship disclosure (#ad)",
+      "Battery spec check against official lab tests",
     ],
   },
   instagram: {
@@ -48,9 +48,9 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     sampleText:
       "Unboxing the sleekest ultrabook of 2026: Novacore NovaBook S1 ✨\n\nUp to 20 hours of battery life means zero charger anxiety, and it's twice as fast as anything in its class. Our most reliable laptop yet.\n\nHit the link in bio and use code NOVA20 for free expedited shipping!\n\n#techunboxing #setupinspiration #workfromanywhere #creatorlife",
     primaryRules: [
-      "FTC 16 CFR § 255: Mandatory #ad or #sponsored disclosure before the 'more' fold",
-      "Truth Registry Spec Lock on battery specifications",
-      "Superlative scanner on comparative claims",
+      "Mandatory #ad or #sponsored disclosure for promotional offers",
+      "Battery spec check against official facts",
+      "Hype scanner on comparative claims",
     ],
   },
   tiktok: {
@@ -61,8 +61,8 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     sampleText:
       "Wait until you see how thin this laptop is 🤯 Novacore NovaBook S1 with 20 hours of battery life and twice as fast performance. Our most reliable laptop yet! Check link in bio for the launch drop! #tech #gadgets #techtok",
     primaryRules: [
-      "FTC endorsement disclosure required in caption and first 3 seconds",
-      "Substantiation required for performance claims",
+      "Ad disclosure required in caption and first 3 seconds",
+      "Evidence required for performance claims",
     ],
   },
   newsletter: {
@@ -73,9 +73,9 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     sampleText:
       "Novacore Dispatch #42: NovaBook S1 is officially here.\n\nAfter 18 months of intensive R&D, we're shipping our next-generation ultrabook.\n\nKey highlights:\n• Up to 20 hours of battery life for non-stop productivity\n• Twice as fast processing speed under sustained workloads\n• Our most reliable laptop yet with titanium chassis\n\nAvailable today with exclusive subscriber benefits.",
     primaryRules: [
-      "CAN-SPAM Act compliance: explicit opt-out & physical address disclosure",
-      "Truth Registry verification on technical specifications",
-      "Absolute & superlative claim scanner",
+      "Clear opt-out and company sender info",
+      "Check technical specs against approved facts",
+      "Unverified claims and superlatives scanner",
     ],
   },
   press_release: {
@@ -86,9 +86,9 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     sampleText:
       "FOR IMMEDIATE RELEASE\n\nSAN FRANCISCO — Novacore Electronics today announced the commercial availability of the NovaBook S1 ultrabook. Engineered for demanding compute workflows, NovaBook S1 delivers up to 20 hours of battery life and is twice as fast as standard market offerings, establishing our most reliable laptop yet.\n\nCommercial shipments begin November 2026.",
     primaryRules: [
-      "Strict Lanham Act § 43(a) substantiation for competitive claims",
-      "Truth Registry version matching on product nomenclature and pricing",
-      "Embargo and date verification",
+      "Competitive claims require proof before release",
+      "Product naming and pricing verification",
+      "Embargo and launch date verification",
     ],
   },
 };
@@ -187,14 +187,14 @@ export function CreatorPlatformStudioModal({
     if (/most reliable/i.test(text)) {
       superlativeIssues.push({
         flagged: "our most reliable laptop yet",
-        rule: "Lanham Act § 43(a) Superlative Claim Scanner",
+        rule: "Fair Advertising Rule (Unverified Superlative)",
         rewrite: "our most thoroughly tested laptop yet",
       });
     }
     if (/twice as fast/i.test(text)) {
       superlativeIssues.push({
         flagged: "twice as fast as all competitor ultrabooks",
-        rule: "Lanham Act § 43(a) Comparative Advertising Rule",
+        rule: "Fair Comparison Rule (Unverified Comparison)",
         rewrite: "engineered for sustained high-speed responsiveness",
       });
     }
@@ -319,15 +319,14 @@ export function CreatorPlatformStudioModal({
 
         <div className="creator-studio-header">
           <div className="studio-kicker-row">
-            <span className="creator-studio-kicker">CREATOR MULTI-PLATFORM PRE-PUBLICATION QUALITY GATE</span>
+            <span className="creator-studio-kicker">CREATOR CONTENT STUDIO · CROSS-PLATFORM COMPLIANCE</span>
             <span className="ai-active-pill">
               <span className="live-dot" /> Live Groq &amp; Sarvam AI + Fail-Soft Fallbacks
             </span>
           </div>
           <h2 id="creator-studio-title">Creator Content Studio · Cross-Platform Compliance</h2>
           <p className="modal-copy">
-            Analyze everything creators post across LinkedIn, X/Twitter, Instagram, TikTok, Newsletters, and Press Releases.
-            Check FTC § 255 sponsorship disclosures, Lanham Act comparative claims, and Novacore Truth Registry specifications.
+            Check posts, threads, newsletters, and press releases before publishing. Automatically flags inaccurate specs, missing advertising disclosures, and unverified promises.
           </p>
         </div>
 
@@ -529,17 +528,17 @@ export function CreatorPlatformStudioModal({
                 <div key={idx} className="studio-finding-pill warning">
                   <span className="finding-icon">!</span>
                   <div className="finding-body">
-                    <strong>Lanham Act § 43(a) Absolute Claim: &ldquo;{issue.flagged}&rdquo;</strong>
-                    <p>Unsubstantiated absolute claim exposes brand to false-advertising challenges.</p>
+                    <strong>Unverified Absolute Claim: &ldquo;{issue.flagged}&rdquo;</strong>
+                    <p>Unproven claims like &ldquo;most reliable&rdquo; need lab evidence or safer wording to prevent misleading buyers.</p>
                     <button
                       type="button"
                       className="inline-fix-btn"
                       onClick={() => {
                         setText(text.replace(issue.flagged, issue.rewrite));
-                        setActionNotice(`Replaced '${issue.flagged}' with safe-harbor '${issue.rewrite}'.`);
+                        setActionNotice(`Replaced '${issue.flagged}' with verified wording '${issue.rewrite}'.`);
                       }}
                     >
-                      ⚡ Apply Safe-Harbor: &ldquo;{issue.rewrite}&rdquo;
+                      ⚡ Apply Verified Phrasing: &ldquo;{issue.rewrite}&rdquo;
                     </button>
                   </div>
                 </div>

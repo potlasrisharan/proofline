@@ -20,57 +20,79 @@ const steps: TourStep[] = [
   {
     label: "Overview",
     title: "Start with the workspace overview",
-    description: "This is your control centre. Choose a role preview, see what needs attention, and follow the review workflow from source to sign-off.",
+    description: "Your control center for marketing accuracy. Switch between 5 dedicated team workspaces, test sample marketing drafts, and see the full review workflow.",
     action: "Open overview",
     href: "/",
   },
   {
     label: "Submit",
     title: "Submit one draft",
-    description: "Paste a draft, name the review, and add its channel, region, language, and publication date. Use the fictional VoltEdge sample to see the workflow quickly.",
+    description: "Paste marketing copy or upload a file. Pick your channel (social, email, blog) and test 1-click sample drafts with real spec checks.",
     action: "Open submit",
     href: "/submit",
   },
   {
     label: "Findings",
     title: "Read the evidence before changing anything",
-    description: "Each finding shows the highlighted text, severity, reason, evidence status, and a proposed correction. Missing evidence is clearly marked for human review.",
+    description: "Every flagged claim shows the exact spec mismatch, advertising rule, and an approved 1-click fix backed by verified lab tests.",
     action: "Open findings",
     href: "/findings",
   },
   {
     label: "Review",
-    title: "Fix, re-check, and request approval",
-    description: "Apply or edit a correction to create a new revision, run a fresh check, then send the revision to an authorised reviewer. Nothing is auto-approved.",
-    action: "Open review queue",
+    title: "Apply safe rewrites & approve",
+    description: "Apply suggested fixes in 1 click, re-run checks instantly, and submit to brand reviewers. Full audit history is saved permanently.",
+    action: "Open Review Queue",
     href: "/?view=reviews",
   },
   {
     label: "Impact",
-    title: "Check what becomes stale",
-    description: "When an approved fact changes or expires, the impact radar shows registered content that needs re-review. Re-checking never edits or approves content automatically.",
-    action: "Open impact radar",
+    title: "Spec Change Radar",
+    description: "When engineers update product specs or promotional discounts expire, Proofline automatically highlights every live draft that needs updating.",
+    action: "Open Spec Radar",
     href: "/impact",
   },
   {
     label: "Insights",
-    title: "Learn from repeated issues",
-    description: "Governance insights group recurring findings, expiry signals, and guideline ambiguity. Proposals still require explicit brand-owner approval.",
-    action: "Open insights",
+    title: "Team Insights & Better Guidelines",
+    description: "See the most common issues your team runs into and approve clearer brand rules with 1 click so creators write accurate copy faster.",
+    action: "View Team Insights",
     href: "/insights",
   },
   {
     label: "Trust",
-    title: "Check the limits before using real data",
-    description: "Open the privacy and AI disclosure page whenever you need to confirm what is local, what is synthetic, and which services are not connected yet.",
-    action: "Open disclosure",
+    title: "Full Privacy & AI Transparency",
+    description: "Proofline never trains on your data. View our AI disclosure, server-side data boundaries, and audit trail guarantees.",
+    action: "View Transparency & Privacy",
     href: "/privacy",
   },
 ];
 
-const noOpSubscribe = () => () => undefined;
-const clientReady = () => true;
-const serverNotReady = () => false;
+const tourListeners = new Set<() => void>();
+function notifyTourListeners() {
+  tourListeners.forEach((l) => l());
+}
+function subscribeTour(callback: () => void) {
+  tourListeners.add(callback);
+  const handleOpenEvent = () => {
+    try {
+      window.sessionStorage.setItem(TOUR_ACTIVE_KEY, "true");
+      window.sessionStorage.setItem(TOUR_STEP_KEY, "0");
+    } catch { /* storage disabled */ }
+    callback();
+  };
+  if (typeof window !== "undefined") {
+    window.addEventListener("proofline:open-tour", handleOpenEvent);
+    window.addEventListener("storage", callback);
+  }
+  return () => {
+    tourListeners.delete(callback);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("proofline:open-tour", handleOpenEvent);
+      window.removeEventListener("storage", callback);
+    }
+  };
+}
 
 function getTourActiveSnapshot() {
   if (typeof window === "undefined") return false;
@@ -89,35 +111,23 @@ function getTourStepSnapshot() {
 export function ProductTour() {
   const pathname = usePathname();
   const router = useRouter();
-  const ready = useSyncExternalStore(noOpSubscribe, clientReady, serverNotReady);
-  const [open, setOpen] = useState(getTourActiveSnapshot);
-  const [stepIndex, setStepIndex] = useState(getTourStepSnapshot);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const openTour = () => {
-      setStepIndex(0);
-      setOpen(true);
-      try {
-        window.sessionStorage.setItem(TOUR_ACTIVE_KEY, "true");
-        window.sessionStorage.setItem(TOUR_STEP_KEY, "0");
-      } catch { /* session storage disabled */ }
-    };
-    window.addEventListener("proofline:open-tour", openTour);
-    return () => window.removeEventListener("proofline:open-tour", openTour);
+    const handle = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(handle);
   }, []);
 
-  const visible = ready && open;
+  const open = useSyncExternalStore(subscribeTour, getTourActiveSnapshot, () => false);
+  const stepIndex = useSyncExternalStore(subscribeTour, getTourStepSnapshot, () => 0);
+
+  const visible = mounted && open;
 
   useEffect(() => {
     if (!visible) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setOpen(false);
-        try {
-          window.sessionStorage.removeItem(TOUR_ACTIVE_KEY);
-          window.sessionStorage.removeItem(TOUR_STEP_KEY);
-        } catch { /* session storage disabled */ }
-        window.localStorage.setItem(TOUR_STORAGE_KEY, "dismissed");
+        closeTour();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -125,21 +135,29 @@ export function ProductTour() {
   }, [visible]);
 
   function closeTour() {
-    setOpen(false);
     try {
       window.sessionStorage.removeItem(TOUR_ACTIVE_KEY);
       window.sessionStorage.removeItem(TOUR_STEP_KEY);
+      window.localStorage.setItem(TOUR_STORAGE_KEY, "dismissed");
     } catch { /* session storage disabled */ }
-    window.localStorage.setItem(TOUR_STORAGE_KEY, "dismissed");
+    notifyTourListeners();
+  }
+
+  function startTour() {
+    try {
+      window.sessionStorage.setItem(TOUR_ACTIVE_KEY, "true");
+      window.sessionStorage.setItem(TOUR_STEP_KEY, "0");
+    } catch { /* session storage disabled */ }
+    notifyTourListeners();
   }
 
   function goToStep(index: number) {
     const nextStep = steps[index];
-    setStepIndex(index);
     try {
       window.sessionStorage.setItem(TOUR_ACTIVE_KEY, "true");
       window.sessionStorage.setItem(TOUR_STEP_KEY, String(index));
     } catch { /* session storage disabled */ }
+    notifyTourListeners();
     if (nextStep.href !== pathname) router.push(nextStep.href);
   }
 
@@ -156,13 +174,13 @@ export function ProductTour() {
     goToStep(stepIndex - 1);
   }
 
-  if (!ready) return null;
+  if (!mounted) return null;
 
   const step = steps[stepIndex];
 
   return (
     <>
-      {!visible ? <button className="tour-launcher" type="button" onClick={() => { setStepIndex(0); setOpen(true); }}>Guided tour</button> : null}
+      {!visible ? <button className="tour-launcher" type="button" onClick={startTour}>Guided tour</button> : null}
       {visible ? (
         <div className="tour-backdrop" role="presentation" onClick={closeTour}>
           <section className="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title" onClick={(event) => event.stopPropagation()}>

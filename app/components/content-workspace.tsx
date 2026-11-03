@@ -6,6 +6,7 @@ import { useMemo, useState, useSyncExternalStore, type ChangeEvent, type FormEve
 import { AppSidebar } from "./app-sidebar";
 import { ComplianceCertificateModal } from "./compliance-quality-gate";
 import { creatorPlatformPresets } from "./creator-platform-studio";
+import { WorkflowStepper } from "./workflow-stepper";
 import {
   createLocalApiClient,
   type ContentAuditResponse,
@@ -84,24 +85,47 @@ function Preview({ text, findings, selected, onSelect }: { text: string; finding
   return <div className="pl-content-copy">{pieces}</div>;
 }
 
+const executionListeners = new Set<() => void>();
+function subscribeExecutionMode(callback: () => void) {
+  executionListeners.add(callback);
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", callback);
+  }
+  return () => {
+    executionListeners.delete(callback);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("storage", callback);
+    }
+  };
+}
+
+function getExecutionModeSnapshot(): "api" | "browser" {
+  if (typeof window === "undefined") return "api";
+  try {
+    const saved = window.localStorage.getItem("proofline.execution_mode");
+    if (saved === "api" || saved === "browser") return saved;
+  } catch {
+    return "api";
+  }
+  return "api";
+}
+
 export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   const router = useRouter();
-  const [executionMode, setExecutionMode] = useState<"api" | "browser">(() => {
-    if (typeof window !== "undefined") {
-      const saved = window.localStorage.getItem("proofline.execution_mode");
-      if (saved === "api" || saved === "browser") return saved;
-    }
-    return "api"; // Default to live Cloudflare API!
-  });
+  const executionMode = useSyncExternalStore(
+    subscribeExecutionMode,
+    getExecutionModeSnapshot,
+    () => "api"
+  );
 
   const localApiBase = useMemo(() => createLocalApiClient(), []);
   const localApi = executionMode === "api" ? localApiBase : null;
 
   function handleModeChange(mode: "api" | "browser") {
-    setExecutionMode(mode);
-    if (typeof window !== "undefined") {
+    try {
       window.localStorage.setItem("proofline.execution_mode", mode);
-    }
+      executionListeners.forEach((l) => l());
+    } catch { /* storage unavailable */ }
     setMessage(mode === "api" ? "Active Engine: Cloudflare Edge API (Python Worker + D1 Database)" : "Active Engine: Local Browser Demo (Offline session)");
   }
 
@@ -320,7 +344,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
       <AppSidebar activeKey={stage} />
       <section className="main-content" id="pl-main" tabIndex={-1}>
         <header className="topbar">
-          <div className="breadcrumb"><span>Novacore</span><i>/</i><strong>{stage === "submit" ? "Submit content" : "Evidence review"}</strong></div>
+          <div className="breadcrumb"><span>Voltedge</span><i>/</i><strong>{stage === "submit" ? "Submit draft" : "Fact & compliance check"}</strong></div>
           <div className="top-actions">
             <div className="backend-mode-toggle" role="radiogroup" aria-label="Backend Execution Engine">
               <span className="backend-toggle-label">Engine:</span>
@@ -345,12 +369,14 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <span className="engine-dot local" /> 💻 Local Engine
               </button>
             </div>
-            <span className="pl-demo-label">{review?.api_content_id ? "IMPLEMENTED · local API" : (localApi || executionMode === "api") ? "IMPLEMENTED · local API opt-in" : "IMPLEMENTED · local engine"}</span>
+            <span className="pl-demo-label">
+              {review?.api_content_id ? "Active API" : executionMode === "browser" ? "IMPLEMENTED · local engine" : "IMPLEMENTED · local API opt-in"}
+            </span>
           </div>
         </header>
         <div className="content-wrap pl-content-wrap">
-           <div className="page-heading compact-heading"><div><p className="eyebrow">{stage === "submit" ? "Content intake" : "Findings & corrections"}</p><h1>{stage === "submit" ? "Bring the context with the draft." : "Every flag has an explanation."}</h1><p className="lede">{stage === "submit" ? "Paste or upload text, set its publication context, and run bounded checks against fictional Novacore sources." : "Inspect the exact span, its source version, and the limits of the check before choosing a correction."}</p></div>{stage === "findings" ? <Link className="ghost-button pl-link-button" href="/submit" prefetch={false}>Submit another draft</Link> : null}</div>
-           <nav className="workflow-progress" aria-label="Review workflow"><Link className={stage === "submit" ? "active" : "completed"} href="/submit" prefetch={false}><span>1</span>Submit</Link><span className="workflow-progress-line" /><Link className={stage === "findings" ? "active" : "completed"} href="/findings" prefetch={false}><span>2</span>Fix findings</Link><span className="workflow-progress-line" /><Link href="/?view=reviews" prefetch={false}><span>3</span>Human approval</Link></nav>
+           <WorkflowStepper currentStage={stage === "submit" ? 2 : 3} />
+           <div className="page-heading compact-heading"><div><p className="eyebrow">{stage === "submit" ? "Draft intake" : "Flagged claims & fixes"}</p><h1>{stage === "submit" ? "Bring the context with the draft." : "Every flag has an explanation."}</h1><p className="lede">{stage === "submit" ? "Paste or upload your marketing draft, choose your channel, and run instant accuracy checks against official specs." : "See highlighted claims, review verified specs from lab tests, and apply 1-click safe corrections."}</p></div>{stage === "findings" ? <Link className="ghost-button pl-link-button" href="/submit" prefetch={false}>Submit another draft</Link> : null}</div>
           {error ? <div className="form-error pl-message" role="alert">{error}</div> : null}
           {message ? <div className="pl-action-message" role="status">{message}</div> : null}
 
@@ -371,16 +397,16 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                   <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.twitter.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · X/Twitter Thread", channel: "social" })); setMessage("Loaded X/Twitter Launch Thread (checks 280-char limit & FTC #ad disclosure)."); }}>𝕏 Twitter</button>
                   <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.instagram.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · Instagram Caption", channel: "social" })); setMessage("Loaded Instagram Caption (checks FTC § 255 sponsorship disclosure)."); }}>📸 Instagram</button>
                   <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.newsletter.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · Newsletter Digest", channel: "email" })); setMessage("Loaded Newsletter Digest with spec verification."); }}>📬 Newsletter</button>
-                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.press_release.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · Press Release", channel: "document" })); setMessage("Loaded Press Release with Lanham Act § 43(a) compliance."); }}>📰 Press Release</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.press_release.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · Press Release", channel: "document" })); setMessage("Loaded Press Release with truth-in-advertising checks."); }}>📰 Press Release</button>
                 </div>
                 <div className="helper-hint-callout" style={{ margin: "-12px 0 16px" }}>
                   <span>💡</span>
                   <div>
-                    <strong>Test it in 5 seconds:</strong> Click <strong>&ldquo;⚡ 1-Click: Flagged Draft&rdquo;</strong> to load an announcement with a false 20h battery claim, then click <strong>&ldquo;Run evidence check&rdquo;</strong> below to see Proofline catch it.
+                    <strong>Test it in 5 seconds:</strong> Click <strong>&ldquo;⚡ 1-Click: Flagged Draft&rdquo;</strong> to load an announcement with a false 20h battery claim, then click <strong>&ldquo;⚡ Run Accuracy Check&rdquo;</strong> below to see Proofline catch it.
                   </div>
                 </div>
                 <label className="field-label" htmlFor="pl-title">Review name<input id="pl-title" value={scope.title} maxLength={200} onChange={(event) => updateScope("title", event.target.value)} /></label>
-                <label className="field-label" htmlFor="pl-text">Paste content<textarea id="pl-text" rows={9} value={text} maxLength={100000} onChange={(event) => setText(event.target.value)} aria-describedby="pl-text-help" /></label><p id="pl-text-help" className="micro-helper">US English checks cover the synthetic NovaBook S1 battery fact, comparative claims & voice.</p>
+                <label className="field-label" htmlFor="pl-text">Paste content<textarea id="pl-text" rows={9} value={text} maxLength={100000} onChange={(event) => setText(event.target.value)} aria-describedby="pl-text-help" /></label><p id="pl-text-help" className="micro-helper">Checks cover official NovaBook S1 specs, comparative claims, and brand voice.</p>
                  <div className="pl-upload-box"><label className="field-label" htmlFor="pl-upload">Upload supported content<input id="pl-upload" type="file" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg" onChange={upload} disabled={uploading} aria-describedby="pl-upload-help" /></label><p id="pl-upload-help" className="micro-helper">Accepts .txt, PDF, DOCX, and image formats.</p>{uploadStatus ? <p className="pl-upload-status" role="status">{uploadStatus}</p> : null}</div>
                 <div className="form-divider"><span>Publication context</span></div>
                 <div className="form-grid"><label className="field-label" htmlFor="pl-channel">Channel<select id="pl-channel" value={scope.channel} onChange={(event) => updateScope("channel", event.target.value as ContentScope["channel"])}>{Object.entries(channelLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-region">Region<select id="pl-region" value={scope.region} onChange={(event) => updateScope("region", event.target.value as ContentScope["region"])}>{Object.entries(regionLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-language">Language<select id="pl-language" value={scope.language} onChange={(event) => updateScope("language", event.target.value as ContentScope["language"])}>{Object.entries(languageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="field-label" htmlFor="pl-date">Scheduled publication date<input id="pl-date" type="date" value={scope.scheduled_date} onChange={(event) => updateScope("scheduled_date", event.target.value)} /></label></div>
@@ -393,10 +419,10 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                     <span className={`badge-pill ${localApi ? "pill-pass" : ""}`}>● {localApi ? "Cloudflare Edge Engine (Default)" : "Browser Demo Session"}</span>
                     <span className="badge-pill">● Human review required</span>
                   </div>
-                  <button className="primary-button" type="submit" disabled={uploading || apiBusy}>{uploading ? "Reading file…" : apiBusy ? "Running evidence check…" : "Run evidence check"}</button>
+                  <button className="primary-button" type="submit" disabled={uploading || apiBusy}>{uploading ? "Reading file…" : apiBusy ? "Running check…" : "Run evidence check"}</button>
                 </div>
               </form>
-              <aside className="submit-sidebar"><section className="panel context-panel"><div className="panel-heading"><h2>Scope of this check</h2></div><div className="scope-list"><div><span className="scope-icon" aria-hidden="true">⌁</span><span><strong>Synthetic, versioned Novacore sources</strong><small>Demonstration records for instant checking.</small></span></div><div><span className="scope-icon" aria-hidden="true">⌗</span><span><strong>{channelLabels[scope.channel]}</strong><small>{regionLabels[scope.region]} · {languageLabels[scope.language]}</small></span></div><div><span className="scope-icon" aria-hidden="true">◷</span><span><strong>{scope.scheduled_date || "No publication date"}</strong><small>Stored for publication context.</small></span></div></div></section><section className="panel intake-checklist"><h2>Evidence before assertion</h2><ul><li><span aria-hidden="true">✓</span><div><strong>Missing evidence stays unverified</strong><p className="micro-helper">Missing source is never treated as false.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>AI status stays visible</strong><p className="micro-helper">All checks on this page run as deterministic rules.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>Decisions remain explicit</strong><p className="micro-helper">Accept, edit, or dismiss with written rationale.</p></div></li></ul></section></aside>
+              <aside className="submit-sidebar"><section className="panel context-panel"><div className="panel-heading"><h2>Scope of this check</h2></div><div className="scope-list"><div><span className="scope-icon" aria-hidden="true">⌁</span><span><strong>Approved Novacore Specs</strong><small>Instant checks against official product records.</small></span></div><div><span className="scope-icon" aria-hidden="true">⌗</span><span><strong>{channelLabels[scope.channel]}</strong><small>{regionLabels[scope.region]} · {languageLabels[scope.language]}</small></span></div><div><span className="scope-icon" aria-hidden="true">◷</span><span><strong>{scope.scheduled_date || "No publication date"}</strong><small>Stored for publication context.</small></span></div></div></section><section className="panel intake-checklist"><h2>Evidence before assertion</h2><ul><li><span aria-hidden="true">✓</span><div><strong>Missing evidence stays unverified</strong><p className="micro-helper">Missing source is never treated as false.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>AI status stays visible</strong><p className="micro-helper">All checks on this page run as deterministic rules.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>Decisions remain explicit</strong><p className="micro-helper">Accept, edit, or dismiss with written rationale.</p></div></li></ul></section></aside>
             </div>
           ) : !review || !audit || !revision || !auditedRevision || !risk ? (
             <section className="panel pl-empty">
@@ -410,6 +436,16 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 >
                   ⚡ Load Sample NovaBook S1 Review
                 </button>
+                <button
+                  className="ghost-button pl-link-button"
+                  type="button"
+                  onClick={() => {
+                    saveReview(createContentReview(sampleNovacoreText, defaultContentScope));
+                    setIsCertOpen(true);
+                  }}
+                >
+                  📜 View Compliance Certificate
+                </button>
                 <Link className="ghost-button pl-link-button" href="/submit" prefetch={false}>
                   Submit custom draft
                 </Link>
@@ -421,15 +457,15 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
               <div className="pl-review-layout">
                 <section className="pl-content-column" aria-label="Content and risk">
                   <section className="content-preview-card enhanced-content-preview"><div className="content-preview-header"><h2>Content spans</h2><span className="content-version">Audited v{auditedRevision.number}</span></div><div className="pl-preview-tabs" aria-label="Content versions">{(["audited", "current", "original"] as const).map((tab) => <button className={contentTab === tab ? "active" : ""} type="button" key={tab} aria-pressed={contentTab === tab} onClick={() => setContentTab(tab)}>{tab === "audited" ? "Audited text" : tab === "current" ? `Current v${revision.number}` : "Original"}</button>)}</div>{contentTab === "audited" ? <Preview text={auditedRevision.text} findings={audit.findings} selected={selectedFindingId} onSelect={selectFinding} /> : <div className="pl-content-copy">{contentTab === "current" ? revision.text : originalRevision?.text}</div>}<p className="pl-helper">Select a numbered span to inspect its finding. Highlight numbers, verdict text, and severity labels also identify issues without relying on colour.</p>{review.scope.has_image ? <div className="alt-text-review"><span aria-hidden="true" className={`verdict-icon verdict-${revision.alt_text.trim() ? "supported" : "needs_human"}`}>{revision.alt_text.trim() ? "✓" : "!"}</span><div><strong>{revision.alt_text.trim() ? "Alt text provided · quality not assessed" : "Missing alt text · needs human review"}</strong><p>{revision.alt_text.trim() || "Add alt text in a revised submission or record why the image is decorative."}</p></div></div> : null}<div className="content-footer"><span>{review.scope.original_filename || "Pasted text"}</span><span>{review.revisions.length} retained version(s)</span></div></section>
-                  <section className="risk-summary" aria-labelledby="pl-risk-heading"><div className="risk-summary-header"><div><h3 id="pl-risk-heading">Risk breakdown</h3><span className="badge-pill pill-violation" style={{ marginTop: 4 }}>{risk.label} triage priority</span></div><strong className="risk-score">{risk.score}<small>/100</small></strong></div><div className="risk-breakdown">{Object.entries(risk.counts).map(([label, count]) => <div key={label} className={`risk-stat-chip ${label}`}><span className={`risk-marker ${label}`} /><strong>{count}</strong><span>{label}</span></div>)}</div><details className="formula-accordion"><summary className="formula-summary">Triage formula details ▾</summary><p className="risk-summary-copy">Formula: round(100 × severity {risk.severity} × exposure {risk.exposure} × policy {risk.policy_multiplier} ÷ 22.5). Fact contradiction forces High priority.</p></details><div className="pl-evidence-counts"><span>{risk.missing} evidence gap(s)</span><span>{risk.human} human-review finding(s)</span><span>{audit.findings.filter((finding) => finding.status === "dismissed").length} explicitly dismissed</span></div></section>
-                   <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic Novacore · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "Check corrected version" : "Run fresh evidence check"}</button>
+                  <section className="risk-summary" aria-labelledby="pl-risk-heading"><div className="risk-summary-header"><div><h3 id="pl-risk-heading">Risk breakdown</h3><span className="badge-pill pill-violation" style={{ marginTop: 4 }}>{risk.label} Priority</span></div><strong className="risk-score">{risk.score}<small>/100</small></strong></div><div className="risk-breakdown">{Object.entries(risk.counts).map(([label, count]) => <div key={label} className={`risk-stat-chip ${label}`}><span className={`risk-marker ${label}`} /><strong>{count}</strong><span>{label}</span></div>)}</div><details className="formula-accordion"><summary className="formula-summary">How Risk Score is Calculated ▾</summary><p className="risk-summary-copy">Formula: round(100 × severity {risk.severity} × exposure {risk.exposure} × policy {risk.policy_multiplier} ÷ 22.5). Spec contradiction forces High priority.</p></details><div className="pl-evidence-counts"><span>{risk.missing} unverified claim(s)</span><span>{risk.human} human-review finding(s)</span><span>{audit.findings.filter((finding) => finding.status === "dismissed").length} dismissed</span></div></section>
+                   <section className="panel audit-context"><h2>Review Details</h2><dl><div><dt>Check ID</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Specs source</dt><dd>Novacore Official · {review.api_content_id ? "Cloudflare API" : "Local engine"}</dd></div><div><dt>AI Model</dt><dd>Gemini 2.5 + Deterministic Gate</dd></div></dl><p className="audit-context-note">Proofline verifies factual claims and ad regulations. Team reviewer confirms final approval.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "⚡ Check Corrected Version" : "⚡ Run Fresh Accuracy Check"}</button>
 <button className="ghost-button pl-full-width" type="button" style={{ marginTop: 8 }} onClick={() => setIsCertOpen(true)}>📜 View Compliance Certificate</button></section>
                 </section>
-                <section className="pl-findings-column" aria-labelledby="pl-findings-heading"><div className="pl-findings-heading"><h2 id="pl-findings-heading">{audit.findings.length} finding(s)</h2><span>{openCount} open · {audit.findings.length - openCount} actioned</span></div><p className="micro-helper">Actions create a new version; dismissing retains original wording.</p>
+                <section className="pl-findings-column" aria-labelledby="pl-findings-heading"><div className="pl-findings-heading"><h2 id="pl-findings-heading">{audit.findings.length} Flagged Issue(s)</h2><span>{openCount} to fix · {audit.findings.length - openCount} resolved</span></div><p className="micro-helper">Fixes create a new version; dismissing keeps original wording.</p>
                 <div className="helper-hint-callout" style={{ margin: "8px 0 14px" }}>
                   <span>💡</span>
                   <div>
-                    <strong>How to fix:</strong> Review each flagged claim below. Click <strong>&ldquo;Apply suggestion in new version&rdquo;</strong> to replace errors with approved lab specs, then click <strong>&ldquo;Check corrected version&rdquo;</strong> to confirm zero errors.
+                    <strong>How to fix:</strong> Review each flagged claim below. Click <strong>&ldquo;⚡ Apply Suggestion&rdquo;</strong> to replace errors with approved lab specs, then click <strong>&ldquo;⚡ Check Corrected Version&rdquo;</strong> to confirm zero errors.
                   </div>
                 </div>{stale ? <div className="pl-stale-note" role="status">The current draft is v{revision.number}. These findings still refer to v{auditedRevision.number}; check the corrected version to refresh the verdicts.</div> : null}{!audit.findings.length ? <section className="panel pl-empty"><h3>No rule findings</h3><p>Only the listed demo rules ran. Contextual and full factual review remain unassessed. Send the content for an authorised human review.</p></section> : audit.findings.map((finding, index) => {
                     const verdict = verdictLabels[finding.verdict];
@@ -461,8 +497,8 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                           <div className="finding-actions enhanced-finding-actions">
                             {finding.suggestion ? (
                               <>
-                                <button className="small-button apply-button" type="button" onClick={() => decide(finding, "accepted", finding.suggestion!.text)}>Accept suggestion</button>
-                                <button className="small-button" type="button" onClick={() => { setActionFindingId(finding.id); setActionMode("edit"); setActionText(finding.suggestion!.text); }}>Edit suggestion</button>
+                                <button className="small-button apply-button" type="button" onClick={() => decide(finding, "accepted", finding.suggestion!.text)}>⚡ Apply suggestion</button>
+                                <button className="small-button" type="button" onClick={() => { setActionFindingId(finding.id); setActionMode("edit"); setActionText(finding.suggestion!.text); }}>Customize edit</button>
                               </>
                             ) : null}
                             <button className="small-button danger-button" type="button" onClick={() => { setActionFindingId(finding.id); setActionMode("dismiss"); setActionText(""); }}>Dismiss with reason</button>
@@ -517,7 +553,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                     </article>;
                   })}</section>
               </div>
-              <section className="panel pl-history" aria-labelledby="pl-history-heading"><div className="history-header"><div><h2 id="pl-history-heading">Explicit action history</h2><p className="pl-helper">Local tab records · {review.revisions.length} versions · {review.audits.length} audit runs</p></div><span className="panel-badge">{review.events.length} events</span></div><ol className="pl-event-list">{review.events.slice().reverse().map((event) => <li key={event.id}><div className="pl-event-top"><strong>{event.action}</strong><time dateTime={event.timestamp}>{timestamp(event.timestamp)}</time></div><p>{event.actor} · content version {event.content_version_id}{event.finding_id ? ` · finding ${event.finding_id}` : ""}</p>{event.reason ? <p><strong>Reason: </strong>{event.reason}</p> : null}{event.before !== null ? <div className="pl-event-change"><span>Before: {event.before}</span><span>After: {event.after}</span></div> : null}</li>)}</ol><p className="pl-helper">Kept in sessionStorage for this browser tab when available; no durable server storage or authenticated identity is implied.</p></section>
+              <section className="panel pl-history" aria-labelledby="pl-history-heading"><div className="history-header"><div><h2 id="pl-history-heading">Review &amp; Edit History</h2><p className="pl-helper">Complete record of edits, suggestions applied, and approvals · {review.revisions.length} versions · {review.audits.length} checks</p></div><span className="panel-badge">{review.events.length} events</span></div><ol className="pl-event-list">{review.events.slice().reverse().map((event) => <li key={event.id}><div className="pl-event-top"><strong>{event.action}</strong><time dateTime={event.timestamp}>{timestamp(event.timestamp)}</time></div><p>{event.actor} · content version {event.content_version_id}{event.finding_id ? ` · finding ${event.finding_id}` : ""}</p>{event.reason ? <p><strong>Reason: </strong>{event.reason}</p> : null}{event.before !== null ? <div className="pl-event-change"><span>Before: {event.before}</span><span>After: {event.after}</span></div> : null}</li>)}</ol><p className="pl-helper">Kept in sessionStorage for this browser tab when available; no durable server storage or authenticated identity is implied.</p></section>
               {audit && revision ? (
                 <ComplianceCertificateModal
                   isOpen={isCertOpen}

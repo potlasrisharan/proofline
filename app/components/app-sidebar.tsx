@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { ProoflineRole } from "../lib/proofline-api";
 import { demoPersonas } from "./role-dashboard-showcase";
 
@@ -21,6 +21,60 @@ export type NavKey =
   | "audit-log"
   | "privacy"
   | "portal";
+
+export type WorkspaceOption = {
+  id: string;
+  name: string;
+  badge: "production" | "staging" | "dev" | "partner";
+  badgeLabel: string;
+  description: string;
+  dotColor: string;
+  specsCount: number;
+  status: string;
+};
+
+export const WORKSPACES: WorkspaceOption[] = [
+  {
+    id: "novacore",
+    name: "Novacore Brand Workspace",
+    badge: "production",
+    badgeLabel: "PROD",
+    description: "Production ultrabooks, AI hardware & launch campaigns",
+    dotColor: "#22C55E",
+    specsCount: 14,
+    status: "Active · RLS Enforced",
+  },
+  {
+    id: "voltedge-labs",
+    name: "VoltEdge Labs R&D",
+    badge: "staging",
+    badgeLabel: "STAGING",
+    description: "Battery benchmarks & prototype devices",
+    dotColor: "#3B82F6",
+    specsCount: 8,
+    status: "Sandbox · Internal",
+  },
+  {
+    id: "audio-wearables",
+    name: "VoltEdge Audio & Wearables",
+    badge: "dev",
+    badgeLabel: "DEV",
+    description: "Noise-cancelling headphones & mobile accessories",
+    dotColor: "#F59E0B",
+    specsCount: 6,
+    status: "Review Pending",
+  },
+  {
+    id: "global-retail",
+    name: "Global Retail & Agency Hub",
+    badge: "partner",
+    badgeLabel: "PARTNER",
+    description: "External ad agencies & retail store collateral",
+    dotColor: "#8B5CF6",
+    specsCount: 11,
+    status: "Guest Isolation",
+  },
+];
 
 type AppSidebarProps = {
   activeKey: NavKey;
@@ -59,6 +113,16 @@ function getStoredRole(fallback: ProoflineRole): ProoflineRole {
   return fallback;
 }
 
+function subscribeStorage(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("proofline:role-change", callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener("proofline:role-change", callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
 export function AppSidebar({
   activeKey,
   onNavigateView,
@@ -68,27 +132,79 @@ export function AppSidebar({
   onSwitchRole,
 }: AppSidebarProps) {
   const router = useRouter();
-  const [storedRole, setStoredRole] = useState<ProoflineRole>(() => getStoredRole(roleKey ?? "legal_reviewer"));
-  const [findingsBadge] = useState<number | null>(getStoredFindingsBadge);
+  const [mounted, setMounted] = useState(false);
+  const switcherRef = useRef<HTMLDivElement>(null);
+  const [activeWorkspaceId, setActiveWorkspaceId] = useState("novacore");
+  const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
+  const [workspaceNotice, setWorkspaceNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleSync = (e: Event) => {
-      const customEvent = e as CustomEvent<ProoflineRole>;
-      if (customEvent.detail && demoPersonas[customEvent.detail]) {
-        setStoredRole(customEvent.detail);
-      } else {
-        setStoredRole(getStoredRole("legal_reviewer"));
+    const handle = requestAnimationFrame(() => {
+      setMounted(true);
+      try {
+        const saved = window.localStorage.getItem("proofline:active-workspace-id");
+        if (saved && WORKSPACES.some((w) => w.id === saved)) {
+          setActiveWorkspaceId(saved);
+        }
+      } catch {
+        /* storage disabled */
       }
-    };
-    window.addEventListener("proofline:role-change", handleSync);
-    window.addEventListener("storage", handleSync);
-    return () => {
-      window.removeEventListener("proofline:role-change", handleSync);
-      window.removeEventListener("storage", handleSync);
-    };
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
 
-  const effectiveRoleKey = roleKey ?? storedRole;
+  useEffect(() => {
+    if (!isWorkspaceOpen) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (switcherRef.current && !switcherRef.current.contains(event.target as Node)) {
+        setIsWorkspaceOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsWorkspaceOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isWorkspaceOpen]);
+
+  const activeWorkspace = WORKSPACES.find((w) => w.id === activeWorkspaceId) ?? WORKSPACES[0];
+
+  const handleSelectWorkspace = (w: WorkspaceOption) => {
+    setActiveWorkspaceId(w.id);
+    setIsWorkspaceOpen(false);
+    try {
+      window.localStorage.setItem("proofline:active-workspace-id", w.id);
+      window.sessionStorage.setItem("proofline:active-workspace-id", w.id);
+      window.dispatchEvent(new CustomEvent("proofline:workspace-change", { detail: w }));
+    } catch {
+      /* storage disabled */
+    }
+  };
+
+  const handleAddWorkspace = () => {
+    setWorkspaceNotice("Created new isolated workspace: 'VoltEdge Enterprise Pilot'. Scoped RLS rules enabled.");
+    setIsWorkspaceOpen(false);
+    setTimeout(() => setWorkspaceNotice(null), 4000);
+  };
+
+  const storedRole = useSyncExternalStore(
+    subscribeStorage,
+    () => getStoredRole(roleKey ?? "legal_reviewer"),
+    () => roleKey ?? "legal_reviewer"
+  );
+  const findingsBadge = useSyncExternalStore(
+    subscribeStorage,
+    getStoredFindingsBadge,
+    () => null
+  );
+
+  const effectiveRoleKey = roleKey ?? (mounted ? storedRole : "legal_reviewer");
   const persona = demoPersonas[effectiveRoleKey] ?? demoPersonas.legal_reviewer;
 
   const handleRoleSwitch = () => {
@@ -108,17 +224,16 @@ export function AppSidebar({
     badge?: number | null;
     title: string;
   }> = [
-    { key: "portal", icon: "⊞", label: "Role Dashboards", href: "/dashboards", isHomeView: "portal", title: "Role Dashboards · 5 dedicated single-stakeholder portals" },
-    { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Unified judge cockpit & draft approval" },
-    { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: findingsBadge, title: "Findings · Flagged claims with 1-click suggested fixes" },
-    { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry", title: "Truth registry · Official specs and approved brand facts" },
-    { key: "multimodal", icon: "👁", label: "Multimodal vision", href: "/multimodal", title: "Multimodal vision · Video reel and carousel compliance with disclaimer font audit" },
-    { key: "drift", icon: "📡", label: "Publish & Drift", href: "/drift", title: "Publish & Drift Radar · Live multi-platform dispatch and post-publish drift alerts" },
-    { key: "sync", icon: "🔄", label: "Dynamic sync", href: "/sync", title: "Dynamic sync · Real-time Notion, Google Docs & ERP inventory ingestion" },
-    { key: "impact", icon: "!", label: "Impact radar", href: "/impact", title: "Impact radar · See what drafts break when specs change" },
-    { key: "insights", icon: "⌁", label: "Governance insights", href: "/insights", isHomeView: "insights", title: "Governance insights · Mistake trends and rule clarifications" },
-    { key: "audit-log", icon: "≋", label: "Audit log", href: "/?view=audit-log", isHomeView: "audit-log", title: "Audit log · Tamper-proof cryptographic record of decisions" },
-    { key: "privacy", icon: "🛡", label: "Privacy & AI disclosure", href: "/privacy", title: "Privacy & AI disclosure · How AI and data are handled" },
+    { key: "portal", icon: "⊞", label: "Role Dashboards", href: "/dashboards", isHomeView: "portal", title: "Role Dashboards · 5 dedicated team workspaces" },
+    { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Review drafts and approve revisions" },
+    { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: findingsBadge, title: "Findings · Flagged claims with 1-click fixes" },
+    { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry", title: "Truth registry · Official product specs and brand rules" },
+    { key: "multimodal", icon: "👁", label: "Video & Visual scan", href: "/multimodal", title: "Video & Visual scanner · Check video reels, images, and readable disclaimers" },
+    { key: "drift", icon: "📡", label: "Publish & Monitor", href: "/drift", title: "Publish & Live Monitor · Publish posts and track live changes" },
+    { key: "sync", icon: "🔄", label: "Live Doc Sync", href: "/sync", title: "Live Doc Sync · Auto-import specs from Notion, Google Docs & Shopify" },
+    { key: "impact", icon: "!", label: "Spec Change Radar", href: "/impact", title: "Spec Change Radar · See which drafts need updates when specs change" },
+    { key: "insights", icon: "⌁", label: "Team Insights", href: "/insights", isHomeView: "insights", title: "Team Insights · Common issues and suggested rule updates" },
+    { key: "audit-log", icon: "≋", label: "Audit log", href: "/?view=audit-log", isHomeView: "audit-log", title: "Audit log · Complete record of edits and approvals" },
   ];
 
   return (
@@ -198,6 +313,7 @@ export function AppSidebar({
           type="button"
           onClick={handleRoleSwitch}
           title="Click to switch demo role / credentials"
+          suppressHydrationWarning
         >
           <div className={`avatar persona-avatar ${persona.badgeTone}`}>{persona.initials}</div>
           <div className="profile-text">

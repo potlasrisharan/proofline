@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SkeletonCard } from "./skeleton-loader";
 
 export type IngestSourceType = "notion" | "google_docs" | "shopify_erp" | "spec_sheet";
 
@@ -68,7 +69,7 @@ export function DynamicTruthSync() {
   const [syncTelemetry, setSyncTelemetry] = useState<string[]>([
     "[18:29:12] Notion API Live Connection Established: Workspace authenticated via environment credentials.",
     "[18:29:14] Successfully resolved Notion Page ID 40d14123-1ebc-8086-8fb7-db69ecf19961 ('sharan').",
-    "[18:30:00] Ingested 4 corporate facts into active Brand Truth Registry with cryptographic SHA-256 state hash.",
+    "[18:30:00] Synced 4 approved product specs into active registry with verified change hash.",
   ]);
 
   const triggerLiveNotionSync = async () => {
@@ -261,7 +262,7 @@ export function DynamicTruthSync() {
       <div className="sync-header">
         <div className="sync-title-group">
           <div className="sync-badge-row">
-            <span className="sync-badge-kicker">DYNAMIC BRAND TRUTH SYNC &amp; NOTION CONNECTOR</span>
+            <span className="sync-badge-kicker">LIVE DOCUMENT SYNC &amp; INTEGRATIONS</span>
             <span className="sync-status-tag">
               <span className="sync-pulse" />
               NOTION &amp; GOOGLE DOCS CONNECTED
@@ -269,7 +270,7 @@ export function DynamicTruthSync() {
           </div>
           <h2 className="sync-heading">Dynamic Brand Truth Sync &amp; Enterprise Doc Ingestion</h2>
           <p className="sync-sub">
-            Automates Brand Truth Registry ingestion by syncing with live corporate data sources (Notion, Google Docs, Shopify, and product spec sheets). Ensures marketing claims are automatically benchmarked against real-time product inventory and legal disclosures without manual registry maintenance.
+            Automatically syncs your approved specs from Notion, Google Docs, and Shopify inventory so marketing drafts are always checked against the latest facts without manual copy-pasting.
           </p>
         </div>
 
@@ -280,7 +281,7 @@ export function DynamicTruthSync() {
             disabled={isSyncing}
             onClick={triggerSyncAllSources}
           >
-            {isSyncing ? "Syncing Corporate Sources…" : "🔄 Sync Now from Live Sources"}
+            {isSyncing ? "Syncing Connected Sources…" : "🔄 Sync Now from Sources"}
           </button>
         </div>
       </div>
@@ -290,12 +291,19 @@ export function DynamicTruthSync() {
         {/* Left: Active Ingested Truth Records */}
         <div className="sync-facts-pane">
           <div className="pane-header-row">
-            <h3>Live Ingested Brand Truth Records</h3>
-            <span className="badge-count">{facts.length} Active Benchmarks</span>
+            <h3>Connected Product Facts &amp; Specs</h3>
+            <span className="badge-count">{facts.length} Active Specs</span>
           </div>
 
           <div className="facts-card-list">
-            {facts.map((fact) => (
+            {isSyncing ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <SkeletonCard height={100} />
+                <SkeletonCard height={100} />
+                <SkeletonCard height={100} />
+              </div>
+            ) : (
+              facts.map((fact) => (
               <div key={fact.id} className="fact-card">
                 <div className="fact-card-top">
                   <div className="fact-source-badge">
@@ -332,7 +340,7 @@ export function DynamicTruthSync() {
                   <span className="fact-scope">Applies to: Novacore NovaBook S1</span>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
         </div>
 

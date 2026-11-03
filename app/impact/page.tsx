@@ -5,16 +5,16 @@ import { ImpactDemo } from "./impact-demo";
 
 export const metadata: Metadata = {
   title: "Fact-change impact radar · Proofline",
-  description: "A synthetic VoltEdge demonstration of version-aware content re-review.",
+  description: "See which marketing drafts and social posts are affected when a product spec changes.",
 };
 
 export default function ImpactPage() {
   return (
     <Phase4Shell
       current="impact"
-      eyebrow="Fact-change impact radar"
-      title="See what changed before it goes stale."
-      description="When a versioned fact changes or an offer expires, registered claims are listed with their old and new evidence so an authorised reviewer can decide what happens next."
+      eyebrow="Spec Change Radar"
+      title="Fact-Change Impact Radar"
+      description="Find stored content that relied on an older approved fact."
     >
       <ImpactDemo />
     </Phase4Shell>

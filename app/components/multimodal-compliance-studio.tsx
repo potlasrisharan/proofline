@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SkeletonCard } from "./skeleton-loader";
 
 export type MediaMode = "video_reel" | "image_carousel";
 
@@ -67,7 +68,7 @@ export const sampleCarouselSlides: AnalyzedFrame[] = [
         boundingBox: { ymin: 300, xmin: 90, ymax: 335, xmax: 680 },
         measuredFontSizeRatio: 3.5,
         requiredFontSizeRatio: 2.5,
-        ruleReference: "Lanham Act § 43(a) & Novacore Claims Policy v2",
+        ruleReference: "Fair Comparison Rule (§43a) & Claims Policy v2",
         evidenceQuote: "Comparative performance assertions ('twice as fast') require active independent laboratory benchmark filings.",
         suggestedFix: "Up to 2x faster in sustained multi-threaded Geekbench 6 scores vs 2024 quad-core baseline.",
         status: "open",
@@ -167,9 +168,9 @@ export const sampleVideoReelFrames: AnalyzedFrame[] = [
         boundingBox: { ymin: 172, xmin: 55, ymax: 270, xmax: 833 },
         measuredFontSizeRatio: 4.2,
         requiredFontSizeRatio: 2.5,
-        ruleReference: "FTC § 5 Deceptive Advertising & Lanham Act § 43(a)",
+        ruleReference: "Consumer Protection & Fair Advertising Rule",
         evidenceQuote:
-          "Unqualified absolute superlative claims ('ONLY laptop with ZERO latency') lack substantiation. Independent IEEE benchmarks certify display input latency at 4.2ms baseline.",
+          "Unqualified absolute claims ('ONLY laptop with ZERO latency') lack test proof. Independent lab benchmarks measure display input latency at 4.2ms baseline.",
         suggestedFix:
           "Engineered for competitive gaming with sub-5ms ultra-low display response latency.",
         status: "open",
@@ -312,14 +313,14 @@ export function MultimodalComplianceStudio() {
         const isApplied = finding.status === "applied";
         const isCritical = finding.severity === "critical";
 
-        // Green bounding box for applied remediation; red/amber for open violations
+        // Emerald bounding box for applied remediation; red/amber for open violations
         const strokeColor = isApplied
-          ? "#00E599"
+          ? "#10B981"
           : isCritical
           ? "#EF4444"
           : "#F59E0B";
         const fillColor = isApplied
-          ? "rgba(0, 229, 153, 0.18)"
+          ? "rgba(16, 185, 129, 0.18)"
           : isCritical
           ? "rgba(239, 68, 68, 0.18)"
           : "rgba(245, 158, 11, 0.18)";
@@ -436,7 +437,7 @@ export function MultimodalComplianceStudio() {
             boundingBox: { ymin: 160, xmin: 80, ymax: 260, xmax: 920 },
             measuredFontSizeRatio: 3.2,
             requiredFontSizeRatio: 2.5,
-            ruleReference: "FTC § 5 & Lanham Act § 43(a)",
+            ruleReference: "Truth in Advertising & Fair Comparison Rule",
             evidenceQuote:
               "Uploaded visual marketing claim asserted without verified laboratory benchmark citation.",
             suggestedFix:
@@ -591,7 +592,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
       <div className="multimodal-header">
         <div className="multimodal-title-group">
           <div className="multimodal-badge-row">
-            <span className="multimodal-badge-kicker">MULTIMODAL COMPLIANCE ENGINE · VISION &amp; CAROUSEL RADAR</span>
+            <span className="multimodal-badge-kicker">MULTIMODAL COMPLIANCE ENGINE · CAROUSEL &amp; REEL CHECK</span>
             <span className="multimodal-engine-tag">
               <span className="multimodal-pulse" />
               {modelBadge}
@@ -599,7 +600,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
           </div>
           <h2 className="multimodal-heading">Visual &amp; Video Frame Compliance Radar</h2>
           <p className="multimodal-sub">
-            Extracts claims, price tags, and mandatory disclaimer font sizes directly from image carousels, Figma exports, and video frames (Instagram Reels / YouTube Shorts) using multimodal vision models.
+            Checks claims, prices, and disclaimer readability across image carousels, Figma designs, and social videos (Instagram Reels, TikTok &amp; YouTube Shorts).
           </p>
         </div>
 
@@ -644,7 +645,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
             disabled={isAnalyzing}
             onClick={triggerLiveMultimodalAudit}
           >
-            {isAnalyzing ? "Scanning Frame Geometry…" : "⚡ Run Multimodal Vision Audit"}
+            {isAnalyzing ? "Scanning Frames…" : "⚡ Run Multimodal Vision Audit"}
           </button>
         </div>
       </div>
@@ -660,10 +661,10 @@ Identify any claim contradictions, unverified comparative statements, and micro-
             </div>
             <div className="canvas-status">
               {activeFrame.findings.filter((f) => f.status === "open").length === 0 ? (
-                <span className="tag-clean">✓ 100% COMPLIANT</span>
+                <span className="tag-clean">✓ 100% ACCURATE</span>
               ) : (
                 <span className="tag-flagged">
-                  {activeFrame.findings.filter((f) => f.status === "open").length} OPEN VIOLATIONS
+                  {activeFrame.findings.filter((f) => f.status === "open").length} OPEN ISSUES
                 </span>
               )}
             </div>
@@ -682,7 +683,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
           {/* Frame Scrubber Selector */}
           <div className="frame-scrubber">
             <div className="scrubber-label">
-              EXTRACTED FRAMES ({activeFrameIndex + 1} OF {frames.length} AUDITED):
+              EXTRACTED FRAMES ({activeFrameIndex + 1} OF {frames.length} CHECKED):
             </div>
             <div className="scrubber-row">
               {frames.map((frame, idx) => {
@@ -697,7 +698,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
                     <div className="scrubber-header">
                       <span className="scrubber-index">#{idx + 1}</span>
                       <span className={`scrubber-badge ${openCount === 0 ? "clean" : "flagged"}`}>
-                        {openCount === 0 ? "PASSED" : `${openCount} FAILS`}
+                        {openCount === 0 ? "PASSED" : `${openCount} ISSUES`}
                       </span>
                     </div>
                     <strong className="scrubber-name">{frame.label}</strong>
@@ -712,19 +713,24 @@ Identify any claim contradictions, unverified comparative statements, and micro-
         {/* Right: Findings Inspector & Font Size Measurement */}
         <div className="multimodal-findings-pane">
           <div className="findings-header">
-            <h3>Automated Claim &amp; Disclaimer Findings</h3>
+            <h3>Visual Findings &amp; Flagged Claims</h3>
             <span className="findings-count">
-              {totalFindings} open · {appliedCount} auto-remediated
+              {totalFindings} open · {appliedCount} fixed
             </span>
           </div>
 
           <div className="findings-list">
-            {activeFrame.findings.length === 0 ? (
+            {isAnalyzing ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 12 }}>
+                <SkeletonCard height={120} />
+                <SkeletonCard height={120} />
+              </div>
+            ) : activeFrame.findings.length === 0 ? (
               <div className="empty-findings">
                 <span className="clean-icon">✓</span>
-                <h4>Zero Violations Detected</h4>
+                <h4>Zero Issues Detected</h4>
                 <p>
-                  All claims in this frame match the Novacore Truth Registry, and the mandatory disclosure font height meets the FTC 16 CFR § 255 clear and conspicuous threshold.
+                  All claims in this frame match approved product specs, and disclaimer text is easily readable on mobile.
                 </p>
               </div>
             ) : (
@@ -743,12 +749,12 @@ Identify any claim contradictions, unverified comparative statements, and micro-
                       </span>
                       <span className="finding-cat-label">
                         {finding.category === "font_size_violation"
-                          ? "FTC § 255 DISCLAIMER FONT RATIO"
+                          ? "READABLE DISCLAIMER CHECK (TEXT TOO SMALL)"
                           : finding.category === "claim_contradiction"
-                          ? "TRUTH REGISTRY SPEC CONTRADICTION"
+                          ? "TRUTH REGISTRY SPEC CONTRADICTION (CONTRADICTS APPROVED SPECS)"
                           : finding.category === "missing_disclaimer"
-                          ? "SAFE-ZONE OCCLUSION & MISSING TERMS"
-                          : "UNSUBSTANTIATED COMPARATIVE CLAIM"}
+                          ? "TEXT COVERED BY APP UI / MISSING DISCLAIMER"
+                          : "UNVERIFIED COMPARISON CLAIM"}
                       </span>
                     </div>
 
@@ -761,7 +767,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
                     {finding.category === "font_size_violation" && (
                       <div className="font-gauge-card">
                         <div className="gauge-header">
-                          <span>MEASURED FONT HEIGHT RATIO</span>
+                          <span>FTC § 255 DISCLAIMER FONT RATIO</span>
                           <strong>{finding.measuredFontSizeRatio}% of frame height</strong>
                         </div>
                         <div className="gauge-track">
@@ -774,7 +780,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
                           </div>
                         </div>
                         <div className="gauge-explanation">
-                          Violation: At {finding.measuredFontSizeRatio}% frame height (~{Math.round(finding.measuredFontSizeRatio * 12.8)}px on mobile reel), text fails the FTC clear &amp; conspicuous standard. Minimum required: &ge; 2.5% height.
+                          Notice: At {finding.measuredFontSizeRatio}% frame height (~{Math.round(finding.measuredFontSizeRatio * 12.8)}px on mobile), text is too small to read easily on mobile screens. Recommended: &ge; 2.5% frame height.
                         </div>
                       </div>
                     )}
@@ -824,11 +830,11 @@ Identify any claim contradictions, unverified comparative statements, and micro-
           <div className="multimodal-audit-log">
             <div className="log-header">
               <span className="log-pulse" />
-              <strong>MULTIMODAL AUDIT TELEMETRY</strong>
+              <strong>MULTIMODAL AUDIT TELEMETRY &amp; STATUS LOG</strong>
             </div>
             <div className="log-body">
               {auditLog.length === 0 ? (
-                <div className="log-empty">Click &ldquo;Run Multimodal Vision Audit&rdquo; to execute live Gemini 2.5 Flash frame analysis.</div>
+                <div className="log-empty">Click &ldquo;Run Visual Scan&rdquo; to analyze frames with AI vision.</div>
               ) : (
                 auditLog.map((entry, idx) => (
                   <div key={idx} className="log-line">{entry}</div>

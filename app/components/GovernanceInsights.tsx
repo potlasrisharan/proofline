@@ -159,39 +159,39 @@ export default function GovernanceInsights({ data, role, loading = false, error 
   return (
     <section className={styles.insights} aria-labelledby={headingId}>
       <header className={styles.header}>
-        <div><p className={styles.eyebrow}>Governance insights</p><h2 id={headingId}>Find patterns. Clarify the guidance.</h2><p className={styles.subtitle}>{formatInsightDate(data.window_start)} – {formatInsightDate(data.window_end)} · {data.sample_size} review events · UTC</p></div>
-        <span className={styles.mode}>{isDemo ? "Fictional VoltEdge simulation" : "Local supplied records"}</span>
+        <div><p className={styles.eyebrow}>Team Insights &amp; Trends</p><h2 id={headingId}>Find patterns. Clarify the guidance.</h2><p className={styles.subtitle}>{formatInsightDate(data.window_start)} – {formatInsightDate(data.window_end)} · {data.sample_size} checks run</p></div>
+        <span className={styles.mode}>{isDemo ? "Demo Workspace" : "Active Records"}</span>
       </header>
 
-      <p className={styles.context}>Team and agency aggregates support guideline improvement. Individual rankings are excluded. {isDemo ? "Synthetic activity demonstrates the method and is not a measured production result." : "Counts reflect only the records supplied for this reporting window."}</p>
+      <p className={styles.context}>Aggregate insights across teams help improve marketing guidelines and catch confusing rules before campaigns launch.</p>
 
       <div className={styles.metrics}>
-        <div><span>Review events</span><strong>{data.sample_size}</strong></div>
+        <div><span>Checks run</span><strong>{data.sample_size}</strong></div>
         <div><span>Issue categories</span><strong>{data.by_category.length}</strong></div>
-        <div><span>Facts expiring soon</span><strong>{data.expiring_facts.length}</strong></div>
-        <div><span>Clarification signals</span><strong>{data.ambiguity_signals.length}</strong></div>
+        <div><span>Specs expiring soon</span><strong>{data.expiring_facts.length}</strong></div>
+        <div><span>Rules to clarify</span><strong>{data.ambiguity_signals.length}</strong></div>
       </div>
 
       <div className={styles.grid}>
-        <section className={styles.panel}><p className={styles.eyebrow}>Recurring categories</p><h3>What keeps surfacing</h3><FindingBars items={data.by_category} emptyText="No findings were recorded in this window." /></section>
+        <section className={styles.panel}><p className={styles.eyebrow}>Recurring issues</p><h3>What keeps surfacing</h3><FindingBars items={data.by_category} emptyText="No findings were recorded in this window." /></section>
         <section className={styles.panel}><p className={styles.eyebrow}>Over time</p><h3>Recorded review activity</h3><TrendChart points={data.trends} /></section>
         <section className={styles.panel}><p className={styles.eyebrow}>Rule-level patterns</p><h3>Rules that need attention</h3><FindingBars items={data.by_rule} emptyText="No rule identifiers were linked to the supplied findings." /></section>
-        <section className={styles.panel}><p className={styles.eyebrow}>Validity window</p><h3>Facts expiring soon</h3>{data.expiring_facts.length > 0 ? <ul className={styles.expiryList}>{data.expiring_facts.map((fact) => <li key={`${fact.fact_id}-${fact.version}`}><div><strong>{fact.label}</strong><p>{fact.version ? `Version ${fact.version} · ` : ""}<time dateTime={fact.expires_at}>{formatInsightDate(fact.expires_at)}</time></p><code>{fact.fact_id}</code></div><span>{fact.days_remaining === 0 ? "Today" : `${fact.days_remaining} days`}</span></li>)}</ul> : <p className={styles.empty}>No active supplied facts expire within the configured horizon.</p>}</section>
+        <section className={styles.panel}><p className={styles.eyebrow}>Validity window</p><h3>Specs &amp; offers expiring soon</h3>{data.expiring_facts.length > 0 ? <ul className={styles.expiryList}>{data.expiring_facts.map((fact) => <li key={`${fact.fact_id}-${fact.version}`}><div><strong>{fact.label}</strong><p>{fact.version ? `Version ${fact.version} · ` : ""}<time dateTime={fact.expires_at}>{formatInsightDate(fact.expires_at)}</time></p><code>{fact.fact_id}</code></div><span>{fact.days_remaining === 0 ? "Today" : `${fact.days_remaining} days`}</span></li>)}</ul> : <p className={styles.empty}>No active supplied facts expire within the configured horizon.</p>}</section>
       </div>
 
       <div className={styles.grid}>
-        <section className={styles.panel}><p className={styles.eyebrow}>Aggregate activity</p><h3>By team</h3><GroupTable groups={data.teams} groupLabel="Team" /></section>
-        <section className={styles.panel}><p className={styles.eyebrow}>Aggregate activity</p><h3>By agency</h3><GroupTable groups={data.agencies} groupLabel="Agency" /></section>
+        <section className={styles.panel}><p className={styles.eyebrow}>Team activity</p><h3>By internal team</h3><GroupTable groups={data.teams} groupLabel="Team" /></section>
+        <section className={styles.panel}><p className={styles.eyebrow}>Partner activity</p><h3>By agency partner</h3><GroupTable groups={data.agencies} groupLabel="Agency" /></section>
       </div>
 
       <section className={styles.panel}>
-        <p className={styles.eyebrow}>Guideline-gap detector</p><h3>Signals to review</h3>
-        <p className={styles.subtitle}>Dismissals, overrides, needs_human outcomes, and explicit guideline conflicts are review signals. They do not establish that a rule is wrong.</p>
+        <p className={styles.eyebrow}>Guideline improvement detector</p><h3>Confusing rules to review</h3>
+        <p className={styles.subtitle}>Frequently dismissed flags or disputed rules suggest wording that may need clarification.</p>
         {data.ambiguity_signals.length > 0 ? <ul className={styles.signalList}>{data.ambiguity_signals.map((signal) => <li key={signal.signal_id}><span className={styles.signalMarker} aria-hidden="true" /><div><strong>{humaniseInsightLabel(signal.label)}</strong><p>{signal.explanation}</p><small>{humaniseInsightLabel(signal.signal_type)} · {signal.rate === null ? "Explicit guideline conflict" : `${signal.count}/${signal.sample_size} review events (${formatInsightRate(signal.rate)})`}</small></div></li>)}</ul> : <p className={styles.empty}>No ambiguity threshold was met in this reporting window.</p>}
       </section>
 
       <section className={styles.proposals} aria-label="Suggested rule updates">
-        <header><p className={styles.eyebrow}>Owner-reviewed proposals</p><h3>Suggested clearer wording</h3><p className={styles.subtitle}>AI-generated local templates, grounded in the observations above. Approval records a decision; activating a versioned rule is a separate explicit action.</p></header>
+        <header><p className={styles.eyebrow}>Owner-reviewed proposals</p><h3>1-Click rule improvements</h3><p className={styles.subtitle}>Clearer wording suggestions based on past edits. Brand owners can approve in 1 click so creators write accurate copy faster.</p></header>
         {data.suggested_rule_updates.length > 0 ? <div className={styles.grid}>{data.suggested_rule_updates.map((proposal) => <RuleSuggestion key={proposal.proposal_id} proposal={proposal} role={role} onApprove={onApproveSuggestion} />)}</div> : <p className={styles.empty}>No suggested rule updates are available.</p>}
       </section>
     </section>

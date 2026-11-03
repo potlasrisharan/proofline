@@ -713,7 +713,7 @@
 }
 
 .industrial-project-row:hover {
-  background-color: #FFFFFF;
+  background-color: #F4F4F5;
   border-left-color: var(--ind-accent);
 }
 
@@ -733,18 +733,15 @@
 }
 
 .industrial-project-title {
-  font-size: clamp(28px, 3.2vw, 48px);
+  font-size: clamp(24px, 2.8vw, 40px);
   font-weight: 800;
   letter-spacing: -0.03em;
   margin: 0;
   line-height: 1.1;
-  transition: font-family 0.3s var(--ind-ease), font-style 0.3s var(--ind-ease), color 0.3s var(--ind-ease);
+  transition: color 0.2s var(--ind-ease);
 }
 
 .industrial-project-row:hover .industrial-project-title {
-  font-family: var(--ind-font-serif);
-  font-style: italic;
-  font-weight: 400;
   color: var(--ind-accent);
 }
 

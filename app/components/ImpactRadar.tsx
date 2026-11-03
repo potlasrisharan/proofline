@@ -68,27 +68,27 @@ export function ImpactRadar({ data, loading = false, error, onRecheckAll, onOpen
     <section className={styles.radar} aria-labelledby={headingId} aria-busy={loading || pending}>
       <header className={styles.header}>
         <div>
-          <h2 id={headingId}>Fact-Change Impact Radar</h2>
-          <p>Find stored content that relied on an older approved fact.</p>
+          <h2 id={headingId}>Spec Change Radar</h2>
+          <p>Find marketing drafts and posts that rely on outdated specs or expired promos.</p>
         </div>
-        <span className={styles.localLabel}>Implemented · Active Engine</span>
+        <span className={styles.localLabel}>Active Engine</span>
       </header>
 
       <div className={styles.boundary}>
-        Only content registered with this radar is scanned. Version-linked claims require explicit verification.
+        Monitors drafts and live posts linked to approved product specs and seasonal discounts.
       </div>
 
-      {loading ? <p className={styles.empty} role="status">Loading stored impact records…</p> : null}
-      {error ? <div className={styles.error} role="alert"><strong>Impact records could not be loaded.</strong><p>{error}</p>{onRefresh ? <button type="button" onClick={onRefresh}>Try again</button> : null}</div> : null}
+      {loading ? <p className={styles.empty} role="status">Loading spec records…</p> : null}
+      {error ? <div className={styles.error} role="alert"><strong>Spec records could not be loaded.</strong><p>{error}</p>{onRefresh ? <button type="button" onClick={onRefresh}>Try again</button> : null}</div> : null}
       {!loading && !error && data === null ? <p className={styles.empty}>Connect this view to the authenticated local impact API to load registered records.</p> : null}
-      {!loading && !error && data !== null && items.length === 0 ? <div className={styles.empty}><strong>No stored content needs re-review.</strong><p>Content linked to changed or expired approved fact versions will appear here.</p></div> : null}
+      {!loading && !error && data !== null && items.length === 0 ? <div className={styles.empty}><strong>All drafts are up to date!</strong><p>When an approved product spec changes or a promo expires, affected drafts will appear here.</p></div> : null}
 
       {!loading && !error && items.length > 0 ? (
         <>
           <div className={styles.summary}>
             <div>
-              <strong>{contentCount} {contentCount === 1 ? "content item needs" : "content items need"} re-review</strong>
-              <p>{claimCount} linked {claimCount === 1 ? "claim" : "claims"} · {items.length} auditable {items.length === 1 ? "task" : "tasks"}</p>
+              <strong>{contentCount} {contentCount === 1 ? "draft needs" : "drafts need"} review</strong>
+              <p>{claimCount} linked {claimCount === 1 ? "claim" : "claims"} · {items.length} review {items.length === 1 ? "task" : "tasks"}</p>
             </div>
             <button className={styles.recheckButton} type="button" disabled={!onRecheckAll || pending} onClick={recheckAll}>
               {pending ? "Re-checking…" : "Re-check all affected"}
@@ -100,7 +100,7 @@ export function ImpactRadar({ data, loading = false, error, onRecheckAll, onOpen
               <li className={styles.item} key={item.task_id}>
                 <div className={styles.itemHeading}>
                   <h3>{item.title}</h3>
-                  <span className={styles.reviewLabel}>Re-review required</span>
+                  <span className={styles.reviewLabel}>Needs update</span>
                 </div>
                 <p className={styles.meta}>
                   {item.previous_workflow_status ? `Previously ${impactStatusLabels[item.previous_workflow_status].toLowerCase()} · ` : ""}
@@ -109,12 +109,12 @@ export function ImpactRadar({ data, loading = false, error, onRecheckAll, onOpen
                 <blockquote>{item.claim_text}</blockquote>
                 <FactChange item={item} />
                 <div className={styles.itemFooter}>
-                  <span>{item.task_status === "rechecked" || recheckedIds.has(item.task_id) ? "Re-checked · human decision still required" : "Awaiting an explicit re-check"}</span>
-                  {onOpenContent ? <button type="button" onClick={() => onOpenContent(item.content_id, item.content_version_id)}>Review content</button> : null}
+                  <span>{item.task_status === "rechecked" || recheckedIds.has(item.task_id) ? "Re-checked · ready for team review" : "Awaiting review"}</span>
+                  {onOpenContent ? <button type="button" onClick={() => onOpenContent(item.content_id, item.content_version_id)}>Open draft</button> : null}
                 </div>
                 <details className={styles.trace}>
-                  <summary>Traceable record IDs</summary>
-                  <dl><div><dt>Fact</dt><dd>{item.fact_id}</dd></div><div><dt>Claim</dt><dd>{item.claim_id}</dd></div><div><dt>Re-review task</dt><dd>{item.task_id}</dd></div></dl>
+                  <summary>Record IDs</summary>
+                  <dl><div><dt>Fact</dt><dd>{item.fact_id}</dd></div><div><dt>Claim</dt><dd>{item.claim_id}</dd></div><div><dt>Task</dt><dd>{item.task_id}</dd></div></dl>
                 </details>
               </li>
             ))}
@@ -123,8 +123,8 @@ export function ImpactRadar({ data, loading = false, error, onRecheckAll, onOpen
       ) : null}
 
       {actionError ? <p className={styles.error} role="alert">{actionError}</p> : null}
-      {recheck && !actionError ? <p className={styles.result} role="status">Re-checked {recheck.checked_content_count} content {recheck.checked_content_count === 1 ? "item" : "items"} against fact versions and validity. Content remains marked for human re-review.</p> : null}
-      <p className={styles.help}>Re-checking verifies stored fact links and validity; it does not rewrite content or grant approval.</p>
+      {recheck && !actionError ? <p className={styles.result} role="status">Re-checked {recheck.checked_content_count} content {recheck.checked_content_count === 1 ? "item" : "items"} against latest specs. Ready for review.</p> : null}
+      <p className={styles.help}>Re-checking highlights outdated numbers and claims; your team reviews and confirms the final edit.</p>
     </section>
   );
 }
@@ -136,7 +136,7 @@ export function ImpactRadarBanner({ data, onOpenImpact }: { data: ImpactResponse
   return (
     <aside className={styles.banner} aria-label="Fact-change re-review required">
       <span className={styles.bannerSymbol} aria-hidden="true">!</span>
-      <div><strong>{count} stored {count === 1 ? "item needs" : "items need"} re-review.</strong><p>An approved fact changed or expired. Inspect the linked claims before using this content.</p><small>Local in-memory radar · registered content only</small></div>
+      <div><strong>{count} {count === 1 ? "draft needs" : "drafts need"} review.</strong><p>A product spec changed or an offer expired. Check linked claims before publishing.</p><small>Live Spec Monitor</small></div>
       {onOpenImpact ? <button type="button" onClick={onOpenImpact}>View impact</button> : null}
     </aside>
   );
