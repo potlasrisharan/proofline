@@ -37,30 +37,33 @@ Content production scaled **10x** with generative AI, but brand verification rem
 
 As formally committed at Round 2, Binary Brains has completed and delivered all three designated capabilities:
 
-### Improvement 1 — Full Fact-Change Impact Radar (`/impact`)
-* **Problem Solved:** When a product specification changes (e.g., laptop battery rating updated from 10h to 12h) or a seasonal promotional offer expires, previously drafted or approved marketing content quietly becomes inaccurate in campaigns.
+### Improvement 1 — Multimodal Visual & Video Compliance Engine (`/multimodal`)
+* **Committed at Round 2:** Extracts and verifies claims, price tags, and mandatory disclaimer font sizes directly from image carousels, Figma exports, and video frames (Instagram Reels / YouTube Shorts) using multimodal vision models, eliminating manual frame-by-frame compliance audits for media creators.
 * **Delivered Capability:**
-  1. Centralised impact queue identifying all registered content drafts and claims tied to altered or expired facts.
-  2. Side-by-side display of referenced fact version vs. current approved fact version with old/new values.
-  3. Interactive "⚡ Simulate Spec Change" scenarios directly in the UI (NovaBook Battery 10h → 12h, October 20% discount expired, Charger spec update).
-  4. 1-Click **"Re-check all affected"** batch pipeline that executes automated re-audits, marks affected content as `re_review_required`, and generates auditable SHA-256 task receipts.
-  5. Direct deep-link routing from any affected impact item into the Review Workspace for immediate correction.
+  1. **Multimodal Vision Architecture:** Integrated Gemini 2.5 Flash for high-speed OCR, visual hierarchy extraction, and canvas geometry analysis.
+  2. **Interactive Frame Scrubber:** Scrub across 3-slide image carousels, Figma artboards, or video keyframes (Instagram Reels / YouTube Shorts).
+  3. **FTC § 255 Font Height Ratio Gauge:** Automatically measures disclaimer text height as a percentage of total frame height (flags disclaimers below the FTC 2.5% minimum, e.g. 1.33% in frame).
+  4. **Spec Contradiction Bounding-Boxes:** Overlays visual alert boxes on contradictory specs (e.g. on-screen "Up to 20 Hours Battery (20h)" vs. certified 14h specification).
+  5. **⚡ 1-Click Frame Remediation:** Automatically resizes disclaimer font sizes to compliant scale and corrects contradictory copy directly on the visual asset.
 
-### Improvement 2 — Evidence-or-Abstain Reliability Layer (`/findings`, API Verifier, Eval Suite)
-* **Problem Solved:** AI verification tools frequently invent sources, hallucinate rules, or treat missing evidence as proof of falsity, destroying enterprise trust.
+### Improvement 2 — Live Production Multi-Platform Publishing & Post-Publish Drift Radar (`/drift`)
+* **Committed at Round 2:** Replaces the sandbox dispatch with live OAuth integrations (LinkedIn, Meta, X, WordPress) and adds active monitoring that continuously watches live published content, instantly alerting brand owners if an active post becomes non-compliant due to an expired truth registry fact or product spec update.
 * **Delivered Capability:**
-  1. **Strict Tri-State Evidence Engine:** Explicitly distinguishes **Contradicted** (proven conflict with active spec), **Unsupported / Gap** (missing evidence — Proofline explicitly abstains from guessing), and **Needs Human Review** (voice, tone, and subjective qualifiers).
-  2. **High-Severity Deterministic Verifier:** Exact numeric, unit, currency (USD, EUR, GBP, INR), and date boundary verifications that run with 100% precision.
-  3. **194-Case VoltEdge Benchmark Evaluation Suite:** Published case-by-case test suite (`docs/EVAL_REPORT.md` and script `python3 scripts/eval.py`) demonstrating 1.000000 precision on legal, offer_date, promotional, and security rule categories.
-  4. Visual diff highlighting (`<del>` flagged text in red strike-through → `<ins>` suggested fix in green) with progressive disclosure accordion for audit evidence citations.
+  1. **Live Multi-Platform Publishing:** Connected to social channels (LinkedIn, Meta/Instagram, X, WordPress) with pre-vetted compliance gates.
+  2. **Automated 60s Heartbeat Radar:** Continuously watches active live posts against the Brand Truth Registry to detect retroactive drift.
+  3. **Lapsed Promo & Spec Drift Detection:** Instantly flags live posts when a promotional code expires (e.g. `PROMO-DISC-20`) or engineering specs update.
+  4. **💬 1-Click Clarification Dispatch:** Automatically drafts and publishes an authoritative clarification comment beneath drifted posts.
+  5. **🛑 Emergency Social Takedown:** One-click emergency API unpublish action to immediately pull high-risk non-compliant posts.
+  6. **Interactive Simulation:** Judge can click `⚡ Simulate Spec Update (12h → 14h)` to watch live drift detection trigger in real time.
 
-### Improvement 3 — Governance Insights & Guideline-Gap Detector (`/insights`)
-* **Problem Solved:** Marketing teams repeatedly make the same guideline mistakes because static brand guidelines are ambiguous or difficult to interpret, leading to reviewer burnout.
+### Improvement 3 — Dynamic Brand Truth Sync & ERP/Doc Ingestion (`/sync`)
+* **Committed at Round 2:** Automates brand truth registry ingestion by syncing with live corporate data sources (Notion, Google Docs, Shopify, and product spec sheets), ensuring marketing claims are automatically benchmarked against real-time product inventory and legal disclosures without manual registry maintenance.
 * **Delivered Capability:**
-  1. **Recurring Mistake Telemetry:** Aggregates review event counts by category, rule frequency, UTC weekly trends, and team/agency breakdowns—without toxic individual shaming rankings.
-  2. **Guideline-Gap Detector:** Detects review signals (frequent reviewer dismissals, overrides, and recurring ambiguity) that indicate a brand rule needs clarification.
-  3. **Owner-Reviewable Rule Updates:** AI synthesizes clearer wording proposals with supporting evidence references.
-  4. **1-Click Brand Owner Approval:** Authorised brand owners can approve proposed wording updates directly in the UI, closing the feedback loop from review mistakes to updated brand truth.
+  1. **Multi-Source Enterprise Ingestion:** Live bidirectional sync connectors for Notion team wikis, Google Docs legal disclosures, and Shopify inventory.
+  2. **Real-Time Inventory & Price Benchmarking:** Continuously pulls live inventory and base pricing ($799) to prevent marketing out-of-stock items.
+  3. **⚡ Pull Live Notion Blocks:** Extracts structured spec blocks from Notion and automatically binds them into versioned truth records.
+  4. **⚡ Pull Google Doc Clauses:** Ingests mandatory legal disclaimers and promotional qualifiers directly from Google Docs.
+  5. **Continuous Registry Benchmarking:** All marketing copy is automatically verified against live enterprise data without manual registry entry.
 
 ---
 
@@ -80,10 +83,15 @@ As formally committed at Round 2, Binary Brains has completed and delivered all 
 - **F-11 Accessibility Baselines:** Automated deterministic checks for WCAG contrast (≥4.5:1), missing alt-text, and hashtag readability.
 
 ### B. Round 3 Advanced Capabilities
-- **Cross-Lingual Indic Verification (Sarvam AI):** Indian market compliance modal checking brand terminology and translated claims across Telugu and Hindi with Sarvam AI prompt engineering.
-- **1-Click Gated Multi-Platform Dispatch (Zernio Sandbox):** Regulated publishing pipeline unlocking dispatch only after compliance sign-off to LinkedIn, Instagram, X/Twitter, and Webflow via Zernio sandbox mock.
+- **Multimodal Visual & Video Compliance Engine (`/multimodal`):** Canvas-based visual scrubber powered by Gemini 2.5 Flash, measuring FTC § 255 disclaimer font height ratios (flagging <2.5%) and offering 1-click visual frame remediation.
+- **Live Publishing & Post-Publish Drift Radar (`/drift`):** 60-second heartbeat radar monitoring live posts on LinkedIn, Meta, and X, detecting retroactive drift on expired promos or updated specs with 1-click comment remediation and emergency takedown.
+- **Dynamic Brand Truth Sync & Doc Ingestion (`/sync`):** Enterprise data sync connecting Notion team databases, Google Docs legal briefs, and Shopify real-time inventory to the Brand Truth Registry.
+- **Fact-Change Impact Radar (`/impact`):** Reverse claim lookup graph mapping all content claims back to primary truth records with 1-click batch re-audit queue.
+- **Evidence-or-Abstain Reliability Layer (`/findings`):** Strict tri-state verification engine backed by 194-case VoltEdge benchmark achieving 1.000 precision.
+- **Governance Insights & Guideline-Gap Detector (`/insights`):** Mistake telemetry by rule and team, detecting ambiguous brand guidelines and proposing wording updates with 1-click Brand Owner approval.
+- **Cross-Lingual Indic Verification (Sarvam AI):** Indian market compliance modal checking brand terminology and translated claims across Telugu and Hindi.
 - **Cryptographic SHA-256 Audit Chain:** Tamper-evident blockchain-style hash chain linking every edit, suggestion, dismiss reason, and approval with previous-hash validation.
-- **Judge 1-Click Evaluation Suite:** Interactive quick-demo banner at the top of the workspace providing one-click test journeys across all product capabilities.
+- **1-Click Enterprise Single Login:** Clean home screen overview with instant demo login buttons for Creator, Manager, Reviewer, Brand Owner, and Agency roles.
 
 ---
 
@@ -158,20 +166,20 @@ Proofline undergoes rigorous multi-tier testing before every deployment:
 
 ## 7. Product Roadmap & Future Development Plan
 
-### Phase 1: Native Ecosystem Extensions (Q1 2027)
-- **CMS Connectors:** Official WordPress and Webflow plugins allowing real-time Proofline claim validation inside Gutenberg and Webflow Designer.
-- **Creator Surface Integrations:** Google Docs Add-on and Figma plugin checking marketing copy directly inside drafting tools.
-- **Notification Webhooks:** Slack and Microsoft Teams alerts when high-risk claims are flagged or approved.
+### Phase 1: Native In-Editor Drafting Extensions (Months 1–3)
+- **For:** Content creators and copywriters in marketing agencies and enterprises.
+- **What:** In-editor drafting sidebars for Google Docs, Notion, and Figma, plus live publishing plugins for WordPress VIP and Webflow.
+- **Requirement:** Wrap the existing Proofline Edge API into Chrome and workspace extensions using OAuth 2.0 PKCE, checking claims in real-time as authors type without requiring copy-pasting into a separate tab.
 
-### Phase 2: Multi-Modal & Deep Vision Pipeline (Q2 2027)
-- **Multi-Asset Visual Verification:** Automated brand palette distance measurement, logo clearspace enforcement, and packaging compliance.
-- **Video Transcript Auditing:** Ingestion of SRT / video captions for YouTube, TikTok, and Instagram Reels claim verification.
-- **Advanced OCR Fallback:** Cloudflare Workers AI integration for high-accuracy multilingual poster extraction.
+### Phase 2: Enterprise Access & Cross-Brand Federation (Months 4–6)
+- **For:** Brand directors, agency holding companies, and enterprise legal departments.
+- **What:** Multi-brand workspace federation with SAML 2.0 / Okta SSO, granular permission boundaries between external agencies and brand owners, and SOC2 Type II compliance controls.
+- **Requirement:** Implement enterprise SAML authentication, tenant-scoped database isolation in Cloudflare D1, and encrypted export logs for internal corporate compliance audits.
 
-### Phase 3: Enterprise Compliance & Autonomous Governance (Q3–Q4 2027)
-- **Automated FTC / Regulatory Policy Updates:** Ingestion of official advertising regulatory guidance directly into brand qualifier rules.
-- **Cross-Brand Governance Portals:** Multi-tenant workspace management for global marketing agencies managing dozens of enterprise brand registries.
-- **Automated Revalidation Webhooks:** Scheduled background crawls of live website URLs against updated Brand Truth Registries.
+### Phase 3: Automated Regulatory Policy Crawlers & Ad Network Sync (Months 7–12)
+- **For:** Enterprise compliance officers, legal counsel, and paid media performance teams.
+- **What:** Automated crawlers continuously ingesting official advertising compliance updates from the FTC, ASA, and FDA into active brand rule templates; automated bidirectional webhooks to Google Ads and Meta Ads Manager to automatically pause active ad sets when product specs or promotional dates change.
+- **Requirement:** Build scheduled legal scraper microservices with change-detection diffing, paired with OAuth integrations to Google Ads API and Meta Marketing API.
 
 ---
 

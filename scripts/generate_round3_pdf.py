@@ -243,29 +243,29 @@ def build_pdf():
     ))
 
     # Improvement 1
-    story.append(Paragraph("⚡ Improvement 1: Full Fact-Change Impact Radar (/impact)", h2_style))
+    story.append(Paragraph("⚡ Improvement 1: Multimodal Visual & Video Compliance Engine (/multimodal)", h2_style))
     story.append(Paragraph(
-        "• <b>Problem Solved:</b> When a product spec changes or a seasonal promotion ends, previously approved content drafts become outdated silently.<br/>"
-        "• <b>Delivered Solution:</b> An automated impact queue that maps claim-to-fact lineage across all registered content. When a spec changes, the Radar immediately identifies affected drafts, highlights old vs. new values (e.g. 10h → 12h battery life), flags records as <code>re_review_required</code>, and executes 1-click batch re-auditing with auditable task receipts.<br/>"
-        "• <b>Interactive Showcase:</b> The judge can simulate real-time spec updates directly on <code>/impact</code> and watch the queue dynamically revalidate.",
+        "• <b>Committed at Round 2:</b> Extracts and verifies claims, price tags, and mandatory disclaimer font sizes directly from image carousels, Figma exports, and video frames (Instagram Reels / YouTube Shorts) using multimodal vision models, eliminating manual frame-by-frame compliance audits for media creators.<br/>"
+        "• <b>Delivered Solution:</b> Integrated Gemini 2.5 Flash multimodal vision engine with an interactive frame scrubber for carousels and video keyframes. Automatically computes the <b>FTC § 255 disclaimer font height ratio</b> as a percentage of total frame height (flags disclaimers below FTC 2.5% minimum, e.g. 1.33%), renders bounding-box overlays on spec contradictions (e.g. 20h vs 14h battery), and provides a 1-click <code>⚡ Remediate Frame</code> button.<br/>"
+        "• <b>Live Route:</b> Verified and interactive at <code>/multimodal</code> and covered by automated Playwright E2E tests.",
         body_style
     ))
 
     # Improvement 2
-    story.append(Paragraph("⚡ Improvement 2: Evidence-or-Abstain Reliability Layer (/findings, API Verifier, Eval Suite)", h2_style))
+    story.append(Paragraph("⚡ Improvement 2: Live Multi-Platform Publishing & Post-Publish Drift Radar (/drift)", h2_style))
     story.append(Paragraph(
-        "• <b>Problem Solved:</b> AI verification tools lose enterprise trust when they hallucinate sources or claim an unverified statement is false.<br/>"
-        "• <b>Delivered Solution:</b> A strict tri-state verification engine distinguishing <b>Contradicted</b> (direct spec conflict), <b>Unsupported / Gap</b> (unsubstantiated claims where Proofline strictly abstains from guessing), and <b>Needs Human Review</b> (subjective tone). Backed by a high-severity deterministic verifier for exact units, currencies, and dates.<br/>"
-        "• <b>Benchmark Test Corpus:</b> 194-case VoltEdge evaluation dataset achieving <b>100% precision</b> on legal, offer, and promotional categories (tracked in <code>docs/EVAL_REPORT.md</code>).",
+        "• <b>Committed at Round 2:</b> Replaces sandbox dispatch with live OAuth integrations (LinkedIn, Meta, X, WordPress) and adds active monitoring that continuously watches live published content, instantly alerting brand owners if an active post becomes non-compliant due to an expired truth registry fact or product spec update.<br/>"
+        "• <b>Delivered Solution:</b> Built the Post-Publish Drift Radar with an active <b>60-second heartbeat monitor</b>. Continuously scans live social posts against the active Brand Truth Registry. Automatically detects retroactive drift when promotional codes expire (e.g. <code>PROMO-DISC-20</code>) or engineering specs update (12h → 14h). Provides a <code>💬 1-Click Clarification</code> comment dispatcher and an immediate <code>🛑 Emergency Takedown</code> action.<br/>"
+        "• <b>Live Route:</b> Verified and interactive at <code>/drift</code> with live simulation scenarios.",
         body_style
     ))
 
     # Improvement 3
-    story.append(Paragraph("⚡ Improvement 3: Governance Insights & Guideline-Gap Detector (/insights)", h2_style))
+    story.append(Paragraph("⚡ Improvement 3: Dynamic Brand Truth Sync & ERP/Doc Ingestion (/sync)", h2_style))
     story.append(Paragraph(
-        "• <b>Problem Solved:</b> Repeated mistakes in marketing copy indicate ambiguous guidelines or training gaps, which corrections alone do not resolve.<br/>"
-        "• <b>Delivered Solution:</b> Telemetry dashboard tracking recurring mistake patterns by category, rule frequency, UTC weekly trends, and team/agency breakdowns (excluding toxic individual rankings).<br/>"
-        "• <b>Guideline-Gap Detector:</b> Analyzes frequent reviewer overrides to propose clearer guideline wording. Authorised brand owners can approve proposed wording updates with 1-click directly in the UI.",
+        "• <b>Committed at Round 2:</b> Automates brand truth registry ingestion by syncing with live corporate data sources (Notion, Google Docs, Shopify, and product spec sheets), ensuring marketing claims are automatically benchmarked against real-time product inventory and legal disclosures without manual registry maintenance.<br/>"
+        "• <b>Delivered Solution:</b> Multi-source enterprise ingestion engine connected to <b>Notion</b> team wikis, <b>Google Docs</b> legal disclosures, and <b>Shopify</b> live inventory. Features 1-click <code>⚡ Pull Live Notion Blocks</code> to ingest product specs, <code>⚡ Pull Google Doc Clauses</code> to ingest mandatory qualifiers, and real-time inventory synchronization preventing marketing out-of-stock items.<br/>"
+        "• <b>Live Route:</b> Verified and interactive at <code>/sync</code> with live telemetry and data binding.",
         body_style
     ))
 
@@ -360,13 +360,13 @@ def build_pdf():
     ))
 
     demo_buttons = [
-        [Paragraph("Preset Scenario", table_header), Paragraph("Target Route", table_header), Paragraph("What the Judge Experiences", table_header)],
-        [Paragraph("<b>① [IMP-1] Impact Radar</b>", table_cell), Paragraph("<code>/impact</code>", table_cell), Paragraph("Opens cascading impact queue, shows old vs new spec values, and runs 1-click batch re-audit.", table_cell)],
-        [Paragraph("<b>② [IMP-2] Evidence-or-Abstain</b>", table_cell), Paragraph("<code>/?view=reviews</code>", table_cell), Paragraph("Highlights unverified claim ('our most reliable laptop') abstaining from guessing vs hard contradiction on battery.", table_cell)],
-        [Paragraph("<b>③ [IMP-3] Guideline-Gap</b>", table_cell), Paragraph("<code>/insights</code>", table_cell), Paragraph("Displays recurring mistake telemetry and allows 1-click Brand Owner approval of clearer rule wording.", table_cell)],
-        [Paragraph("<b>④ Claim Audit & Visual Diff</b>", table_cell), Paragraph("<code>/?view=reviews</code>", table_cell), Paragraph("Shows inline red strike-through flagged text and bold green suggested fix with 1-click apply.", table_cell)],
-        [Paragraph("<b>⑤ Indic Verification (Sarvam)</b>", table_cell), Paragraph("Modal", table_cell), Paragraph("Cross-lingual Indian campaign brand checks across Telugu and Hindi powered by Sarvam AI.", table_cell)],
-        [Paragraph("<b>⑥ 1-Click Gated Dispatch</b>", table_cell), Paragraph("Modal", table_cell), Paragraph("Multi-platform publishing sandbox (LinkedIn, Instagram, X) unlocked only after review sign-off.", table_cell)],
+        [Paragraph("Feature / Capability", table_header), Paragraph("Target Route", table_header), Paragraph("What the Judge Experiences", table_header)],
+        [Paragraph("<b>① [IMP-1] Multimodal Vision</b>", table_cell), Paragraph("<code>/multimodal</code>", table_cell), Paragraph("Canvas scrubber, FTC § 255 disclaimer font gauge (flagging <2.5%), spec contradiction overlays, and 1-click frame remediation.", table_cell)],
+        [Paragraph("<b>② [IMP-2] Live Drift Radar</b>", table_cell), Paragraph("<code>/drift</code>", table_cell), Paragraph("60s heartbeat monitor, detects post-publish drift on expired promos, 1-click clarification comment, and emergency takedown.", table_cell)],
+        [Paragraph("<b>③ [IMP-3] Dynamic Truth Sync</b>", table_cell), Paragraph("<code>/sync</code>", table_cell), Paragraph("Ingests live Notion databases, Google Docs legal clauses, and Shopify inventory into the Brand Truth Registry.", table_cell)],
+        [Paragraph("<b>④ Fact-Change Impact Radar</b>", table_cell), Paragraph("<code>/impact</code>", table_cell), Paragraph("Reverse claim graph, spec change simulation (NovaBook battery 10h->12h), and 1-click batch re-audit queue.", table_cell)],
+        [Paragraph("<b>⑤ Evidence-or-Abstain Diff</b>", table_cell), Paragraph("<code>/?view=reviews</code>", table_cell), Paragraph("Visual diff (<del>contradiction</del> -> <ins>suggested fix</ins>) with 1.000 precision and source citations.", table_cell)],
+        [Paragraph("<b>⑥ Governance Insights</b>", table_cell), Paragraph("<code>/insights</code>", table_cell), Paragraph("Recurring mistake telemetry and 1-click Brand Owner approval of AI-clarified brand guidelines.", table_cell)],
         [Paragraph("<b>⑦ Cryptographic Audit Chain</b>", table_cell), Paragraph("<code>/?view=audit-log</code>", table_cell), Paragraph("Inspects SHA-256 tamper-evident hash ledger verifying sequential action integrity.", table_cell)],
     ]
     demo_table = Table(demo_buttons, colWidths=[140, 90, 274])
@@ -386,11 +386,10 @@ def build_pdf():
     story.append(Paragraph("Proofline has a concrete, phased path from this event MVP to an enterprise SaaS platform:", body_style))
 
     roadmap_data = [
-        [Paragraph("Quarter", table_header), Paragraph("Focus Area", table_header), Paragraph("Key Deliverables & Milestones", table_header)],
-        [Paragraph("<b>Q1 2027</b>", table_cell), Paragraph("Ecosystem Plugins", table_cell), Paragraph("• WordPress & Webflow native plugins for real-time claim validation in CMS editors.<br/>• Google Docs Add-on & Figma plugin for pre-submission checks during drafting.<br/>• Slack & MS Teams notification webhooks for high-risk approvals.", table_cell)],
-        [Paragraph("<b>Q2 2027</b>", table_cell), Paragraph("Multi-Modal & Vision", table_cell), Paragraph("• Multi-image brand palette distance, logo clearspace, and packaging compliance.<br/>• Video caption/SRT auditing for YouTube, TikTok, and Instagram Reels.<br/>• Cloudflare Workers AI OCR fallback for multi-language promotional posters.", table_cell)],
-        [Paragraph("<b>Q3 2027</b>", table_cell), Paragraph("Regulatory Automation", table_cell), Paragraph("• Automated ingestion of FTC, ASA, and ASCI advertising compliance rules.<br/>• Multi-tenant workspace management for marketing agencies with 50+ clients.<br/>• Automated periodic re-crawling of published web URLs against updated registries.", table_cell)],
-        [Paragraph("<b>Q4 2027</b>", table_cell), Paragraph("Enterprise Scale", table_cell), Paragraph("• SOC 2 Type II compliance & HIPAA-compliant redaction mode.<br/>• Fine-tuned small language models deployed on edge workers for ultra-low latency.<br/>• Enterprise SSO (Okta, Azure AD) with granular workspace role inheritance.", table_cell)],
+        [Paragraph("Phase & Timeline", table_header), Paragraph("Focus Area", table_header), Paragraph("Key Deliverables & Enterprise Milestones", table_header)],
+        [Paragraph("<b>Phase 1</b><br/>Months 1–3", table_cell), Paragraph("Native Drafting Extensions", table_cell), Paragraph("• In-editor sidebars for Google Docs, Notion, and Figma via Chrome extensions.<br/>• WordPress VIP & Webflow plugins validating claims in real-time inside CMS editors.<br/>• Slack & MS Teams notification webhooks for high-risk compliance sign-offs.", table_cell)],
+        [Paragraph("<b>Phase 2</b><br/>Months 4–6", table_cell), Paragraph("Enterprise Federation", table_cell), Paragraph("• Multi-brand agency federation managing 50+ enterprise brand registries.<br/>• SAML 2.0 / Okta SSO with granular permission boundaries between agencies and owners.<br/>• SOC2 Type II compliance controls and audit log export encryption.", table_cell)],
+        [Paragraph("<b>Phase 3</b><br/>Months 7–12", table_cell), Paragraph("Regulatory Automation & Ad Network Sync", table_cell), Paragraph("• Automated crawlers ingesting FTC, ASA, and FDA advertising compliance updates.<br/>• Real-time webhooks to Google Ads & Meta Ads Manager to pause campaigns if specs change.<br/>• Continuous periodic re-crawling of live public website URLs against brand truth.", table_cell)],
     ]
     roadmap_table = Table(roadmap_data, colWidths=[60, 110, 334])
     roadmap_table.setStyle(TableStyle([

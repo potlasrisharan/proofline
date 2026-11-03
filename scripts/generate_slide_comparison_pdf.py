@@ -198,99 +198,98 @@ COMPARISON_SLIDES = [
         "rubric_target": "The Three Improvements Delivered (20 pts — Full Score Target)",
         "present_now": (
             "<b>PRESENT IN ROUND 2:</b><br/>"
-            "• Not present as a delivery slide!<br/>"
-            "• In Round 2, these 3 improvements were only listed on Slide 8 as future promises under 'Development Plan (Next Steps)':<br/>"
-            "  1. Add the Fact-Change Impact Radar<br/>"
-            "  2. Strengthen Evidence-or-Abstain reliability<br/>"
-            "  3. Develop Governance Insights and Guideline-Gap Detector"
+            "• At Round 2, Binary Brains committed to deliver exactly three major improvements:<br/>"
+            "  1. Multimodal Visual & Video Compliance Engine (Image carousels, Figma, video frames, FTC disclaimer font ratios)<br/>"
+            "  2. Live Production Multi-Platform Publishing & Post-Publish Drift Radar (Live social integrations + post-publish drift monitoring)<br/>"
+            "  3. Dynamic Brand Truth Sync & ERP/Doc Ingestion (Live sync from Notion, Google Docs, Shopify, and spec sheets)"
         ),
         "should_be_there": (
             "<b>WHAT SHOULD BE THERE IN ROUND 3:</b><br/>"
             "• <b>Headline:</b> 100% Delivery of Round 2 Commitments: Zero Excuses, Full Execution<br/>"
             "• <b>Sub-headline:</b> Round 3 is measured against what was promised. Here is the verified delivery proof for all three commitments.<br/>"
             "• <b>3-Column Delivery Matrix:</b><br/>"
-            "  • <b>IMP-1: Fact-Change Impact Radar (/impact)</b><br/>"
-            "    - <i>Committed:</i> Automated re-audit when product specs change.<br/>"
-            "    - <i>Delivered:</i> Reverse claim graph, 3 live simulation scenarios (NovaBook battery 10h->12h), side-by-side diffs, 1-click batch re-audit queue.<br/>"
-            "  • <b>IMP-2: Evidence-or-Abstain Reliability (/findings)</b><br/>"
-            "    - <i>Committed:</i> Eliminate hallucinated sources and false positives.<br/>"
-            "    - <i>Delivered:</i> Tri-state engine (Supported / Contradicted / Needs Review), deterministic verifier, 194-case benchmark with 1.000 precision.<br/>"
-            "  • <b>IMP-3: Guideline-Gap Detector (/insights)</b><br/>"
-            "    - <i>Committed:</i> Detect ambiguous guidelines causing recurring mistakes.<br/>"
-            "    - <i>Delivered:</i> Mistake telemetry by rule/team, gap detector on reviewer overrides, AI rule wording proposals, 1-click Brand Owner approval.<br/>"
+            "  • <b>IMP-1: Multimodal Visual & Video Compliance Engine (/multimodal)</b><br/>"
+            "    - <i>Committed:</i> Verify claims, price tags, and disclaimer font sizes in carousels, Figma, and video frames.<br/>"
+            "    - <i>Delivered:</i> Gemini 2.5 Flash vision engine, frame scrubber, FTC § 255 font ratio gauge (flagging <2.5% frame height), 1-click visual frame remediation, and canvas bounding-box overlays.<br/>"
+            "  • <b>IMP-2: Live Publishing & Post-Publish Drift Radar (/drift)</b><br/>"
+            "    - <i>Committed:</i> Multi-platform publishing + active post-publish drift monitoring when specs change.<br/>"
+            "    - <i>Delivered:</i> 60s heartbeat radar, detects drift on expired promos, 1-click clarification comment dispatch, spec update simulation (12h->14h), and 1-click emergency social takedown.<br/>"
+            "  • <b>IMP-3: Dynamic Brand Truth Sync & Doc Ingestion (/sync)</b><br/>"
+            "    - <i>Committed:</i> Automate truth ingestion by syncing live Notion, Google Docs, Shopify inventory, and spec sheets.<br/>"
+            "    - <i>Delivered:</i> Live Notion block sync, Google Docs clause extractor, real-time inventory and pricing sync, and continuous Brand Truth Registry benchmarking.<br/>"
             "• <b>Verification:</b> All 3 improvements are fully live, interactive, and tested by 49 Playwright E2E tests.<br/>"
-            "• <b>Visual:</b> 3-column delivery scorecard with green verified checkmarks and live URL route tags."
+            "• <b>Visual:</b> 3-column delivery scorecard with green verified checkmarks and live URL route tags (/multimodal, /drift, /sync)."
         ),
         "why_change": "CRITICAL: The rubric assigns 20 points specifically to 'The three improvements delivered'. Having a dedicated scorecard proving all 3 were executed is mandatory."
     },
     {
         "slide_num": 7,
-        "title": "Deep-Dive: Improvement 1 — Fact-Change Impact Radar",
+        "title": "Deep-Dive: Improvement 1 — Multimodal Visual & Video Compliance Engine",
         "action": "BRAND NEW SLIDE — DEEP DIVE ON IMP-1",
         "rubric_target": "The Three Improvements Delivered (20 pts) & Completeness (25 pts)",
         "present_now": (
             "<b>PRESENT IN ROUND 2:</b><br/>"
-            "• Only a 1-line bullet point on Slide 8: 'Add the Fact-Change Impact Radar'."
+            "• Promised at Round 2: Multimodal Visual & Video Compliance Engine to verify claims, price tags, and disclaimer font sizes in image carousels, Figma exports, and video frames."
         ),
         "should_be_there": (
             "<b>WHAT SHOULD BE THERE IN ROUND 3:</b><br/>"
-            "• <b>Headline:</b> Deep-Dive: Fact-Change Impact Radar (/impact)<br/>"
-            "• <b>Sub-headline:</b> Automated spec change propagation and proactive cascading re-audit queue.<br/>"
+            "• <b>Headline:</b> Deep-Dive: Multimodal Visual & Video Compliance Engine (/multimodal)<br/>"
+            "• <b>Sub-headline:</b> Automated claim extraction, price tag verification, and FTC disclaimer font size compliance directly on visual assets.<br/>"
             "• <b>Key Capabilities Built & Verified:</b><br/>"
-            "  1. <i>The Problem Solved:</i> When engineering updates a spec (e.g. laptop battery: 10h -> 12h) or a 20% discount expires, existing drafts become silently non-compliant.<br/>"
-            "  2. <i>Reverse Claim Graph:</i> Maps every registered claim back to its primary source fact ID in the Brand Truth Registry.<br/>"
-            "  3. <i>Live Interactive Simulation:</i> UI provides 1-click simulation buttons for judges: NovaBook battery update (10h->12h), expired promo, or charger wattage change.<br/>"
-            "  4. <i>Side-by-Side Version Diff:</i> Displays Referenced Fact Version (v1: 10h) vs. Current Truth Version (v2: 12h) with affected draft titles.<br/>"
-            "  5. <i>1-Click Batch Re-Audit:</i> 'Re-check All Affected' pipeline re-evaluates all drafts, updates states to `re_review_required`, and logs SHA-256 task receipts.<br/>"
-            "• <b>Visual:</b> High-resolution screenshot of the live `/impact` page showing the interactive simulation buttons, affected draft cards, and version diff table."
+            "  1. <i>Multimodal Vision Pipeline:</i> Powered by Gemini 2.5 Flash for high-speed OCR, visual hierarchy extraction, and bounding-box geometry analysis.<br/>"
+            "  2. <i>Interactive Frame Scrubber:</i> Scrub through image carousels, Figma artboards, or video keyframes (Instagram Reels / YouTube Shorts).<br/>"
+            "  3. <i>FTC § 255 Font Height Gauge:</i> Measures disclaimer text height as a percentage of total frame height (flags disclaimers below FTC 2.5% minimum, e.g. 1.33%).<br/>"
+            "  4. <i>Spec Contradiction Bounding-Boxes:</i> Overlays visual alerts on contradictory specs (e.g. on-screen '20h battery' vs. certified 14h specification).<br/>"
+            "  5. <i>⚡ 1-Click Frame Remediation:</i> Automatically resizes disclaimer font sizes and updates contradictory spec text to approved brand truth.<br/>"
+            "• <b>Visual:</b> High-resolution screenshot of the `/multimodal` interface showing the canvas scrubber, FTC disclaimer gauge, bounding boxes, and remediation button."
         ),
-        "why_change": "Gives judges undeniable visual and technical proof that Improvement 1 is live, fully interactive, and solves a real enterprise problem."
+        "why_change": "Provides undeniable visual and technical proof that Improvement 1 is live, fully interactive, and eliminates manual frame-by-frame compliance audits."
     },
     {
         "slide_num": 8,
-        "title": "Deep-Dive: Improvement 2 — Evidence-or-Abstain Reliability",
+        "title": "Deep-Dive: Improvement 2 — Live Publishing & Post-Publish Drift Radar",
         "action": "BRAND NEW SLIDE — DEEP DIVE ON IMP-2",
         "rubric_target": "The Three Improvements Delivered (20 pts) & Reliability (20 pts)",
         "present_now": (
             "<b>PRESENT IN ROUND 2:</b><br/>"
-            "• Only a 1-line bullet point on Slide 8: 'Strengthen Evidence-or-Abstain reliability'."
+            "• Promised at Round 2: Live Production Multi-Platform Publishing & Post-Publish Drift Radar to watch active posts and alert brand owners when published content drifts from updated specs."
         ),
         "should_be_there": (
             "<b>WHAT SHOULD BE THERE IN ROUND 3:</b><br/>"
-            "• <b>Headline:</b> Deep-Dive: Evidence-or-Abstain Reliability Layer (/findings)<br/>"
-            "• <b>Sub-headline:</b> Eliminating hallucinations: grounded active truth or explicit abstention.<br/>"
+            "• <b>Headline:</b> Deep-Dive: Multi-Platform Publishing & Post-Publish Drift Radar (/drift)<br/>"
+            "• <b>Sub-headline:</b> Active 60s heartbeat monitoring that watches live published posts and dispatches instant remediations when specs change.<br/>"
             "• <b>Key Capabilities Built & Verified:</b><br/>"
-            "  1. <i>Strict Tri-State Classification:</i> Contradicted (proven factual clash) vs. Supported (verified source match) vs. Abstain (missing evidence yields 'Needs Human Review').<br/>"
-            "  2. <i>Deterministic Verifier Pass:</i> Exact regex and code layer checking numeric boundaries, units (mAh, hrs, GHz), currencies (USD, EUR, GBP, INR), and dates.<br/>"
-            "  3. <i>Visual Strike-Through Diffs:</i> Red strike-through <del> paired with green <ins> suggested fixes, preserving creator tone and layout.<br/>"
-            "  4. <i>194-Case Benchmark Evaluation Suite:</i> Automated test harness (scripts/eval.py) demonstrating 1.000000 precision across legal, promotional, and spec rules.<br/>"
-            "  5. <i>Audit Evidence Cards:</i> Expandable accordion citing exact source document, page number, and effective validity window.<br/>"
-            "• <b>Visual:</b> Flowchart of the Tri-State decision logic alongside an authentic visual diff screenshot from the review workspace."
+            "  1. <i>Live Multi-Platform Dispatch:</i> Pre-vetted publishing pipeline connected to social channels (LinkedIn, Meta/Instagram, X, WordPress).<br/>"
+            "  2. <i>Automated 60s Heartbeat Radar:</i> Continuously monitors active live posts against the Brand Truth Registry to detect retroactive drift.<br/>"
+            "  3. <i>Lapsed Promo & Spec Drift Detection:</i> Instantly flags live posts when a promotional code expires (e.g. PROMO-DISC-20) or specs update.<br/>"
+            "  4. <i>⚡ 1-Click Clarification Dispatch:</i> Automatically generates and posts an authoritative clarification comment beneath drifted posts.<br/>"
+            "  5. <i>🛑 Emergency Social Takedown:</i> One-click emergency API unpublish action to immediately pull high-risk non-compliant posts.<br/>"
+            "• <b>Visual:</b> Screenshot of the `/drift` dashboard showing the active radar heartbeat, post cards, drift alerts, and the 1-click remediation actions."
         ),
-        "why_change": "Directly proves how Proofline solved the industry's #1 AI flaw (hallucinations) and backs it with an auditable 194-case evaluation report."
+        "why_change": "Proves that Proofline protects brands even after publication, transforming static dispatch into a dynamic, continuous compliance radar."
     },
     {
         "slide_num": 9,
-        "title": "Deep-Dive: Improvement 3 — Guideline-Gap Detector",
+        "title": "Deep-Dive: Improvement 3 — Dynamic Brand Truth Sync & Doc Ingestion",
         "action": "BRAND NEW SLIDE — DEEP DIVE ON IMP-3",
         "rubric_target": "The Three Improvements Delivered (20 pts) & Usability (20 pts)",
         "present_now": (
             "<b>PRESENT IN ROUND 2:</b><br/>"
-            "• Only a 1-line bullet point on Slide 8: 'Develop Governance Insights and a Guideline-Gap Detector'."
+            "• Promised at Round 2: Dynamic Brand Truth Sync & ERP/Doc Ingestion to automate brand truth ingestion from Notion, Google Docs, Shopify, and spec sheets."
         ),
         "should_be_there": (
             "<b>WHAT SHOULD BE THERE IN ROUND 3:</b><br/>"
-            "• <b>Headline:</b> Deep-Dive: Governance Insights & Guideline-Gap Detector (/insights)<br/>"
-            "• <b>Sub-headline:</b> Closing the governance loop: from recurring creator errors to updated brand truth.<br/>"
+            "• <b>Headline:</b> Deep-Dive: Dynamic Brand Truth Sync & Enterprise Doc Ingestion (/sync)<br/>"
+            "• <b>Sub-headline:</b> Zero-effort truth registry maintenance: live synchronization with Notion, Google Docs, Shopify, and product spec sheets.<br/>"
             "• <b>Key Capabilities Built & Verified:</b><br/>"
-            "  1. <i>Recurring Mistake Telemetry:</i> Aggregates audit violations across teams and agencies to pinpoint confusing guidelines.<br/>"
-            "  2. <i>Blameless Governance Insights:</i> Focuses on rule ambiguity and reviewer dismiss patterns rather than toxic employee shaming rankings.<br/>"
-            "  3. <i>Autonomous Gap Detection:</i> High dispute/override frequencies trigger a 'Guideline Clarity Gap' alert.<br/>"
-            "  4. <i>AI Rule Refinement Proposals:</i> Synthesizes clearer, actionable rule wording based on dispute evidence.<br/>"
-            "  5. <i>1-Click Brand Owner Approval:</i> Brand Owners can review proposed rule updates and approve them directly into the Brand Truth Registry with a single click.<br/>"
-            "• <b>Visual:</b> Screenshot of the `/insights` dashboard showing mistake telemetry charts, gap detection cards, and the interactive rule approval modal."
+            "  1. <i>Multi-Source Enterprise Ingestion:</i> Live bidirectional sync connectors for Notion team wikis, Google Docs legal briefs, and Shopify inventory.<br/>"
+            "  2. <i>Real-Time Inventory & Price Benchmarking:</i> Pulls live inventory counts and base pricing to prevent marketing out-of-stock or mispriced items.<br/>"
+            "  3. <i>⚡ 1-Click 'Pull Live Notion Blocks':</i> Extracts structured spec blocks from Notion and automatically binds them into versioned truth records.<br/>"
+            "  4. <i>⚡ 1-Click 'Pull Google Doc Clauses':</i> Ingests mandatory legal disclaimers and promotional qualifiers directly from Google Docs.<br/>"
+            "  5. <i>Continuous Registry Benchmarking:</i> Ensures all marketing copy is checked against live enterprise data without manual registry entry.<br/>"
+            "• <b>Visual:</b> Screenshot of the `/sync` page showing connected Notion & Google Docs data sources, ingested record cards, and live telemetry log."
         ),
-        "why_change": "Proves that Proofline is not just an inspection tool, but an autonomous governance platform that continuously improves brand guidelines over time."
+        "why_change": "Proves that brand truth maintenance is fully automated, solving enterprise scaling friction without requiring manual data entry."
     },
     {
         "slide_num": 10,
@@ -358,7 +357,7 @@ COMPARISON_SLIDES = [
             "• <b>Strategic Post-Hackathon Roadmap:</b><br/>"
             "  • <i>Phase 1: Native Ecosystem Extensions (Months 1–3):</i> Google Docs & Notion drafting sidebars; WordPress VIP & Webflow CMS plugins.<br/>"
             "  • <i>Phase 2: Enterprise Access & Cross-Brand Federation (Months 4–6):</i> Multi-brand agency federation, SAML 2.0 / Okta SSO, SOC2 Type II compliance.<br/>"
-            "  • <i>Phase 3: Multimodal Video & Regulatory Intelligence (Months 7–12):</i> Speech-to-text video script verification (YouTube/TikTok) and automated FTC advertising policy sync.<br/>"
+            "  • <i>Phase 3: Automated Regulatory Policy Crawlers & Ad Network Sync (Months 7–12):</i> Continuous ingestion of FTC, ASA, and FDA advertising compliance updates; automated webhooks to Google Ads & Meta Ads Manager to pause campaigns if specs change.<br/>"
             "• <b>Visual:</b> Horizontal timeline roadmap showing 3 distinct phases alongside a Git commit velocity graph."
         ),
         "why_change": "Proves adherence to the 72-hour window rule, confirms delivery of Round 2 commitments, and satisfies the 15-point roadmap requirement with concrete timelines."
