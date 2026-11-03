@@ -911,8 +911,8 @@ export default function Home() {
           <div className="industrial-header-inner">
             {/* Left Nav Links (10px uppercase tracking 0.22em) */}
             <nav className="industrial-header-left">
-              <a href="#services-section" className="industrial-nav-link">Services</a>
-              <a href="#dashboards-section" className="industrial-nav-link">Dashboards</a>
+              <Link href="/#services-section" className="industrial-nav-link">Services</Link>
+              <Link href="/dashboards" className="industrial-nav-link">Dashboards</Link>
               <Link href="/impact" className="industrial-nav-link">Impact radar</Link>
               <Link href="/privacy" className="industrial-nav-link">Trust &amp; Privacy</Link>
               <Link href="/portal" className="industrial-nav-link">Role Portal</Link>
@@ -1548,7 +1548,22 @@ export default function Home() {
         <section id="dashboards-section" className="industrial-project-section industrial-role-launchpads-section">
           <div className="industrial-section-label-bar">
             <span className="industrial-mono-10">02 // STAKEHOLDER WORKSPACES &amp; ROLE DASHBOARDS</span>
-            <span className="industrial-mono-10-muted">5 PERSONA LOGINS · DEDICATED AUDIT &amp; REVIEW DASHBOARDS</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span className="industrial-mono-10-muted">5 PERSONA LOGINS</span>
+              <Link
+                href="/dashboards"
+                style={{
+                  fontSize: 10,
+                  fontFamily: "var(--ind-font-mono)",
+                  textTransform: "uppercase",
+                  color: "var(--ind-fg)",
+                  textDecoration: "underline",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                Open Fullscreen Dashboards Portal (/dashboards) →
+              </Link>
+            </div>
           </div>
           <EnterpriseSingleLogin
             currentRole={currentRole}
