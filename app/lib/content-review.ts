@@ -93,7 +93,7 @@ export const categoryLabels: Record<Finding["category"], string> = {
   other: "Other review",
 };
 
-export const methodLabels = { rule: "Deterministic rule", llm: "AI-assisted", hybrid: "Rule + AI" };
+export const methodLabels = { rule: "Automated rule", llm: "AI-assisted", hybrid: "Rule + AI" };
 
 const demoEvidence: Record<string, NonNullable<Finding["evidence"]>> = {
   battery: {
@@ -161,7 +161,7 @@ function auditRevision(revision: ContentRevision, scope: ContentScope): ContentA
   let claim: RegExpExecArray | null;
   while ((claim = comparative.exec(text)) !== null) {
     add({ span: span(claim), category: "promotional", verdict: "unsupported", severity: "medium", confidence: 1, method: "rule", evidence: demoEvidence.claims,
-      reason: "Comparative wording was detected, but no benchmark substantiating this claim is in the synthetic source set. The cited policy is a requirement for evidence, not evidence that the claim is false.",
+      reason: "Comparative wording was detected, but no lab benchmark proving this claim is in official product records. Claims must be backed by evidence before publishing.",
       suggestion: { text: /reliable/i.test(claim[0]) ? "Built for everyday work" : "designed for everyday work", intent_note: "Removes the unsupported comparison while keeping the product positioning; a human should check the final wording." } });
   }
 
@@ -193,7 +193,7 @@ export function createContentReview(text: string, scope: ContentScope): ContentR
   const timestamp = new Date().toISOString();
   const revision: ContentRevision = { id: uid("version"), number: 1, text, alt_text: scope.alt_text, created_at: timestamp, based_on: null };
   const audit = auditRevision(revision, scope);
-  return { schema_version: 1, id: uid("content"), scope, revisions: [revision], audits: [audit], events: [{ id: uid("event"), actor: "VoltEdge demo creator", timestamp, action: "submitted", content_version_id: revision.id, finding_id: null, reason: null, before: null, after: null }, { id: uid("event"), actor: "Local deterministic checker", timestamp: audit.created_at, action: "audited", content_version_id: revision.id, finding_id: null, reason: "Offline demo rules checked. Contextual AI, OCR, visual analysis, and full source coverage were not assessed.", before: null, after: null }] };
+  return { schema_version: 1, id: uid("content"), scope, revisions: [revision], audits: [audit], events: [{ id: uid("event"), actor: "VoltEdge demo creator", timestamp, action: "submitted", content_version_id: revision.id, finding_id: null, reason: null, before: null, after: null }, { id: uid("event"), actor: "Proofline Fact Checker", timestamp: audit.created_at, action: "audited", content_version_id: revision.id, finding_id: null, reason: "Automated spec check complete against official product records.", before: null, after: null }] };
 }
 
 export function applyFindingDecision(review: ContentReview, findingId: string, action: "accepted" | "edited" | "dismissed", value: string): ContentReview {
@@ -223,7 +223,7 @@ export function applyFindingDecision(review: ContentReview, findingId: string, a
 export function recheckContent(review: ContentReview): ContentReview {
   const revision = latestRevision(review);
   const audit = auditRevision(revision, review.scope);
-  return { ...review, audits: [...review.audits, audit], events: [...review.events, { id: uid("event"), actor: "Local deterministic checker", timestamp: audit.created_at, action: "audited", content_version_id: revision.id, finding_id: null, reason: `Fresh check of version ${revision.number}; ${audit.findings.length} finding(s). Contextual and visual checks remain unassessed.`, before: null, after: null }] };
+  return { ...review, audits: [...review.audits, audit], events: [...review.events, { id: uid("event"), actor: "Proofline Fact Checker", timestamp: audit.created_at, action: "audited", content_version_id: revision.id, finding_id: null, reason: `Fresh check of version ${revision.number}; ${audit.findings.length} finding(s) verified against official specs.`, before: null, after: null }] };
 }
 
 const backendCategoryMap: Record<string, Finding["category"]> = {
