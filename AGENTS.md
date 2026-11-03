@@ -37,6 +37,12 @@ Additional credential rules for this project: keep secret values in local `.env`
 only, provide `.env.example` with redacted variable names, use project-dedicated
 accounts, and never reuse credentials from another project.
 
+### 🛑 ZERO SECRET LEAKAGE RULE (CRITICAL SYSTEM INVARIANT)
+- **NEVER push, commit, or stage ANY API key, token, secret, password, or private credential to GitHub or version control.**
+- All API keys (Gemini, Groq, Sarvam, Zernio, Notion, Cloudflare, etc.) must reside exclusively in gitignored `.env.local` or server environment variables.
+- Prior to EVERY `git commit` and `git push`, run an automated regex scan (`git diff --staged | grep -E "(sk_|gsk_|ntn_|AIza|AQ\.)"`) to ensure no secret tokens are staged.
+- Groq (`GROQ_API_KEY`) and Sarvam (`SARVAM_API_KEY`) operate strictly as fail-soft fallbacks behind Gemini; if an external provider is unreachable or unconfigured, fallback immediately to the offline deterministic engine rather than requiring hardcoded keys.
+
 ## 3. Evidence-first review behavior
 
 - A finding must point to an applicable approved source or rule, or explicitly say

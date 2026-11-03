@@ -25,7 +25,7 @@ from .provider import (
 from .types import ProviderAvailability, ProviderStatus
 
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
-DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
+DEFAULT_GROQ_MODEL = "qwen/qwen3.8-27b"
 
 
 @dataclass(frozen=True)
