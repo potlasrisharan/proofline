@@ -22,7 +22,7 @@ export const demoPersonas: Record<ProoflineRole, DemoPersona> = {
   creator: {
     role: "creator",
     name: "Aisha Rahman",
-    email: "aisha.rahman@voltedge.io",
+    email: "aisha.rahman@novacore.io",
     initials: "AR",
     title: "Content Lead",
     department: "Product Marketing",
@@ -41,7 +41,7 @@ export const demoPersonas: Record<ProoflineRole, DemoPersona> = {
   manager: {
     role: "manager",
     name: "Marcus Vance",
-    email: "marcus.vance@voltedge.io",
+    email: "marcus.vance@novacore.io",
     initials: "MV",
     title: "Editorial & Campaign Manager",
     department: "Marketing Operations",
@@ -60,12 +60,12 @@ export const demoPersonas: Record<ProoflineRole, DemoPersona> = {
   legal_reviewer: {
     role: "legal_reviewer",
     name: "Maya Chen",
-    email: "maya.chen@voltedge.io",
+    email: "maya.chen@novacore.io",
     initials: "MC",
     title: "Authorised Legal Reviewer",
     department: "Legal & Regulatory Ops",
     focus: "Regulatory Clearance & Quality Gate",
-    description: "Audits FTC §5 and Lanham Act §43(a) compliance, verifies evidence against the VoltEdge Truth Registry, and signs off on cryptographic compliance certificates.",
+    description: "Audits FTC §5 and Lanham Act §43(a) compliance, verifies evidence against the Novacore Truth Registry, and signs off on cryptographic compliance certificates.",
     primaryView: "reviews",
     permissionsSummary: "Full regulatory sign-off: can approve revisions, unlock publishing gate, and sign certificates.",
     badgeTone: "blue",
@@ -79,7 +79,7 @@ export const demoPersonas: Record<ProoflineRole, DemoPersona> = {
   brand_owner: {
     role: "brand_owner",
     name: "Lena Ortiz",
-    email: "lena.ortiz@voltedge.io",
+    email: "lena.ortiz@novacore.io",
     initials: "LO",
     title: "VP Brand & Product Truth",
     department: "Executive Brand Leadership",
@@ -184,7 +184,7 @@ export function EnterpriseSingleLogin({
               ACTIVE IDENTITY: <strong>{activePersona.name.toUpperCase()}</strong> ({activePersona.role.toUpperCase()})
             </span>
           </div>
-          <h2 className="single-login-title" id="single-login-modal-title">Sign In to VoltEdge Workspace</h2>
+          <h2 className="single-login-title" id="single-login-modal-title">Sign In to Enterprise Brand Workspace</h2>
           <p className="single-login-sub">
             Every department operates under deterministic, least-privilege boundaries. Select a stakeholder persona below to test their specialized verification workbench:
           </p>

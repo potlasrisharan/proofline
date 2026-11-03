@@ -204,44 +204,44 @@ test.describe("Enterprise Workspaces & Quality Gate Workflows", () => {
     const banner = page.getByRole("region", { name: "Active role workflow context" });
     await expect(banner).toBeVisible();
     await expect(banner.getByText("Logged in as Maya Chen")).toBeVisible();
-    await expect(banner.getByText("maya.chen@voltedge.io")).toBeVisible();
+    await expect(banner.getByText("maya.chen@novacore.io")).toBeVisible();
 
     // Verify Single Login component is visible on home page
     const loginSection = page.locator(".single-login-container");
-    await expect(loginSection.getByRole("heading", { name: "Sign In to VoltEdge Workspace" })).toBeVisible();
-    await expect(loginSection.getByText("aisha.rahman@voltedge.io")).toBeVisible();
-    await expect(loginSection.getByText("marcus.vance@voltedge.io")).toBeVisible();
-    await expect(loginSection.getByText("lena.ortiz@voltedge.io")).toBeVisible();
+    await expect(loginSection.getByRole("heading", { name: "Sign In to Enterprise Brand Workspace" })).toBeVisible();
+    await expect(loginSection.getByText("aisha.rahman@novacore.io")).toBeVisible();
+    await expect(loginSection.getByText("marcus.vance@novacore.io")).toBeVisible();
+    await expect(loginSection.getByText("lena.ortiz@novacore.io")).toBeVisible();
     await expect(loginSection.getByText("carlos.mendez@agency-partner.com")).toBeVisible();
 
     // 1-Click quick login as Aisha Rahman (Creator)
     await loginSection.getByRole("button", { name: /Sign in as Aisha Rahman/ }).click();
     await expect(banner.getByText("Logged in as Aisha Rahman")).toBeVisible();
-    await expect(banner.getByText("aisha.rahman@voltedge.io")).toBeVisible();
+    await expect(banner.getByText("aisha.rahman@novacore.io")).toBeVisible();
 
     // Open Single Login modal via topbar avatar
     await page.locator("header .persona-avatar").first().click();
-    const modal = page.getByRole("dialog", { name: "Sign In to VoltEdge Workspace" });
+    const modal = page.getByRole("dialog", { name: "Sign In to Enterprise Brand Workspace" });
     await expect(modal).toBeVisible();
 
     // Switch to Lena Ortiz (Brand Owner)
     await modal.getByRole("button", { name: /Sign in as Lena Ortiz/ }).click();
     await expect(banner.getByText("Logged in as Lena Ortiz")).toBeVisible();
-    await expect(banner.getByText("lena.ortiz@voltedge.io")).toBeVisible();
+    await expect(banner.getByText("lena.ortiz@novacore.io")).toBeVisible();
 
     // Open Single Login modal via banner button
     await banner.getByRole("button", { name: "⇄ Switch Account / Role" }).click();
-    const modal2 = page.getByRole("dialog", { name: "Sign In to VoltEdge Workspace" });
+    const modal2 = page.getByRole("dialog", { name: "Sign In to Enterprise Brand Workspace" });
     await expect(modal2).toBeVisible();
 
     // Switch to Marcus Vance (Manager)
     await modal2.getByRole("button", { name: /Sign in as Marcus Vance/ }).click();
     await expect(banner.getByText("Logged in as Marcus Vance")).toBeVisible();
-    await expect(banner.getByText("marcus.vance@voltedge.io")).toBeVisible();
+    await expect(banner.getByText("marcus.vance@novacore.io")).toBeVisible();
 
     // Verify dedicated /login page works
     await page.goto("/login");
-    await expect(page.getByRole("heading", { name: "Sign In to VoltEdge Workspace" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Sign In to Enterprise Brand Workspace" })).toBeVisible();
     await page.getByRole("button", { name: /Sign in as Carlos Mendez/ }).click();
     await expect(page).toHaveURL("/");
     const activeBanner = page.getByRole("region", { name: "Active role workflow context" });

@@ -14,7 +14,7 @@ from typing import Any, Sequence
 
 import httpx
 
-ZERNIO_API_URL = "https://api.zernio.com/v1"
+ZERNIO_API_URL = "https://zernio.com/api/v1"
 
 
 @dataclass(frozen=True)

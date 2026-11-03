@@ -13,6 +13,9 @@ export type NavKey =
   | "submit"
   | "findings"
   | "registry"
+  | "multimodal"
+  | "drift"
+  | "sync"
   | "impact"
   | "insights"
   | "audit-log"
@@ -93,6 +96,9 @@ export function AppSidebar({
     { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Inspect and approve pending drafts" },
     { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: findingsBadge, title: "Findings · Flagged claims with 1-click suggested fixes" },
     { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry", title: "Truth registry · Official specs and approved brand facts" },
+    { key: "multimodal", icon: "👁", label: "Multimodal vision", href: "/multimodal", title: "Multimodal vision · Video reel and carousel compliance with disclaimer font audit" },
+    { key: "drift", icon: "📡", label: "Publish & Drift", href: "/drift", title: "Publish & Drift Radar · Live multi-platform dispatch and post-publish drift alerts" },
+    { key: "sync", icon: "🔄", label: "Dynamic sync", href: "/sync", title: "Dynamic sync · Real-time Notion, Google Docs & ERP inventory ingestion" },
     { key: "impact", icon: "!", label: "Impact radar", href: "/impact", title: "Impact radar · See what drafts break when specs change" },
     { key: "insights", icon: "⌁", label: "Governance insights", href: "/insights", isHomeView: "insights", title: "Governance insights · Mistake trends and rule clarifications" },
     { key: "audit-log", icon: "≋", label: "Audit log", href: "/?view=audit-log", isHomeView: "audit-log", title: "Audit log · Tamper-proof cryptographic record of decisions" },
@@ -100,7 +106,7 @@ export function AppSidebar({
   ];
 
   return (
-    <aside className="sidebar" aria-label="VoltEdge workspace navigation">
+    <aside className="sidebar" aria-label="Enterprise workspace navigation">
       <Link className="brand-lockup pl-brand-link" href="/" prefetch={false} aria-label="Proofline Home">
         <Image
           src="/logo.png"
@@ -118,7 +124,7 @@ export function AppSidebar({
 
       <div className="workspace-switcher" title="Active enterprise workspace">
         <span className="workspace-dot" />
-        <span>VoltEdge workspace</span>
+        <span>Novacore Brand Workspace</span>
         <span className="chevron" aria-hidden="true">⌄</span>
       </div>
 

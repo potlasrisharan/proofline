@@ -20,7 +20,7 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     icon: "💼",
     maxChars: 3000,
     sampleText:
-      "Thrilled to announce the official release of the VoltEdge NovaBook S1! 🚀\n\nEngineered from the ground up for software developers and creative pros, it delivers up to 20 hours of battery life and is twice as fast as all competitor ultrabooks.\n\nOur most reliable laptop yet. Built with unibody titanium and whisper-quiet cooling.\n\nPre-orders are live today at voltedge.io/novabook.\n\n#TechNews #Productivity #Engineering #LaptopLaunch",
+      "Thrilled to announce the official release of the Novacore NovaBook S1! 🚀\n\nEngineered from the ground up for software developers and creative pros, it delivers up to 20 hours of battery life and is twice as fast as all competitor ultrabooks.\n\nOur most reliable laptop yet. Built with unibody titanium and whisper-quiet cooling.\n\nPre-orders are live today at novacore.io/novabook.\n\n#TechNews #Productivity #Engineering #LaptopLaunch",
     primaryRules: [
       "Lanham Act § 43(a) comparative claims require approved lab benchmarks",
       "Truth Registry Spec Lock (20h claimed vs 12h approved lab test)",
@@ -33,7 +33,7 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     icon: "𝕏",
     maxChars: 280,
     sampleText:
-      "The wait is finally over: meet the VoltEdge NovaBook S1 🧵👇\n\n1/ Delivering up to 20 hours of battery life and twice as fast as previous generations. Our most reliable laptop yet.\n\n2/ Pre-order now with code VOLT20 for 20% off!",
+      "The wait is finally over: meet the Novacore NovaBook S1 🧵👇\n\n1/ Delivering up to 20 hours of battery life and twice as fast as previous generations. Our most reliable laptop yet.\n\n2/ Pre-order now with code NOVA20 for 20% off!",
     primaryRules: [
       "280 character limit per post",
       "FTC 16 CFR § 255: Promotional promo codes must disclose sponsorship (#ad)",
@@ -46,7 +46,7 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     icon: "📸",
     maxChars: 2200,
     sampleText:
-      "Unboxing the sleekest ultrabook of 2026: VoltEdge NovaBook S1 ✨\n\nUp to 20 hours of battery life means zero charger anxiety, and it's twice as fast as anything in its class. Our most reliable laptop yet.\n\nHit the link in bio and use code VOLT20 for free expedited shipping!\n\n#techunboxing #setupinspiration #workfromanywhere #creatorlife",
+      "Unboxing the sleekest ultrabook of 2026: Novacore NovaBook S1 ✨\n\nUp to 20 hours of battery life means zero charger anxiety, and it's twice as fast as anything in its class. Our most reliable laptop yet.\n\nHit the link in bio and use code NOVA20 for free expedited shipping!\n\n#techunboxing #setupinspiration #workfromanywhere #creatorlife",
     primaryRules: [
       "FTC 16 CFR § 255: Mandatory #ad or #sponsored disclosure before the 'more' fold",
       "Truth Registry Spec Lock on battery specifications",
@@ -59,7 +59,7 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     icon: "🎵",
     maxChars: 2200,
     sampleText:
-      "Wait until you see how thin this laptop is 🤯 VoltEdge NovaBook S1 with 20 hours of battery life and twice as fast performance. Our most reliable laptop yet! Check link in bio for the launch drop! #tech #gadgets #techtok",
+      "Wait until you see how thin this laptop is 🤯 Novacore NovaBook S1 with 20 hours of battery life and twice as fast performance. Our most reliable laptop yet! Check link in bio for the launch drop! #tech #gadgets #techtok",
     primaryRules: [
       "FTC endorsement disclosure required in caption and first 3 seconds",
       "Substantiation required for performance claims",
@@ -71,7 +71,7 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     icon: "📬",
     maxChars: 10000,
     sampleText:
-      "VoltEdge Dispatch #42: NovaBook S1 is officially here.\n\nAfter 18 months of intensive R&D, we're shipping our next-generation ultrabook.\n\nKey highlights:\n• Up to 20 hours of battery life for non-stop productivity\n• Twice as fast processing speed under sustained workloads\n• Our most reliable laptop yet with titanium chassis\n\nAvailable today with exclusive subscriber benefits.",
+      "Novacore Dispatch #42: NovaBook S1 is officially here.\n\nAfter 18 months of intensive R&D, we're shipping our next-generation ultrabook.\n\nKey highlights:\n• Up to 20 hours of battery life for non-stop productivity\n• Twice as fast processing speed under sustained workloads\n• Our most reliable laptop yet with titanium chassis\n\nAvailable today with exclusive subscriber benefits.",
     primaryRules: [
       "CAN-SPAM Act compliance: explicit opt-out & physical address disclosure",
       "Truth Registry verification on technical specifications",
@@ -84,7 +84,7 @@ export const creatorPlatformPresets: Record<CreatorPlatform, PlatformPreset> = {
     icon: "📰",
     maxChars: 15000,
     sampleText:
-      "FOR IMMEDIATE RELEASE\n\nSAN FRANCISCO — VoltEdge Electronics today announced the commercial availability of the NovaBook S1 ultrabook. Engineered for demanding compute workflows, NovaBook S1 delivers up to 20 hours of battery life and is twice as fast as standard market offerings, establishing our most reliable laptop yet.\n\nCommercial shipments begin November 2026.",
+      "FOR IMMEDIATE RELEASE\n\nSAN FRANCISCO — Novacore Electronics today announced the commercial availability of the NovaBook S1 ultrabook. Engineered for demanding compute workflows, NovaBook S1 delivers up to 20 hours of battery life and is twice as fast as standard market offerings, establishing our most reliable laptop yet.\n\nCommercial shipments begin November 2026.",
     primaryRules: [
       "Strict Lanham Act § 43(a) substantiation for competitive claims",
       "Truth Registry version matching on product nomenclature and pricing",
@@ -327,7 +327,7 @@ export function CreatorPlatformStudioModal({
           <h2 id="creator-studio-title">Creator Content Studio · Cross-Platform Compliance</h2>
           <p className="modal-copy">
             Analyze everything creators post across LinkedIn, X/Twitter, Instagram, TikTok, Newsletters, and Press Releases.
-            Check FTC § 255 sponsorship disclosures, Lanham Act comparative claims, and VoltEdge Truth Registry specifications.
+            Check FTC § 255 sponsorship disclosures, Lanham Act comparative claims, and Novacore Truth Registry specifications.
           </p>
         </div>
 
@@ -486,7 +486,7 @@ export function CreatorPlatformStudioModal({
                   <div className="finding-body">
                     <strong>Truth Registry Contradiction: {issue.flagged}</strong>
                     <p>
-                      Copy claims &ldquo;{issue.flagged}&rdquo;, but approved VoltEdge Truth Registry record confirms{" "}
+                      Copy claims &ldquo;{issue.flagged}&rdquo;, but approved Novacore Truth Registry record confirms{" "}
                       <strong>{issue.approvedValue}</strong>.
                     </p>
                     <button

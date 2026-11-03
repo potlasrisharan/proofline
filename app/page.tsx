@@ -1050,18 +1050,32 @@ export default function Home() {
           {/* Right Column (5 cols): Grayscale Frame + Glassmorphism UI Card */}
           <div className="industrial-hero-right">
             <div className="industrial-frame-container">
-              {/* Grayscale Technical Schematic Canvas */}
-              <div className="industrial-frame-visual">
-                <div className="industrial-schematic-grid" />
-                <svg width="220" height="120" viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ zIndex: 2 }}>
-                  <rect x="10" y="10" width="200" height="100" stroke="#18181B" strokeWidth="1" strokeDasharray="4 4" />
-                  <path d="M20 60 L60 30 L110 80 L160 40 L200 60" stroke="#18181B" strokeWidth="2" fill="none" />
-                  <circle cx="60" cy="30" r="4" fill="#0066FF" />
-                  <circle cx="110" cy="80" r="4" fill="#18181B" />
-                  <circle cx="160" cy="40" r="4" fill="#22C55E" />
-                </svg>
-                <span className="industrial-mono-10" style={{ position: "absolute", bottom: 8, left: 12, fontSize: 8 }}>
-                  FIG 1.0 // DETERMINISTIC EVIDENCE TOPOLOGY
+              {/* Content Creation Studio Visual */}
+              <div className="industrial-frame-visual" style={{ position: "relative" }}>
+                <Image
+                  src="/content-creation.jpg"
+                  alt="Content Creation & Video Recording Studio"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  priority
+                />
+                <div className="industrial-schematic-grid" style={{ zIndex: 2, opacity: 0.15 }} />
+                <span
+                  className="industrial-mono-10"
+                  style={{
+                    position: "absolute",
+                    bottom: 8,
+                    left: 12,
+                    fontSize: 8,
+                    zIndex: 3,
+                    background: "rgba(0, 0, 0, 0.75)",
+                    color: "#FFFFFF",
+                    padding: "3px 8px",
+                    borderRadius: 4,
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  FIG 1.0 // CONTENT CREATION &amp; VIDEO COMPLIANCE
                 </span>
               </div>
 
@@ -1074,7 +1088,7 @@ export default function Home() {
 
                 <div className="industrial-status-bar-wrap">
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span className="industrial-mono-10" style={{ fontSize: 9 }}>SPEC ALIGNMENT (VOLTEDGE S1)</span>
+                    <span className="industrial-mono-10" style={{ fontSize: 9 }}>SPEC ALIGNMENT (NOVACORE S1)</span>
                     <span className="industrial-mono-10" style={{ fontSize: 9 }}>94.8% PASS</span>
                   </div>
                   <div className="industrial-bar-track">
@@ -1326,6 +1340,84 @@ export default function Home() {
               <span className="industrial-reveal-badge">MODULE 06 · SHA-256 PROVENANCE</span>
             </div>
           </div>
+
+          {/* Row 07: Multimodal Visual & Video Compliance Engine */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push("/multimodal")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/multimodal")}
+          >
+            <span className="industrial-project-idx">07 / VISION</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">MULTIMODAL AI · GEMINI 2.5 FLASH</span>
+              <h2 className="industrial-project-title">Multimodal Video &amp; Carousel Compliance</h2>
+            </div>
+            <p className="industrial-project-desc">
+              Audits image carousels, Figma exports, and video frames (Instagram Reels/Shorts) for claim truth and FTC mandatory disclaimer font height ratios.
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #065F46 0%, #047857 100%)" }}>
+                <div className="industrial-schematic-grid" />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 07 · GEMINI MULTIMODAL VISION</span>
+            </div>
+          </div>
+
+          {/* Row 08: Post-Publish Drift Radar & Live Dispatch */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push("/drift")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/drift")}
+          >
+            <span className="industrial-project-idx">08 / DRIFT</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">PRODUCTION PUBLISHING · META, X &amp; LINKEDIN</span>
+              <h2 className="industrial-project-title">Post-Publish Drift Radar &amp; Live Dispatch</h2>
+            </div>
+            <p className="industrial-project-desc">
+              Replaces sandbox dispatch with live platform APIs and actively monitors live published posts, alerting when an expired truth record causes compliance drift.
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #075985 0%, #0284C7 100%)" }}>
+                <div className="industrial-schematic-grid" />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 08 · CONTINUOUS DRIFT RADAR</span>
+            </div>
+          </div>
+
+          {/* Row 09: Dynamic Brand Truth Sync & Ingestion */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push("/sync")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/sync")}
+          >
+            <span className="industrial-project-idx">09 / SYNC</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">ENTERPRISE INGESTION · NOTION, GOOGLE DOCS &amp; SHOPIFY</span>
+              <h2 className="industrial-project-title">Dynamic Brand Truth Sync &amp; Ingestion</h2>
+            </div>
+            <p className="industrial-project-desc">
+              Live corporate data ingestion syncing specs from Notion, Google Docs, and real-time inventory from Shopify ERP into the versioned Truth Registry.
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #581C87 0%, #7E22CE 100%)" }}>
+                <div className="industrial-schematic-grid" />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 09 · DYNAMIC TRUTH SYNC</span>
+            </div>
+          </div>
         </section>
 
         {/* 8. QUICK ROLE LAUNCHPADS (Direct login personas for evaluation) */}
@@ -1512,7 +1604,7 @@ export default function Home() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-end" }}>
-                <span className="industrial-mono-10" style={{ color: "#A1A1AA" }}>VOLTEDGE ENTERPRISE LABS</span>
+                <span className="industrial-mono-10" style={{ color: "#A1A1AA" }}>NOVACORE ENTERPRISE LABS</span>
                 <span className="industrial-mono-10" style={{ color: "#22C55E" }}>● SYSTEM OPERATIONAL</span>
               </div>
             </div>

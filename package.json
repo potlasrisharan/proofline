@@ -17,6 +17,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@zernio/node": "^0.2.1448",
     "next": "^16.4.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

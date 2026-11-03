@@ -45,7 +45,7 @@ export default function LoginPage() {
       </main>
 
       <footer className="login-page-footer">
-        <span>Proofline Enterprise Access · VoltEdge Workspace</span>
+        <span>Proofline Enterprise Access · Novacore Workspace</span>
         <span>
           <Link href="/privacy">Privacy &amp; AI Disclosure</Link>
         </span>

@@ -54,7 +54,7 @@ test.describe("Edge Cases, Robustness & Direct Visits Audit", () => {
     test("loads 1-click samples (flagged draft & clean draft)", async ({ page }) => {
       await page.goto("/submit");
       await page.getByRole("button", { name: "✓ 1-Click: Clean Draft" }).click();
-      await expect(page.getByLabel("Review name")).toHaveValue("VoltEdge NovaBook S1 · Clean Draft");
+      await expect(page.getByLabel("Review name")).toHaveValue("Novacore NovaBook S1 · Clean Draft");
       await expect(page.getByLabel("Paste content")).toContainText("30-day return guarantee");
 
       await page.getByRole("button", { name: "⚡ 1-Click: Flagged Draft" }).click();
@@ -71,7 +71,7 @@ test.describe("Edge Cases, Robustness & Direct Visits Audit", () => {
 
       // Verify empty state is rendered
       await expect(page.getByRole("heading", { name: "No content has been submitted in this tab." })).toBeVisible();
-      await expect(page.getByText("Submit a VoltEdge draft to inspect its highlighted spans")).toBeVisible();
+      await expect(page.getByText("Submit a Novacore draft to inspect its highlighted spans")).toBeVisible();
 
       // Click 1-click recovery button
       await page.getByRole("button", { name: /Load Sample NovaBook S1 Review/ }).click();

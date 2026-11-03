@@ -52,7 +52,8 @@ export type ContentReview = {
   events: ReviewEvent[];
 };
 
-export const sampleVoltEdgeText = "Meet the VoltEdge NovaBook S1.\n\nDesigned for deep work and long days, it delivers up to 20 hours of battery life. Our most reliable laptop yet.\n\nPre-order today and be among the first to experience it.";
+export const sampleNovacoreText = "Meet the Novacore NovaBook S1.\n\nDesigned for deep work and long days, it delivers up to 20 hours of battery life. Our most reliable laptop yet.\n\nPre-order today and be among the first to experience it.";
+export const sampleVoltEdgeText = sampleNovacoreText;
 
 export const defaultContentScope: ContentScope = {
   title: "NovaBook S1 launch email",

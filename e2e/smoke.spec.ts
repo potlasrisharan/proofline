@@ -72,5 +72,5 @@ test("uses the opt-in local API review path when configured", async ({ page }) =
 
   await expect(page.getByText("IMPLEMENTED · local API", { exact: true })).toBeVisible();
   await expect(page.getByText("Source set", { exact: true })).toBeVisible();
-  await expect(page.getByText("Synthetic VoltEdge · local API", { exact: true })).toBeVisible();
+  await expect(page.getByText("Synthetic Novacore · local API", { exact: true })).toBeVisible();
 });

@@ -127,9 +127,9 @@ export default function PortalPage() {
 
       {/* Enterprise Footer */}
       <footer className={styles.portalFooter}>
-        <span>Proofline Enterprise Portal · VoltEdge Production Workspace · Cryptographic Evidence Engine</span>
+        <span>Proofline Enterprise Portal · Novacore Production Workspace · Cryptographic Evidence Engine</span>
         <span>
-          <Link href="/privacy">AI &amp; Data Disclosure</Link> · VoltEdge Brand Safety Standards
+          <Link href="/privacy">AI &amp; Data Disclosure</Link> · Novacore Brand Safety Standards
         </span>
       </footer>
     </div>
@@ -161,10 +161,10 @@ function PortalMainLoginView({ onSelectRole }: { onSelectRole: (role: ProoflineR
   return (
     <>
       <div className={styles.portalHero}>
-        <span className={styles.heroKicker}>VoltEdge Identity &amp; Role Gateways</span>
+        <span className={styles.heroKicker}>Novacore Identity &amp; Role Gateways</span>
         <h1 className={styles.heroTitle}>Select Your Role to Access Your Dedicated Dashboard</h1>
         <p className={styles.heroSubtitle}>
-          Each department in VoltEdge has separate responsibilities and governance tools. Sign in to your dedicated role portal below to access specialized workflows, automated checks, and audit controls.
+          Each department in Novacore has separate responsibilities and governance tools. Sign in to your dedicated role portal below to access specialized workflows, automated checks, and audit controls.
         </p>
       </div>
 
@@ -172,13 +172,13 @@ function PortalMainLoginView({ onSelectRole }: { onSelectRole: (role: ProoflineR
       <form className={styles.ssoBar} onSubmit={handleSsoSubmit}>
         <div>
           <div className={styles.ssoBarTitle}>Enterprise Corporate SSO Sign In</div>
-          <div className={styles.ssoBarSub}>Enter your VoltEdge corporate address to route to your specific dashboard</div>
+          <div className={styles.ssoBarSub}>Enter your Novacore corporate address to route to your specific dashboard</div>
         </div>
         <div className={styles.ssoInputs}>
           <input
             type="email"
             required
-            placeholder="e.g. maya.chen@voltedge.io"
+            placeholder="e.g. maya.chen@novacore.io"
             value={ssoEmail}
             onChange={(e) => setSsoEmail(e.target.value)}
             className={styles.ssoInput}
@@ -357,7 +357,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
   };
 
   const handleRescan = () => {
-    setScanStatus("Scanning draft against VoltEdge Truth Registry...");
+    setScanStatus("Scanning draft against Novacore Truth Registry...");
     setTimeout(() => {
       setScanStatus(
         batteryFixed
@@ -424,7 +424,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
             </div>
 
             <div className={styles.draftTextBox}>
-              &ldquo;Meet the VoltEdge NovaBook S1. It delivers{" "}
+              &ldquo;Meet the Novacore NovaBook S1. It delivers{" "}
               {batteryFixed ? (
                 <span className={styles.highlightApproved}>up to 12 hours of battery life</span>
               ) : (
@@ -522,17 +522,17 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
           <div className={styles.draftTextBox} style={{ minHeight: 90 }}>
             {selectedLang === "en" && (
               <p style={{ margin: 0 }}>
-                &ldquo;VoltEdge NovaBook S1 delivers 12 hours of verified battery life under IEEE lab standards.&rdquo;
+                &ldquo;Novacore NovaBook S1 delivers 12 hours of verified battery life under IEEE lab standards.&rdquo;
               </p>
             )}
             {selectedLang === "te" && (
               <p style={{ margin: 0 }}>
-                &ldquo;VoltEdge NovaBook S1 ల్యాప్‌టాప్ IEEE ల్యాబ్ ప్రమాణాల ప్రకారం 12 గంటల ధృవీకరించబడిన బ్యాటరీ లైఫ్‌ను అందిస్తుంది.&rdquo;
+                &ldquo;Novacore NovaBook S1 ల్యాప్‌టాప్ IEEE ల్యాబ్ ప్రమాణాల ప్రకారం 12 గంటల ధృవీకరించబడిన బ్యాటరీ లైఫ్‌ను అందిస్తుంది.&rdquo;
               </p>
             )}
             {selectedLang === "hi" && (
               <p style={{ margin: 0 }}>
-                &ldquo;VoltEdge NovaBook S1 लैपटॉप IEEE लैब मानकों के तहत 12 घंटे की प्रमाणित बैटरी लाइफ प्रदान करता है।&rdquo;
+                &ldquo;Novacore NovaBook S1 लैपटॉप IEEE लैब मानकों के तहत 12 घंटे की प्रमाणित बैटरी लाइफ प्रदान करता है।&rdquo;
               </p>
             )}
           </div>
@@ -873,7 +873,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
         {/* Left: 4-Pillar Quality Scorecard */}
         <section className={styles.panelCard}>
           <h2 className={styles.panelTitle}>4-Pillar Regulatory &amp; Brand Scorecard</h2>
-          <p className={styles.panelSub}>Statutory clearinghouse for VoltEdge marketing copy</p>
+          <p className={styles.panelSub}>Statutory clearinghouse for Novacore marketing copy</p>
 
           <div className={styles.scorecardPillars}>
             <div className={styles.pillarRow}>
@@ -900,7 +900,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
 
             <div className={styles.pillarRow}>
               <div className={styles.pillarMeta}>
-                <span>3. VoltEdge Brand Guidelines Voice</span>
+                <span>3. Novacore Brand Guidelines Voice</span>
                 <span style={{ color: "#22C55E", fontWeight: 800 }}>95% (PASS)</span>
               </div>
               <div className={styles.pillarBarBg}>
@@ -1009,9 +1009,9 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
   const handleDispatch = () => {
     setDispatched(true);
     setDispatchReceipts([
-      { channel: "LinkedIn Business Page (@VoltEdgeLabs)", id: "urn:li:share:712984102941", status: "LIVE · 100% Verified Grounding" },
-      { channel: "X / Twitter Corporate (@VoltEdge)", id: "tweet_id:18492049102941", status: "LIVE · Spec Matched" },
-      { channel: "Instagram Product Studio (@voltedge_tech)", id: "media_id:18029419402941", status: "LIVE · Legal Cleared" },
+      { channel: "LinkedIn Business Page (@NovacoreLabs)", id: "urn:li:share:712984102941", status: "LIVE · 100% Verified Grounding" },
+      { channel: "X / Twitter Corporate (@Novacore)", id: "tweet_id:18492049102941", status: "LIVE · Spec Matched" },
+      { channel: "Instagram Product Studio (@novacore_tech)", id: "media_id:18029419402941", status: "LIVE · Legal Cleared" },
     ]);
   };
 
@@ -1090,15 +1090,15 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
           <p className={styles.panelSub}>Connected social integration (Unlocked only after legal approval)</p>
 
           <div className={styles.channelRow}>
-            <span><strong>LinkedIn Business Page</strong> (@VoltEdgeLabs)</span>
+            <span><strong>LinkedIn Business Page</strong> (@NovacoreLabs)</span>
             <span style={{ color: "#22C55E", fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)" }}>✓ Ready</span>
           </div>
           <div className={styles.channelRow}>
-            <span><strong>X / Twitter Corporate</strong> (@VoltEdge)</span>
+            <span><strong>X / Twitter Corporate</strong> (@Novacore)</span>
             <span style={{ color: "#22C55E", fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)" }}>✓ Ready</span>
           </div>
           <div className={styles.channelRow}>
-            <span><strong>Instagram Product Studio</strong> (@voltedge_tech)</span>
+            <span><strong>Instagram Product Studio</strong> (@novacore_tech)</span>
             <span style={{ color: "#22C55E", fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)" }}>✓ Ready</span>
           </div>
 
@@ -1136,7 +1136,7 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
   const [feedbackList, setFeedbackList] = useState<string[]>([
     "Battery claim verified against client spec v2.1.",
     "Superlative phrasing excluded from hero copy.",
-    "#VoltEdgePartner tag verified in all deliverables.",
+    "#NovacorePartner tag verified in all deliverables.",
   ]);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
@@ -1153,7 +1153,7 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Assigned Client Campaigns</div>
-          <div className={styles.metricValue}>2 <span className={styles.metricChange}>VoltEdge</span></div>
+          <div className={styles.metricValue}>2 <span className={styles.metricChange}>Novacore</span></div>
           <div className={styles.metricSubtext}>NovaBook S1 Partner Promo</div>
         </div>
         <div className={styles.metricCard}>
@@ -1184,12 +1184,12 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
 
           <div className={styles.subtleCard} style={{ marginTop: 0, marginBottom: 16 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#18181B", marginBottom: 8 }}>
-              Campaign: VoltEdge NovaBook S1 Freelancer Promo
+              Campaign: Novacore NovaBook S1 Freelancer Promo
             </div>
             <ul style={{ paddingLeft: 18, margin: "0 0 14px", fontSize: 12, color: "#52525B", lineHeight: 1.6 }}>
               <li>Battery claim must not exceed 12 hours under any test scenario.</li>
               <li>Superlatives (&ldquo;best&rdquo;, &ldquo;most reliable&rdquo;) strictly barred in agency copy.</li>
-              <li>Include #VoltEdgePartner tag as mandated by FTC 16 CFR § 255.</li>
+              <li>Include #NovacorePartner tag as mandated by FTC 16 CFR § 255.</li>
             </ul>
 
             <form onSubmit={handleAddComment} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1212,7 +1212,7 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
 
             {feedbackSubmitted ? (
               <div className={styles.actionFeedback} style={{ marginTop: 10 }}>
-                ✓ Comment logged to VoltEdge review thread ({feedbackList.length} total notes).
+                ✓ Comment logged to Novacore review thread ({feedbackList.length} total notes).
               </div>
             ) : null}
           </div>
@@ -1230,7 +1230,7 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
           <p className={styles.panelSub}>Client telemetry isolation for third-party partners</p>
 
           <div className={styles.maskedNoticeBox}>
-            <strong>Enterprise Privacy Boundary:</strong> In compliance with VoltEdge security policies, internal telemetry, financial margins, and confidential roadmap documents are cryptographically masked in this partner view.
+            <strong>Enterprise Privacy Boundary:</strong> In compliance with Novacore security policies, internal telemetry, financial margins, and confidential roadmap documents are cryptographically masked in this partner view.
             <div className={styles.maskedItem}>
               <span>Internal Margin Data</span>
               <span>🔒 PROTECTED</span>

@@ -259,7 +259,7 @@ export function ComplianceQualityGate({
                 <div className="pillar-bar-track">
                   <div className={`pillar-bar-fill ${brandScore >= 85 ? "good" : "warn"}`} style={{ width: `${brandScore}%` }} />
                 </div>
-                <p className="pillar-note">VoltEdge Launch Voice Guide v2</p>
+                <p className="pillar-note">Novacore Launch Voice Guide v2</p>
               </div>
 
               {/* Pillar 4: Accessibility */}
@@ -329,8 +329,8 @@ export function ComplianceQualityGate({
               </div>
               <p className="disclaimer-body">
                 {hasDisclaimer
-                  ? "Standard disclosure found in draft: terms disclaimer correctly links to voltedge.com/terms for US launch eligibility."
-                  : "Promotional product announcements require a qualifying terms disclosure (*Terms apply. Full details at voltedge.com/terms)."}
+                  ? "Standard disclosure found in draft: terms disclaimer correctly links to novacore.io/terms for US launch eligibility."
+                  : "Promotional product announcements require a qualifying terms disclosure (*Terms apply. Full details at novacore.io/terms)."}
               </p>
               {!hasDisclaimer && onAddDisclaimer ? (
                 <button
@@ -370,7 +370,7 @@ export function ComplianceQualityGate({
                   <span className="risk-level-tag high">Tier 1: High Regulatory Scrutiny</span>
                 </div>
                 <p className="trigger-rationale">
-                  <strong>Statutory Rule:</strong> Superlative claim requires an active third-party audited MTBF (Mean Time Between Failures) benchmark on file. No benchmark source found in VoltEdge registry.
+                  <strong>Statutory Rule:</strong> Superlative claim requires an active third-party audited MTBF (Mean Time Between Failures) benchmark on file. No benchmark source found in Novacore registry.
                 </p>
                 {onApplySafeHarbor ? (
                   <div className="safe-harbor-action-bar">
@@ -504,7 +504,7 @@ export function ComplianceCertificateModal({
 
   const certificatePayload = {
     certificateId: `PLC-2026-${contentHash.slice(7, 19).toUpperCase()}`,
-    workspace: "VoltEdge Brand Workspace (US Market)",
+    workspace: "Novacore Brand Workspace (US Market)",
     contentVersion,
     auditReviewState: auditState,
     compositeQualityScore: `${scoreData.compositeScore} / 100`,
@@ -518,7 +518,7 @@ export function ComplianceCertificateModal({
     statutoryClearances: [
       "FTC 16 CFR Part 255 (§5 Unfair/Deceptive Claim Clearance)",
       "Lanham Act §43(a) Comparative Claim Verification",
-      "VoltEdge Specification Registry v3 Validation",
+      "Novacore Specification Registry v3 Validation",
       "WCAG 2.1 AA Visual Contrast Baseline",
     ],
     sha256Seal: contentHash,
@@ -610,7 +610,7 @@ export function ComplianceCertificateModal({
               PUBLICATION &amp; REGULATORY COMPLIANCE
             </h2>
             <p className="cert-id-line">
-              Certificate No: <strong>{certificatePayload.certificateId}</strong> · Issued for: <strong>VoltEdge Labs</strong>
+              Certificate No: <strong>{certificatePayload.certificateId}</strong> · Issued for: <strong>Novacore Labs</strong>
             </p>
           </div>
 
@@ -618,7 +618,7 @@ export function ComplianceCertificateModal({
           <div className="cert-meta-grid">
             <div className="cert-meta-cell">
               <span className="meta-cell-label">Audited Document</span>
-              <strong>VoltEdge NovaBook S1 launch email</strong>
+              <strong>Novacore NovaBook S1 launch email</strong>
             </div>
             <div className="cert-meta-cell">
               <span className="meta-cell-label">Content Version</span>
@@ -679,7 +679,7 @@ export function ComplianceCertificateModal({
                 <tr>
                   <td>
                     <strong>3. Brand &amp; Voice Consistency</strong>
-                    <div className="cert-dim-sub">VoltEdge Launch Voice Guide v2</div>
+                    <div className="cert-dim-sub">Novacore Launch Voice Guide v2</div>
                   </td>
                   <td>≥ 80%</td>
                   <td>{scoreData.brandScore}%</td>
@@ -719,7 +719,7 @@ export function ComplianceCertificateModal({
               <div className="cert-stamp-ring">
                 <span>PROOFLINE</span>
                 <strong>VERIFIED</strong>
-                <small>VOLTEDGE</small>
+                <small>NOVACORE</small>
               </div>
             </div>
           </div>

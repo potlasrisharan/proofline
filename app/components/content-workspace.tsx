@@ -14,7 +14,7 @@ import {
 import {
   applyFindingDecision, categoryLabels, channelLabels, createContentReview,
   contentReviewFromApi, defaultContentScope, languageLabels, latestAudit, latestRevision,
-  methodLabels, recheckContent, regionLabels, riskBreakdown, sampleVoltEdgeText, verdictLabels,
+  methodLabels, recheckContent, regionLabels, riskBreakdown, sampleNovacoreText, verdictLabels,
   type ContentReview, type ContentScope,
 } from "../lib/content-review";
 
@@ -108,7 +108,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => null);
   const review = useMemo(() => parseReview(snapshot), [snapshot]);
   const [scope, setScope] = useState<ContentScope>(defaultContentScope);
-  const [text, setText] = useState(sampleVoltEdgeText);
+  const [text, setText] = useState(sampleNovacoreText);
   const [error, setError] = useState("");
   const [uploadStatus, setUploadStatus] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -193,7 +193,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
         ...(apiFile ? { file_base64: apiFile.data, filename: apiFile.filename, mime_type: apiFile.mime_type } : { text }),
         confidential: nextScope.confidential,
         exposure: exposureForChannel(nextScope.channel),
-        product: "VoltEdge NovaBook S1",
+        product: "Novacore NovaBook S1",
         market: nextScope.region,
         channel: nextScope.channel,
         language: nextScope.language,
@@ -233,7 +233,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
             text: revisedText,
             confidential: review.scope.confidential,
             exposure: exposureForChannel(review.scope.channel),
-            product: "VoltEdge NovaBook S1",
+            product: "Novacore NovaBook S1",
             market: review.scope.region,
             channel: review.scope.channel,
             language: review.scope.language,
@@ -283,7 +283,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
           text: current.text,
           confidential: review.scope.confidential,
           exposure: exposureForChannel(review.scope.channel),
-          product: "VoltEdge NovaBook S1",
+          product: "Novacore NovaBook S1",
           market: review.scope.region,
           channel: review.scope.channel,
           language: review.scope.language,
@@ -313,7 +313,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
       <AppSidebar activeKey={stage} />
       <section className="main-content" id="pl-main" tabIndex={-1}>
         <header className="topbar">
-          <div className="breadcrumb"><span>VoltEdge</span><i>/</i><strong>{stage === "submit" ? "Submit content" : "Evidence review"}</strong></div>
+          <div className="breadcrumb"><span>Novacore</span><i>/</i><strong>{stage === "submit" ? "Submit content" : "Evidence review"}</strong></div>
           <div className="top-actions">
             <div className="backend-mode-toggle" role="radiogroup" aria-label="Backend Execution Engine">
               <span className="backend-toggle-label">Engine:</span>
@@ -342,7 +342,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
           </div>
         </header>
         <div className="content-wrap pl-content-wrap">
-           <div className="page-heading compact-heading"><div><p className="eyebrow">{stage === "submit" ? "Content intake" : "Findings & corrections"}</p><h1>{stage === "submit" ? "Bring the context with the draft." : "Every flag has an explanation."}</h1><p className="lede">{stage === "submit" ? "Paste or upload text, set its publication context, and run bounded checks against fictional VoltEdge sources." : "Inspect the exact span, its source version, and the limits of the check before choosing a correction."}</p></div>{stage === "findings" ? <Link className="ghost-button pl-link-button" href="/submit" prefetch={false}>Submit another draft</Link> : null}</div>
+           <div className="page-heading compact-heading"><div><p className="eyebrow">{stage === "submit" ? "Content intake" : "Findings & corrections"}</p><h1>{stage === "submit" ? "Bring the context with the draft." : "Every flag has an explanation."}</h1><p className="lede">{stage === "submit" ? "Paste or upload text, set its publication context, and run bounded checks against fictional Novacore sources." : "Inspect the exact span, its source version, and the limits of the check before choosing a correction."}</p></div>{stage === "findings" ? <Link className="ghost-button pl-link-button" href="/submit" prefetch={false}>Submit another draft</Link> : null}</div>
            <nav className="workflow-progress" aria-label="Review workflow"><Link className={stage === "submit" ? "active" : "completed"} href="/submit" prefetch={false}><span>1</span>Submit</Link><span className="workflow-progress-line" /><Link className={stage === "findings" ? "active" : "completed"} href="/findings" prefetch={false}><span>2</span>Fix findings</Link><span className="workflow-progress-line" /><Link href="/?view=reviews" prefetch={false}><span>3</span>Human approval</Link></nav>
           {error ? <div className="form-error pl-message" role="alert">{error}</div> : null}
           {message ? <div className="pl-action-message" role="status">{message}</div> : null}
@@ -353,18 +353,18 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <div className="submit-form-heading">
                   <div><h2>Content to review</h2><p className="micro-helper">Original and corrections stay available for comparison.</p></div>
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                    <button className="small-button apply-button" type="button" onClick={() => { setText(sampleVoltEdgeText); setScope(defaultContentScope); setUploadStatus(""); setMessage("Loaded Flagged Sample: VoltEdge NovaBook S1 with 20h battery spec conflict."); }}>⚡ 1-Click: Flagged Draft</button>
-                    <button className="small-button" type="button" onClick={() => { setText("VoltEdge NovaBook S1 offers up to 12 hours of battery life and includes a 30-day return guarantee. Full details apply at voltedge.com/terms."); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Clean Draft" })); setUploadStatus(""); setMessage("Loaded Clean Sample: VoltEdge NovaBook S1 with compliant claims."); }}>✓ 1-Click: Clean Draft</button>
+                    <button className="small-button apply-button" type="button" onClick={() => { setText(sampleNovacoreText); setScope(defaultContentScope); setUploadStatus(""); setMessage("Loaded Flagged Sample: Novacore NovaBook S1 with 20h battery spec conflict."); }}>⚡ 1-Click: Flagged Draft</button>
+                    <button className="small-button" type="button" onClick={() => { setText("Novacore NovaBook S1 offers up to 12 hours of battery life and includes a 30-day return guarantee. Full details apply at novacore.io/terms."); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · Clean Draft" })); setUploadStatus(""); setMessage("Loaded Clean Sample: Novacore NovaBook S1 with compliant claims."); }}>✓ 1-Click: Clean Draft</button>
                   </div>
                 </div>
 
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "-6px 0 14px", alignItems: "center" }}>
                   <span style={{ fontSize: 9.5, fontWeight: 700, color: "#18181B", fontFamily: "var(--ind-font-mono, 'JetBrains Mono', monospace)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Creator Platforms:</span>
-                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.linkedin.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · LinkedIn Announcement", channel: "social" })); setMessage("Loaded LinkedIn Creator Post with comparative claims & 20h spec."); }}>💼 LinkedIn</button>
-                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.twitter.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · X/Twitter Thread", channel: "social" })); setMessage("Loaded X/Twitter Launch Thread (checks 280-char limit & FTC #ad disclosure)."); }}>𝕏 Twitter</button>
-                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.instagram.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Instagram Caption", channel: "social" })); setMessage("Loaded Instagram Caption (checks FTC § 255 sponsorship disclosure)."); }}>📸 Instagram</button>
-                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.newsletter.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Newsletter Digest", channel: "email" })); setMessage("Loaded Newsletter Digest with spec verification."); }}>📬 Newsletter</button>
-                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.press_release.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Press Release", channel: "document" })); setMessage("Loaded Press Release with Lanham Act § 43(a) compliance."); }}>📰 Press Release</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.linkedin.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · LinkedIn Announcement", channel: "social" })); setMessage("Loaded LinkedIn Creator Post with comparative claims & 20h spec."); }}>💼 LinkedIn</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.twitter.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · X/Twitter Thread", channel: "social" })); setMessage("Loaded X/Twitter Launch Thread (checks 280-char limit & FTC #ad disclosure)."); }}>𝕏 Twitter</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.instagram.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · Instagram Caption", channel: "social" })); setMessage("Loaded Instagram Caption (checks FTC § 255 sponsorship disclosure)."); }}>📸 Instagram</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.newsletter.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · Newsletter Digest", channel: "email" })); setMessage("Loaded Newsletter Digest with spec verification."); }}>📬 Newsletter</button>
+                  <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.press_release.sampleText); setScope((prev) => ({ ...prev, title: "Novacore NovaBook S1 · Press Release", channel: "document" })); setMessage("Loaded Press Release with Lanham Act § 43(a) compliance."); }}>📰 Press Release</button>
                 </div>
                 <div className="helper-hint-callout" style={{ margin: "-12px 0 16px" }}>
                   <span>💡</span>
@@ -389,17 +389,17 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                   <button className="primary-button" type="submit" disabled={uploading || apiBusy}>{uploading ? "Reading file…" : apiBusy ? "Running evidence check…" : "Run evidence check"}</button>
                 </div>
               </form>
-              <aside className="submit-sidebar"><section className="panel context-panel"><div className="panel-heading"><h2>Scope of this check</h2></div><div className="scope-list"><div><span className="scope-icon" aria-hidden="true">⌁</span><span><strong>Synthetic, versioned VoltEdge sources</strong><small>Demonstration records for instant checking.</small></span></div><div><span className="scope-icon" aria-hidden="true">⌗</span><span><strong>{channelLabels[scope.channel]}</strong><small>{regionLabels[scope.region]} · {languageLabels[scope.language]}</small></span></div><div><span className="scope-icon" aria-hidden="true">◷</span><span><strong>{scope.scheduled_date || "No publication date"}</strong><small>Stored for publication context.</small></span></div></div></section><section className="panel intake-checklist"><h2>Evidence before assertion</h2><ul><li><span aria-hidden="true">✓</span><div><strong>Missing evidence stays unverified</strong><p className="micro-helper">Missing source is never treated as false.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>AI status stays visible</strong><p className="micro-helper">All checks on this page run as deterministic rules.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>Decisions remain explicit</strong><p className="micro-helper">Accept, edit, or dismiss with written rationale.</p></div></li></ul></section></aside>
+              <aside className="submit-sidebar"><section className="panel context-panel"><div className="panel-heading"><h2>Scope of this check</h2></div><div className="scope-list"><div><span className="scope-icon" aria-hidden="true">⌁</span><span><strong>Synthetic, versioned Novacore sources</strong><small>Demonstration records for instant checking.</small></span></div><div><span className="scope-icon" aria-hidden="true">⌗</span><span><strong>{channelLabels[scope.channel]}</strong><small>{regionLabels[scope.region]} · {languageLabels[scope.language]}</small></span></div><div><span className="scope-icon" aria-hidden="true">◷</span><span><strong>{scope.scheduled_date || "No publication date"}</strong><small>Stored for publication context.</small></span></div></div></section><section className="panel intake-checklist"><h2>Evidence before assertion</h2><ul><li><span aria-hidden="true">✓</span><div><strong>Missing evidence stays unverified</strong><p className="micro-helper">Missing source is never treated as false.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>AI status stays visible</strong><p className="micro-helper">All checks on this page run as deterministic rules.</p></div></li><li><span aria-hidden="true">✓</span><div><strong>Decisions remain explicit</strong><p className="micro-helper">Accept, edit, or dismiss with written rationale.</p></div></li></ul></section></aside>
             </div>
           ) : !review || !audit || !revision || !auditedRevision || !risk ? (
             <section className="panel pl-empty">
               <h2>No content has been submitted in this tab.</h2>
-              <p>Submit a VoltEdge draft to inspect its highlighted spans, evidence, and correction history.</p>
+              <p>Submit a Novacore draft to inspect its highlighted spans, evidence, and correction history.</p>
               <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap", justifyContent: "center" }}>
                 <button
                   className="primary-button pl-link-button"
                   type="button"
-                  onClick={() => saveReview(createContentReview(sampleVoltEdgeText, defaultContentScope))}
+                  onClick={() => saveReview(createContentReview(sampleNovacoreText, defaultContentScope))}
                 >
                   ⚡ Load Sample NovaBook S1 Review
                 </button>
@@ -415,7 +415,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 <section className="pl-content-column" aria-label="Content and risk">
                   <section className="content-preview-card enhanced-content-preview"><div className="content-preview-header"><h2>Content spans</h2><span className="content-version">Audited v{auditedRevision.number}</span></div><div className="pl-preview-tabs" aria-label="Content versions">{(["audited", "current", "original"] as const).map((tab) => <button className={contentTab === tab ? "active" : ""} type="button" key={tab} aria-pressed={contentTab === tab} onClick={() => setContentTab(tab)}>{tab === "audited" ? "Audited text" : tab === "current" ? `Current v${revision.number}` : "Original"}</button>)}</div>{contentTab === "audited" ? <Preview text={auditedRevision.text} findings={audit.findings} selected={selectedFindingId} onSelect={selectFinding} /> : <div className="pl-content-copy">{contentTab === "current" ? revision.text : originalRevision?.text}</div>}<p className="pl-helper">Select a numbered span to inspect its finding. Highlight numbers, verdict text, and severity labels also identify issues without relying on colour.</p>{review.scope.has_image ? <div className="alt-text-review"><span aria-hidden="true" className={`verdict-icon verdict-${revision.alt_text.trim() ? "supported" : "needs_human"}`}>{revision.alt_text.trim() ? "✓" : "!"}</span><div><strong>{revision.alt_text.trim() ? "Alt text provided · quality not assessed" : "Missing alt text · needs human review"}</strong><p>{revision.alt_text.trim() || "Add alt text in a revised submission or record why the image is decorative."}</p></div></div> : null}<div className="content-footer"><span>{review.scope.original_filename || "Pasted text"}</span><span>{review.revisions.length} retained version(s)</span></div></section>
                   <section className="risk-summary" aria-labelledby="pl-risk-heading"><div className="risk-summary-header"><div><h3 id="pl-risk-heading">Risk breakdown</h3><span className="badge-pill pill-violation" style={{ marginTop: 4 }}>{risk.label} triage priority</span></div><strong className="risk-score">{risk.score}<small>/100</small></strong></div><div className="risk-breakdown">{Object.entries(risk.counts).map(([label, count]) => <div key={label} className={`risk-stat-chip ${label}`}><span className={`risk-marker ${label}`} /><strong>{count}</strong><span>{label}</span></div>)}</div><details className="formula-accordion"><summary className="formula-summary">Triage formula details ▾</summary><p className="risk-summary-copy">Formula: round(100 × severity {risk.severity} × exposure {risk.exposure} × policy {risk.policy_multiplier} ÷ 22.5). Fact contradiction forces High priority.</p></details><div className="pl-evidence-counts"><span>{risk.missing} evidence gap(s)</span><span>{risk.human} human-review finding(s)</span><span>{audit.findings.filter((finding) => finding.status === "dismissed").length} explicitly dismissed</span></div></section>
-                   <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic VoltEdge · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "Check corrected version" : "Run fresh evidence check"}</button>
+                   <section className="panel audit-context"><h2>Check context</h2><dl><div><dt>Audit</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic Novacore · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>External AI</dt><dd>STUB · no model called</dd></div></dl><p className="audit-context-note">OCR, visual checks, broad fact verification, and legal review were not assessed. An authorised person owns the final decision.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "Check corrected version" : "Run fresh evidence check"}</button>
 <button className="ghost-button pl-full-width" type="button" style={{ marginTop: 8 }} onClick={() => setIsCertOpen(true)}>📜 View Compliance Certificate</button></section>
                 </section>
                 <section className="pl-findings-column" aria-labelledby="pl-findings-heading"><div className="pl-findings-heading"><h2 id="pl-findings-heading">{audit.findings.length} finding(s)</h2><span>{openCount} open · {audit.findings.length - openCount} actioned</span></div><p className="micro-helper">Actions create a new version; dismissing retains original wording.</p>
