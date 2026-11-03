@@ -309,6 +309,9 @@ export function ActiveRoleWorkflowBanner({
           <div className="role-banner-title-row">
             <strong>Logged in as {persona.name}</strong>
             <span className="role-banner-pill">{persona.title}</span>
+            <span className="save-state" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "var(--ind-font-mono)", letterSpacing: "0.15em", textTransform: "uppercase", color: "#18181B" }}>
+              <span className="industrial-status-pulse" /> Enterprise workspace
+            </span>
             <code className="role-banner-email">{persona.email}</code>
           </div>
         </div>

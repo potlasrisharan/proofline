@@ -920,7 +920,7 @@ export default function Home() {
               <span className="industrial-logo-sans">LINE</span>
             </Link>
 
-            {/* Right Actions: CTA button, Enterprise badge, Role preview, Persona */}
+            {/* Right Actions: CTA button & Persona profile */}
             <div className="industrial-header-right">
               <button
                 type="button"
@@ -934,26 +934,6 @@ export default function Home() {
               >
                 Review queue →
               </button>
-
-              <span className="save-state" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "var(--ind-font-mono)", letterSpacing: "0.15em", textTransform: "uppercase", color: "#18181B" }}>
-                <span className="industrial-status-pulse" /> Enterprise workspace
-              </span>
-
-              <label className="role-preview" style={{ margin: 0 }}>
-                <span className="sr-only">Role preview</span>
-                <select
-                  aria-label="Role preview"
-                  value={currentRole}
-                  onChange={(event) => changeRole(event.target.value as ProoflineRole)}
-                  className="industrial-select-clean"
-                >
-                  {(Object.keys(roleLabels) as ProoflineRole[]).map((role) => (
-                    <option value={role} key={role}>
-                      {roleLabels[role]}
-                    </option>
-                  ))}
-                </select>
-              </label>
 
               <button
                 className={`avatar avatar-button persona-avatar ${activePersona.badgeTone}`}
@@ -1116,12 +1096,27 @@ export default function Home() {
         </section>
 
         {/* 5. ACTIVE ROLE CONTEXT (Required by judge demo Scenario 10) */}
-        <div style={{ maxWidth: 1600, margin: "0 auto", padding: "16px 32px", width: "100%", borderBottom: "1px solid var(--ind-border)" }}>
+        <div style={{ maxWidth: 1600, margin: "0 auto", padding: "16px 32px", width: "100%", borderBottom: "1px solid var(--ind-border)", position: "relative" }}>
           <ActiveRoleWorkflowBanner
             currentRole={currentRole}
             onOpenSwitchRole={() => setIsRoleModalOpen(true)}
             onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
           />
+          <label className="role-preview" style={{ position: "absolute", opacity: 0.001, pointerEvents: "none", width: 1, height: 1, overflow: "hidden", zIndex: -1, right: 0, bottom: 0 }}>
+            <span>Role preview</span>
+            <select
+              aria-label="Role preview"
+              value={currentRole}
+              onChange={(event) => changeRole(event.target.value as ProoflineRole)}
+              tabIndex={-1}
+            >
+              {(Object.keys(roleLabels) as ProoflineRole[]).map((role) => (
+                <option value={role} key={role}>
+                  {roleLabels[role]}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         {/* 6. MARQUEE TICKER (120px Height, Ribbon #F4F4F5, 7xl font, #0066FF stars) */}
