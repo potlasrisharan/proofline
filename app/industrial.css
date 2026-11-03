@@ -201,7 +201,7 @@
 /* Centered Logo in Grid */
 .industrial-logo-center {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
   gap: 6px;
   text-decoration: none;

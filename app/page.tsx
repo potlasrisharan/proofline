@@ -914,10 +914,16 @@ export default function Home() {
               <Link href="/privacy" className="industrial-nav-link">Trust &amp; Privacy</Link>
             </nav>
 
-            {/* Absolute Centered Logo: Serif Italic + Bold Sans */}
-            <Link href="/" className="industrial-logo-center">
-              <span className="industrial-logo-serif">PROOF</span>
-              <span className="industrial-logo-sans">LINE</span>
+            {/* Absolute Centered Logo Brand Mark */}
+            <Link href="/" className="industrial-logo-center" aria-label="Proofline Home">
+              <Image
+                src="/logo.png"
+                alt="Proofline"
+                width={40}
+                height={40}
+                priority
+                style={{ objectFit: "contain", borderRadius: 8 }}
+              />
             </Link>
 
             {/* Right Actions: CTA button & Persona profile */}
