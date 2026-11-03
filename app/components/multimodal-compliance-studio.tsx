@@ -204,11 +204,11 @@ export const sampleVideoReelFrames: AnalyzedFrame[] = [
         measuredFontSizeRatio: 1.2,
         requiredFontSizeRatio: 2.5,
         ruleReference:
-          "FTC .com Disclosures & 16 CFR § 255.5 Ephemeral Visibility Rule",
+          "Consumer Protection · Disclaimer Readability & Duration Standards",
         evidenceQuote:
-          "Ephemeral disclaimer measures only 1.2% frame height (15px on 1280p, below 2.5% statutory min) and flashed on screen for 0.8s (FTC requires minimum 3.0s continuous display for 14-word disclaimers).",
+          "Disclaimer text is too small (only 1.2% frame height vs 2.5% recommended) and flashes on screen for only 0.8s (must be visible for at least 3 seconds so users have time to read it).",
         suggestedFix:
-          "Increase disclaimer font to 32px (2.5% frame height) and maintain on-screen visibility for at least 3.2 seconds.",
+          "Increase disclaimer font to 32px (2.5% frame height) and keep visible on screen for at least 3.2 seconds.",
         status: "open",
       },
     ],
@@ -433,7 +433,7 @@ export function MultimodalComplianceStudio() {
             timestamp: "Custom Frame",
             category: "unsubstantiated_superlative",
             severity: "critical",
-            flaggedText: "Visual Headline: Unsubstantiated Comparative Assertion",
+            flaggedText: "Visual Headline: Unverified Comparative Claim",
             boundingBox: { ymin: 160, xmin: 80, ymax: 260, xmax: 920 },
             measuredFontSizeRatio: 3.2,
             requiredFontSizeRatio: 2.5,
@@ -565,7 +565,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
       setAuditLog((log) => [
         `[${new Date().toLocaleTimeString()}] ✓ Fail-Soft Multimodal Audit Complete: 100% precision verified across ${frames.length} frame(s).`,
         `[${new Date().toLocaleTimeString()}] 🔍 Truth Registry Verification: Cross-referenced claims against Novacore Specs (SPEC-BATT-01, NB-S1-BASE).`,
-        `[${new Date().toLocaleTimeString()}] 📐 FTC § 255 Geometry Scan: Measured disclaimer font-height ratios (${activeMode === "video_reel" ? "1.2%" : "1.33%"} vs 2.5% statutory min).`,
+        `[${new Date().toLocaleTimeString()}] 📐 Disclaimer Readability Check: Measured font size ratio (${activeMode === "video_reel" ? "1.2%" : "1.33%"} vs 2.5% minimum height standard).`,
         `[${new Date().toLocaleTimeString()}] 🛡️ Multimodal Vision Gate: Executing local deterministic vision scanner & Sarvam Indic compliance gate.`,
         ...log,
       ]);
@@ -830,7 +830,7 @@ Identify any claim contradictions, unverified comparative statements, and micro-
           <div className="multimodal-audit-log">
             <div className="log-header">
               <span className="log-pulse" />
-              <strong>MULTIMODAL AUDIT TELEMETRY &amp; STATUS LOG</strong>
+              <strong>MULTIMODAL AUDIT TELEMETRY &amp; ACTIVITY LOG</strong>
             </div>
             <div className="log-body">
               {auditLog.length === 0 ? (

@@ -186,7 +186,7 @@ export function ComplianceQualityGate({
           className={`gate-tab-btn ${activeTab === "rulebook" ? "active" : ""}`}
           onClick={() => setActiveTab("rulebook")}
         >
-          <span>⚖️</span> Statutory Regulatory Rulebook
+          <span>⚖️</span> Statutory Regulatory Rulebook &amp; Advertising Guidelines
           {!hasDisclaimer ? <span className="tab-alert-badge">!</span> : null}
         </button>
         <button
@@ -278,7 +278,7 @@ export function ComplianceQualityGate({
         </div>
       ) : null}
 
-      {/* Tab 2: Statutory Regulatory Rulebook & Disclaimer Detector */}
+      {/* Tab 2: Advertising Guidelines & Disclaimer Detector */}
       {activeTab === "rulebook" ? (
         <div className="gate-tab-content">
           <div className="rulebook-grid">

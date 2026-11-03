@@ -336,7 +336,7 @@ const initialFindings: Finding[] = [
     category: "Unsupported claim",
     severity: "medium",
     excerpt: "“our most reliable laptop yet”",
-    description: "Proofline could not find an approved source that substantiates this comparative claim.",
+    description: "Proofline could not find an approved source to prove this comparative claim.",
     evidenceTitle: "Evidence not found · Claims policy v2",
     evidence: "Comparative claims need an approved benchmark or a reviewer decision.",
     evidenceStatus: "evidence not found",
@@ -532,8 +532,26 @@ export default function Home() {
 
     syncRoleFromStorage();
 
+    const handleWorkspaceEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ name: string }>;
+      if (customEvent.detail?.name) {
+        setWorkspaceName(customEvent.detail.name);
+        notify(`Switched to ${customEvent.detail.name} (Isolated brand partition)`);
+      }
+    };
+
+    try {
+      const savedWs = window.localStorage.getItem("proofline:active-workspace-id");
+      if (savedWs === "voltedge-labs") setWorkspaceName("VoltEdge Labs R&D");
+      else if (savedWs === "audio-wearables") setWorkspaceName("VoltEdge Audio & Wearables");
+      else if (savedWs === "global-retail") setWorkspaceName("Global Retail & Agency Hub");
+    } catch {
+      /* storage disabled */
+    }
+
     window.addEventListener("popstate", handleUrlState);
     window.addEventListener("proofline:role-change", handleRoleEvent);
+    window.addEventListener("proofline:workspace-change", handleWorkspaceEvent);
     window.addEventListener("storage", syncRoleFromStorage);
     window.addEventListener("focus", syncRoleFromStorage);
 
@@ -546,6 +564,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("popstate", handleUrlState);
       window.removeEventListener("proofline:role-change", handleRoleEvent);
+      window.removeEventListener("proofline:workspace-change", handleWorkspaceEvent);
       window.removeEventListener("storage", syncRoleFromStorage);
       window.removeEventListener("focus", syncRoleFromStorage);
     };
@@ -569,6 +588,7 @@ export default function Home() {
   const [commentDraft, setCommentDraft] = useState("");
   const [decisionNote, setDecisionNote] = useState("");
   const [toast, setToast] = useState("");
+  const [workspaceName, setWorkspaceName] = useState("Novacore Brand Workspace");
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(false);
@@ -753,13 +773,13 @@ export default function Home() {
       notify(error instanceof Error ? error.message : "The finding no longer matches this revision.");
       return;
     }
-    const nextLabel = createRevision(`Applied safe-harbor rewrite for ${finding.category.toLowerCase()}.`, [revisedContent]);
+    const nextLabel = createRevision(`Applied safe wording rewrite for ${finding.category.toLowerCase()}.`, [revisedContent]);
     setSubmittedContent(revisedContent);
     setAuditState("needs-changes");
     setFindings((current) => current.map((item) => (item.id === "reliable" ? { ...item, resolved: true, actionStatus: "accepted" } : item)));
-    addActivity({ icon: "⚖️", title: "Safe-harbor applied", detail: `Statutory safe-harbor rewrite added to ${nextLabel}.`, time: "Just now", tone: "good" });
-    appendAuditEvent({ kind: "suggestion_applied", actor: "Maya Chen", role: currentRole, summary: `Superlative safe-harbor rewrite applied to ${nextLabel}.`, contentVersion: nextLabel });
-    notify("Safe-harbor rewrite applied to new revision.");
+    addActivity({ icon: "⚖️", title: "Safe wording applied", detail: `Verified phrasing added to ${nextLabel}.`, time: "Just now", tone: "good" });
+    appendAuditEvent({ kind: "suggestion_applied", actor: "Maya Chen", role: currentRole, summary: `Safe phrasing rewrite applied to ${nextLabel}.`, contentVersion: nextLabel });
+    notify("Verified phrasing applied to new revision.");
   }
 
   function runRescan() {
@@ -1366,7 +1386,7 @@ export default function Home() {
               }
             }}
           >
-            <span className="industrial-project-idx">07 / TRIAGE</span>
+            <span className="industrial-project-idx">07 / REVIEW QUEUE</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">EDITORIAL MANAGER · MARCUS VANCE</span>
               <h2 className="industrial-project-title">Campaign Review Queue</h2>
@@ -1867,9 +1887,9 @@ export default function Home() {
 
       <section id="main-content" className="main-content" tabIndex={-1}>
         <header className="topbar">
-          <div className="breadcrumb"><span>VoltEdge Labs</span><i>/</i><strong>{pageTitles[activeView]}</strong></div>
+          <div className="breadcrumb"><span>{workspaceName}</span><i>/</i><strong>{pageTitles[activeView]}</strong></div>
           <div className="top-actions">
-            <div className="backend-mode-toggle" role="radiogroup" aria-label="Backend Execution Engine">
+            <div className="backend-mode-toggle" role="radiogroup" aria-label="Backend Execution Engine" suppressHydrationWarning>
               <span className="backend-toggle-label">Engine:</span>
               <button
                 type="button"
@@ -1883,7 +1903,9 @@ export default function Home() {
                 role="radio"
                 title="Live Cloudflare Python Worker + D1 Database"
               >
-                <span className="engine-dot live" /> ⚡ Cloudflare API (Default)
+                <span className="engine-dot live" />
+                <span className="engine-label-long">⚡ Cloudflare API (Default)</span>
+                <span className="engine-label-short">⚡ Cloudflare</span>
               </button>
               <button
                 type="button"
@@ -1897,10 +1919,12 @@ export default function Home() {
                 role="radio"
                 title="Client-side JavaScript only (offline demo)"
               >
-                <span className="engine-dot local" /> 💻 Local Engine
+                <span className="engine-dot local" />
+                <span className="engine-label-long">💻 Local Engine</span>
+                <span className="engine-label-short">💻 Local</span>
               </button>
             </div>
-            <span className="save-state"><span className="health-dot" /> {engineMode === "api" ? "IMPLEMENTED · Cloudflare API" : "IMPLEMENTED · local engine"}</span>
+            <span className="save-state" suppressHydrationWarning><span className="health-dot" /> {engineMode === "api" ? "IMPLEMENTED · Cloudflare API" : "IMPLEMENTED · local engine"}</span>
             <label className="role-preview"><span>Role preview</span><select aria-label="Role preview" value={currentRole} onChange={(event) => changeRole(event.target.value as ProoflineRole)}>{(Object.keys(roleLabels) as ProoflineRole[]).map((role) => <option value={role} key={role}>{roleLabels[role]}</option>)}</select></label>
             <button className="icon-button" type="button" aria-label="Open AI and services disclosure" onClick={() => setIsDisclosureOpen(true)}>?</button>
             <button
@@ -2087,7 +2111,7 @@ export default function Home() {
                         <span className="dispatch-check" aria-hidden="true">✓</span>
                         <div>
                           <strong>Compliance verified · Ready for 1-click dispatch</strong>
-                          <p className="micro-helper" style={{ margin: 0 }}>All claims substantiated against VoltEdge truth registry.</p>
+                          <p className="micro-helper" style={{ margin: 0 }}>All claims verified against official product specs.</p>
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>

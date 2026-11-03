@@ -46,10 +46,10 @@ export const demoPersonas: Record<ProoflineRole, DemoPersona> = {
     initials: "MV",
     title: "Editorial & Campaign Manager",
     department: "Marketing Operations",
-    focus: "Queue Triage & Change Requests",
+    focus: "Review Queue & Edit Requests",
     description: "Prioritizes submissions by risk score (0–100), reviews team comments, requests edits with helpful notes, and routes clean drafts for final sign-off.",
     primaryView: "reviews",
-    permissionsSummary: "Can request changes, leave decision notes, triage risk queue, and submit for legal sign-off.",
+    permissionsSummary: "Can request changes, leave decision notes, organize review queue, and submit for final sign-off.",
     badgeTone: "amber",
     coreCapabilities: [
       "Prioritize review queue by risk score and publication date",
@@ -127,7 +127,7 @@ const roleShortTitles: Record<ProoflineRole, string> = {
 
 const roleOneLiners: Record<ProoflineRole, string> = {
   creator: "Draft copy & claim verification",
-  manager: "Campaign triage & legal routing",
+  manager: "Campaign review & legal sign-off",
   legal_reviewer: "Ad compliance audit & sign-off",
   brand_owner: "Approved specs & safe publishing",
   agency: "Partner copywriter workspace",
@@ -135,7 +135,7 @@ const roleOneLiners: Record<ProoflineRole, string> = {
 
 const roleIndexes: Record<ProoflineRole, string> = {
   creator: "01 / DRAFT",
-  manager: "02 / TRIAGE",
+  manager: "02 / REVIEW",
   legal_reviewer: "03 / AUDIT",
   brand_owner: "04 / GOVERN",
   agency: "05 / PARTNER",
@@ -395,7 +395,7 @@ export function ActiveRoleWorkflowBanner({
             ) : null}
             <strong>Logged in as {persona.name}</strong>
             <span className="role-banner-pill">{persona.title}</span>
-            <span className="save-state" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "var(--ind-font-mono)", letterSpacing: "0.15em", textTransform: "uppercase", color: "#18181B" }}>
+            <span className="save-state" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "var(--ind-font-mono)", letterSpacing: "0.15em", textTransform: "uppercase", color: "#18181B", whiteSpace: "nowrap", flexShrink: 0 }}>
               <span className="industrial-status-pulse" /> Enterprise workspace
             </span>
             <code className="role-banner-email">{persona.email}</code>

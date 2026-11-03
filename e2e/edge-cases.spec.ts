@@ -61,6 +61,39 @@ test.describe("Edge Cases, Robustness & Direct Visits Audit", () => {
       await expect(page.getByLabel("Review name")).toHaveValue("NovaBook S1 launch email");
       await expect(page.getByLabel("Paste content")).toContainText("20 hours of battery life");
     });
+
+    test("handles file upload for text, PDF, and image without hydration error or crash", async ({ page }) => {
+      const consoleErrors: string[] = [];
+      page.on("console", (msg) => {
+        if (msg.type() === "error") {
+          consoleErrors.push(msg.text());
+        }
+      });
+
+      await page.goto("/submit");
+      await page.getByRole("radio", { name: /Local (Demo|Engine)/ }).click();
+
+      // Test text file upload via input[type="file"]
+      const fileChooserInput = page.locator("#pl-upload");
+      await fileChooserInput.setInputFiles({
+        name: "test-campaign-announcement.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.from("Novacore NovaBook S1 with 20 hours of battery life and twice as fast as all competitors."),
+      });
+
+      await expect(page.locator(".pl-upload-status")).toBeVisible();
+      await expect(page.locator(".pl-upload-status")).toContainText("Text extracted");
+      await expect(page.getByLabel("Review name")).toHaveValue("Test campaign announcement");
+
+      // Verify no hydration errors (React error #418) occurred
+      const hydrationErrors = consoleErrors.filter((e) => e.includes("418") || e.includes("Hydration"));
+      expect(hydrationErrors).toHaveLength(0);
+
+      // Submit and verify findings view
+      await page.getByRole("button", { name: "Run evidence check" }).click();
+      await expect(page).toHaveURL(/\/findings$/);
+      await expect(page.getByRole("heading", { name: "Every flag has an explanation." })).toBeVisible();
+    });
   });
 
   test.describe("/findings (Audit findings & triage)", () => {

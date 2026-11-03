@@ -440,7 +440,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Sarvam Indic Verification</div>
           <div className={styles.metricValue}>100% <span className={styles.metricChange}>Verified</span></div>
-          <div className={styles.metricSubtext}>Telugu and Hindi parity checked</div>
+          <div className={styles.metricSubtext}>Telugu and Hindi accuracy verified</div>
         </div>
       </div>
 
@@ -511,7 +511,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
               onClick={handleSubmitToManager}
               style={{ background: submittedToTriage ? "#22C55E" : "#18181B" }}
             >
-              {submittedToTriage ? "✓ Submitted to Editorial" : "Submit to Manager Triage →"}
+              {submittedToTriage ? "✓ Submitted to Editorial" : "Submit for Manager Review →"}
             </button>
             <button
               type="button"
@@ -532,7 +532,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
         {/* Right: Indic Multi-Lingual Verification & Submissions */}
         <section className={styles.panelCard}>
           <h2 className={styles.panelTitle}>Sarvam Indic Multi-Lingual Studio</h2>
-          <p className={styles.panelSub}>Verify spec parity across regional campaigns</p>
+          <p className={styles.panelSub}>Check consistent specs across regional languages</p>
 
           <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
             <button
@@ -655,7 +655,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
       riskScore: 24,
       riskLevel: "low",
       status: "Approved",
-      notes: "Clean statutory check; carbon offset claims grounded in ISO certs.",
+      notes: "Clean compliance check; carbon offset claims verified with official certs.",
     },
   ]);
 
@@ -667,7 +667,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
           : r
       )
     );
-    setActionMessage("✓ NovaBook S1 launch email routed to Maya Chen (Legal Ops) for statutory clearance.");
+    setActionMessage("✓ NovaBook S1 launch email routed to Maya Chen (Legal Reviewer) for final approval.");
   };
 
   const handleRequestChanges = () => {
@@ -687,7 +687,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
     <>
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Pending Triage Queue</div>
+          <div className={styles.metricLabel}>Pending Review Queue</div>
           <div className={styles.metricValue}>5 <span className={styles.metricChange}>Items</span></div>
           <div className={styles.metricSubtext}>Highest risk items sorted first</div>
         </div>
@@ -714,9 +714,9 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
       </div>
 
       <div className={styles.dashboardWorkbench}>
-        {/* Left: Risk Triage Queue */}
+        {/* Left: Risk Review Queue */}
         <section className={styles.panelCard}>
-          <h2 className={styles.panelTitle}>Editorial Triage Queue (Highest Risk First)</h2>
+          <h2 className={styles.panelTitle}>Editorial Review Queue (Highest Priority First)</h2>
           <p className={styles.panelSub}>Review incoming drafts and route to legal clearance</p>
 
           <table className={styles.queueTable}>
@@ -811,7 +811,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
         {/* Right: Channel Breakdown & Team Workload */}
         <section className={styles.panelCard}>
           <h2 className={styles.panelTitle}>Active Inspection: {selectedItem.title}</h2>
-          <p className={styles.panelSub}>Triage context, claims breakdown, and reviewer notes</p>
+          <p className={styles.panelSub}>Review details, claims breakdown, and reviewer notes</p>
 
           <div className={styles.subtleCard} style={{ marginTop: 0, marginBottom: 16 }}>
             <div style={{ fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#71717A", marginBottom: 6 }}>
@@ -890,7 +890,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Advertising Truth (FTC)</div>
           <div className={styles.metricValue}>100% <span className={styles.metricChange}>Clear</span></div>
-          <div className={styles.metricSubtext}>Clear &amp; substantiated claims</div>
+          <div className={styles.metricSubtext}>Clear &amp; verified claims</div>
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Unverified Comparisons</div>
@@ -1213,7 +1213,7 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
           <div className={styles.metricSubtext}>Checked against client baseline</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Internal Telemetry</div>
+          <div className={styles.metricLabel}>Internal Company Logs</div>
           <div className={styles.metricValue}>🔒 <span className={styles.metricChange} style={{ color: "#F59E0B" }}>Masked</span></div>
           <div className={styles.metricSubtext}>Protected client data boundary</div>
         </div>
@@ -1278,7 +1278,7 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
         {/* Right: Data Protection & Masking */}
         <section className={styles.panelCard}>
           <h2 className={styles.panelTitle}>Data Protection &amp; Confidentiality Barrier</h2>
-          <p className={styles.panelSub}>Client telemetry isolation for third-party partners</p>
+          <p className={styles.panelSub}>Confidential data protection for external partners</p>
 
           <div className={styles.maskedNoticeBox}>
             <strong>Enterprise Privacy Boundary:</strong> In compliance with Novacore security policies, internal financial margins and confidential roadmap notes are securely hidden in this guest partner view.
@@ -1291,7 +1291,7 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
               <span>🔒 MASKED</span>
             </div>
             <div className={styles.maskedItem}>
-              <span>Customer PII Telemetry</span>
+              <span>Customer Personal Information</span>
               <span>🔒 ANONYMIZED</span>
             </div>
           </div>

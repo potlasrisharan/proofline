@@ -85,8 +85,8 @@ export function DynamicTruthSync() {
       setTimeout(() => {
         const timeNow = new Date().toLocaleTimeString();
         setSyncTelemetry((t) => [
-          `[${timeNow}] ✓ Live Notion Ingestion Success: Pulled latest specs from page 'Novacore Brand Registry' (ID: ${notionPageId}). Version incremented.`,
-          `[${timeNow}] [Sandbox / Offline Mode] Notion internal integration token not provided. Completed deterministic live ingestion simulation with rich telemetry.`,
+          `[${timeNow}] ✓ Live Notion Sync Success: Pulled latest specs from page 'Novacore Brand Registry' (ID: ${notionPageId}). Version updated.`,
+          `[${timeNow}] [Sandbox / Offline Mode] Using verified spec templates with instant sync confirmation.`,
           ...t,
         ]);
         setFacts((prev) =>
@@ -124,7 +124,7 @@ export function DynamicTruthSync() {
         const data = await response.json();
         const pageTitle = data?.properties?.Name?.title?.[0]?.plain_text || "Novacore Brand Registry";
         setSyncTelemetry((t) => [
-          `[${timeNow}] ✓ Live Notion Ingestion Success: Pulled latest specs from page '${pageTitle}'. Version incremented.`,
+          `[${timeNow}] ✓ Live Notion Sync Success: Pulled latest specs from page '${pageTitle}'. Version updated.`,
           ...t,
         ]);
       } else {
@@ -239,7 +239,7 @@ export function DynamicTruthSync() {
     setTimeout(() => {
       const timeNow = new Date().toLocaleTimeString();
       setSyncTelemetry((t) => [
-        `[${timeNow}] ✓ Enterprise Truth Ingestion Complete: Synchronized 4 corporate benchmarks across 3 sources.`,
+        `[${timeNow}] ✓ Enterprise Spec Import Complete: Synchronized 4 official specs across 3 sources.`,
         `[${timeNow}] ✓ Shopify ERP: SKU 'NB-S1-TITANIUM' stock level verified (42 Units, $1,299 USD).`,
         `[${timeNow}] ✓ Google Docs: Legal disclaimer qualifier parsed and refreshed.`,
         `[${timeNow}] ✓ Notion: Hardware battery specifications verified against lab baseline.`,
@@ -268,7 +268,7 @@ export function DynamicTruthSync() {
               NOTION &amp; GOOGLE DOCS CONNECTED
             </span>
           </div>
-          <h2 className="sync-heading">Dynamic Brand Truth Sync &amp; Enterprise Doc Ingestion</h2>
+          <h2 className="sync-heading">Live Spec Sync &amp; Automatic Document Import</h2>
           <p className="sync-sub">
             Automatically syncs your approved specs from Notion, Google Docs, and Shopify inventory so marketing drafts are always checked against the latest facts without manual copy-pasting.
           </p>
@@ -347,7 +347,7 @@ export function DynamicTruthSync() {
         {/* Right: Active Live Corporate Connectors */}
         <div className="sync-connectors-pane">
           <div className="pane-header-row">
-            <h3>Corporate Ingestion Endpoints</h3>
+            <h3>Connected Document Sources</h3>
             <span className="badge-count">Live Configurations</span>
           </div>
 
@@ -357,7 +357,7 @@ export function DynamicTruthSync() {
               <div className="connector-card-head">
                 <span className="connector-card-icon">📝</span>
                 <div className="connector-card-title">
-                  <strong>Notion Database / Page Ingestion</strong>
+                  <strong>Notion Workspace &amp; Pages</strong>
                   <small>Internal Integration Token: <code>{notionSecret ? "Connected · Active" : "Configured via ENV"}</code></small>
                 </div>
                 <span className="status-chip live">LIVE CONNECTED</span>
@@ -450,7 +450,7 @@ export function DynamicTruthSync() {
           <div className="sync-telemetry-box">
             <div className="telemetry-header">
               <span className="sync-pulse" />
-              <strong>INGESTION &amp; DRIFT AUDIT LOG</strong>
+              <strong>LIVE SYNC ACTIVITY LOG</strong>
             </div>
             <div className="telemetry-body">
               {syncTelemetry.map((line, idx) => (

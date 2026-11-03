@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}<ModalAccessibility /><ProductTour /></body>
+      <body suppressHydrationWarning>{children}<ModalAccessibility /><ProductTour /></body>
     </html>
   );
 }

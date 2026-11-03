@@ -253,11 +253,104 @@ export function AppSidebar({
         </span>
       </Link>
 
-      <div className="workspace-switcher" title="Active enterprise workspace">
-        <span className="workspace-dot" />
-        <span>Novacore Brand Workspace</span>
-        <span className="chevron" aria-hidden="true">⌄</span>
+      <div className="workspace-switcher-wrap" ref={switcherRef} suppressHydrationWarning>
+        <button
+          type="button"
+          className={`workspace-switcher ${isWorkspaceOpen ? "open" : ""}`}
+          onClick={() => setIsWorkspaceOpen((prev) => !prev)}
+          title={`Active enterprise workspace: ${activeWorkspace.name}. Click to switch brand workspace.`}
+          aria-haspopup="listbox"
+          aria-expanded={isWorkspaceOpen}
+          aria-label="Switch brand workspace"
+        >
+          <span
+            className="workspace-dot"
+            style={{
+              background: activeWorkspace.dotColor,
+              boxShadow: `0 0 6px ${activeWorkspace.dotColor}`,
+            }}
+          />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+            {activeWorkspace.name}
+          </span>
+          <span className="chevron" aria-hidden="true">
+            ⌄
+          </span>
+        </button>
+
+        {isWorkspaceOpen && (
+          <div className="workspace-dropdown-menu" role="listbox" aria-label="Available Brand Workspaces">
+            <div className="workspace-dropdown-header">
+              <span className="workspace-dropdown-kicker">Brand Workspaces</span>
+              <span className="workspace-dropdown-sub">Isolated specs, rules &amp; team access</span>
+            </div>
+
+            <div className="workspace-options-list">
+              {WORKSPACES.map((w) => {
+                const isSelected = w.id === activeWorkspace.id;
+                return (
+                  <button
+                    key={w.id}
+                    type="button"
+                    className={`workspace-option-btn ${isSelected ? "active" : ""}`}
+                    onClick={() => handleSelectWorkspace(w)}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <div className="workspace-option-top">
+                      <span
+                        className="workspace-dot"
+                        style={{
+                          background: w.dotColor,
+                          boxShadow: `0 0 5px ${w.dotColor}`,
+                        }}
+                      />
+                      <span className="workspace-option-name">{w.name}</span>
+                      <span className={`workspace-badge-tag ${w.badge}`}>{w.badgeLabel}</span>
+                      {isSelected && <span style={{ color: "#22C55E", fontSize: 11, marginLeft: "auto" }}>✓</span>}
+                    </div>
+                    <div className="workspace-option-desc">{w.description}</div>
+                    <div className="workspace-option-meta">
+                      <span>{w.specsCount} approved specs</span>
+                      <span>{w.status}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="workspace-dropdown-footer">
+              <button
+                type="button"
+                className="workspace-add-btn"
+                onClick={handleAddWorkspace}
+                title="Create a new isolated brand workspace"
+              >
+                ＋ New Brand Workspace
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
+      {workspaceNotice && (
+        <div
+          role="status"
+          style={{
+            margin: "0 0 10px",
+            padding: "8px 10px",
+            background: "rgba(34, 197, 94, 0.12)",
+            border: "1px solid rgba(34, 197, 94, 0.35)",
+            borderRadius: 4,
+            color: "#4ADE80",
+            fontSize: 9.5,
+            fontFamily: "var(--ind-font-mono, monospace)",
+            lineHeight: 1.4,
+          }}
+        >
+          ✓ {workspaceNotice}
+        </div>
+      )}
 
       <Link
         className={`nav-action-btn ${activeKey === "submit" ? "active" : ""}`}

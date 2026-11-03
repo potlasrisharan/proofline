@@ -30,7 +30,9 @@ export function RevisionHistory({ revisions, selectedId, onSelect }: RevisionHis
           <button className={`revision-item ${selected.id === revision.id ? "active" : ""}`} type="button" key={revision.id} aria-pressed={selected.id === revision.id} onClick={() => onSelect(revision.id)}>
             <span className="revision-marker">{revision.label.replace("Version ", "v").replace(" draft", "")}</span>
             <span><strong>{revision.label}</strong><small>{revision.author} · {revision.time}</small><em>{revision.summary}</em></span>
-            <span className={`revision-status ${revision.status}`}>{revision.status}</span>
+            <span className={`revision-status ${revision.status}`}>
+              {revision.status === "superseded" ? "previous" : revision.status === "audited" ? "verified" : revision.status}
+            </span>
           </button>
         ))}
       </div>

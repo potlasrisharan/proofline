@@ -597,7 +597,7 @@ export function PublishingDriftRadar() {
           <div className="radar-telemetry-box">
             <div className="telemetry-header">
               <span className="radar-pulse active" />
-              <strong>DRIFT RADAR EVENT LOG</strong>
+              <strong>LIVE POST MONITOR EVENT LOG</strong>
             </div>
             <div className="telemetry-body">
               {radarLog.map((line, idx) => (
