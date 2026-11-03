@@ -914,8 +914,30 @@ export default function Home() {
               />
             </Link>
 
-            {/* Right Actions: Persona profile */}
-            <div className="industrial-header-right">
+            {/* Right Actions: Enterprise Login CTA & Persona profile */}
+            <div className="industrial-header-right" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <Link
+                href="/login"
+                className="industrial-login-btn"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "6px 14px",
+                  background: "var(--ind-fg, #18181B)",
+                  color: "#FFFFFF",
+                  borderRadius: 9999,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  fontFamily: "var(--ind-font-sans, sans-serif)",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                }}
+              >
+                <span>🔒</span>
+                <span>Sign In</span>
+              </Link>
               <button
                 className={`avatar avatar-button persona-avatar ${activePersona.badgeTone}`}
                 type="button"

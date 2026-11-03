@@ -140,8 +140,8 @@ As formally committed at Round 2, Binary Brains has completed and delivered all 
 Proofline undergoes rigorous multi-tier testing before every deployment:
 
 ### 1. Automated Test Results
-- **Frontend Playwright E2E Tests:** **20 passed, 0 failed, 1 skipped** (opt-in local API). Covers end-to-end judge journeys, intake, visual diffs, Sarvam AI modal, Zernio dispatch, cryptographic audit chain, and engine toggle.
-- **Backend Pytest Suite:** **155 passed, 0 failed, 2 skipped** (in-memory demo isolation). Covers role RBAC, document extraction, audit engine, impact queue, and governance insights.
+- **Frontend Playwright E2E Tests:** **49 passed, 0 failed, 1 skipped** (50 tests total across 5 parallel workers). Covers end-to-end judge journeys, intake, visual diffs, Sarvam AI modal, Zernio dispatch, cryptographic audit chain, role logins, empty states, and engine toggles.
+- **Backend Pytest Suite:** **159 passed, 0 failed, 2 skipped** (in-memory demo isolation). Covers role RBAC, document extraction, audit engine, impact queue, governance insights, Groq fallbacks, and Sarvam cross-lingual verifier.
 - **VoltEdge Benchmark Evaluation Corpus:** **194 golden test cases** verified with 0 regressions.
   - Factual Claim Precision: **100% (154/154)**
   - Factual Claim Recall: **97.5% (154/158)**
@@ -181,6 +181,6 @@ This submission package, deployed code, and product PDF have been verified end-t
 
 * **Team Name:** Binary Brains  
 * **Lead Engineer:** Potla Sri Sharan  
-* **Submission Date:** November 1, 2026  
+* **Submission Date:** November 3, 2026  
 * **Product Status:** COMPLETE, DEPLOYED & AUDITED  
 * **Live Link:** [https://proofline-4cz.pages.dev](https://proofline-4cz.pages.dev)
