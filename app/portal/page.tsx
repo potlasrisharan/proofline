@@ -21,12 +21,36 @@ function getInitialPortalRole(): ProoflineRole | null {
   return null;
 }
 
-export default function PortalPage() {
+export type PortalPageProps = {
+  activeRole?: ProoflineRole;
+  onRoleChange?: (role: ProoflineRole) => void;
+  isEmbedded?: boolean;
+};
+
+export default function PortalPage({
+  activeRole,
+  onRoleChange,
+  isEmbedded = false,
+}: PortalPageProps = {}) {
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<ProoflineRole | null>(getInitialPortalRole);
+  const [selectedRole, setSelectedRole] = useState<ProoflineRole | null>(() => {
+    if (activeRole) return activeRole;
+    return getInitialPortalRole();
+  });
+  const [prevActiveRole, setPrevActiveRole] = useState(activeRole);
+
+  if (activeRole !== prevActiveRole) {
+    setPrevActiveRole(activeRole);
+    if (activeRole) {
+      setSelectedRole(activeRole);
+    }
+  }
 
   const handleLogin = (role: ProoflineRole) => {
     setSelectedRole(role);
+    if (onRoleChange) {
+      onRoleChange(role);
+    }
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem("proofline:portal-active-role", role);
       window.sessionStorage.setItem("proofline:active-role", role);
@@ -57,58 +81,53 @@ export default function PortalPage() {
   };
 
   return (
-    <div className={styles.portalWrapper}>
-      {/* 1. Global Noise Texture Overlay */}
-      <div className="industrial-noise-overlay" aria-hidden="true" />
-
-      {/* 2. Structural 12-Column Persistent Grid */}
-      <div className="industrial-grid-bg" aria-hidden="true">
-        {Array.from({ length: 12 }).map((_, idx) => (
-          <div key={idx} className="industrial-grid-col" />
-        ))}
-      </div>
-
-      {/* Enterprise Header */}
-      <header className={styles.portalHeader}>
-        <Link href="/" className={styles.brandLockup}>
-          <Image
-            src="/logo.png"
-            alt="Proofline Logo"
-            width={34}
-            height={34}
-            className={styles.brandLogo}
-            priority
-          />
-          <div className={styles.brandText}>
-            <span className={styles.brandName}>Proofline Enterprise</span>
-            <span className={styles.brandSub}>Brand truth, before publish.</span>
+    <div className={`${styles.portalWrapper} ${isEmbedded ? styles.embeddedWrapper : ""}`}>
+      {/* Background and Header ONLY if standalone (not embedded in workspace) */}
+      {!isEmbedded && (
+        <>
+          <div className="industrial-noise-overlay" aria-hidden="true" />
+          <div className="industrial-grid-bg" aria-hidden="true">
+            {Array.from({ length: 12 }).map((_, idx) => (
+              <div key={idx} className="industrial-grid-col" />
+            ))}
           </div>
-        </Link>
 
-        {/* Absolute Centered Logo matching landing page */}
-        <Link href="/" className={styles.logoCenter}>
-          <span className={styles.logoSerif}>PROOF</span>
-          <span className={styles.logoSans}>LINE</span>
-        </Link>
+          <header className={styles.portalHeader}>
+            <Link href="/" className={styles.brandLockup}>
+              <Image
+                src="/logo.png"
+                alt="Proofline Logo"
+                width={34}
+                height={34}
+                className={styles.brandLogo}
+                priority
+              />
+              <div className={styles.brandText}>
+                <span className={styles.brandName}>Proofline Enterprise</span>
+                <span className={styles.brandSub}>Brand truth, before publish.</span>
+              </div>
+            </Link>
 
-        <div className={styles.headerPills}>
-          <span className={styles.systemBadge}>
-            <span className={styles.statusDot} />
-            Cloudflare Edge API Active
-          </span>
-          <span className={styles.systemBadge}>
-            RLS Enforcement Active
-          </span>
-          <button
-            type="button"
-            className={styles.workspaceLink}
-            onClick={() => handleOpenWorkspace()}
-            title="Open unified multi-role workspace"
-          >
-            ⇥ Open Full Workspace
-          </button>
-        </div>
-      </header>
+            <div className={styles.headerPills}>
+              <span className={styles.systemBadge}>
+                <span className={styles.statusDot} />
+                Cloudflare Edge API Active
+              </span>
+              <span className={styles.systemBadge}>
+                RLS Enforcement Active
+              </span>
+              <button
+                type="button"
+                className={styles.workspaceLink}
+                onClick={() => handleOpenWorkspace()}
+                title="Open unified multi-role workspace"
+              >
+                ⇥ Open Full Workspace
+              </button>
+            </div>
+          </header>
+        </>
+      )}
 
       {/* Main Body: Portal Login Screen OR Dedicated Dashboard */}
       <main className={styles.portalMain}>
@@ -121,87 +140,41 @@ export default function PortalPage() {
             onSwitchRole={handleLogin}
             onLogout={handleLogout}
             onOpenWorkspace={() => handleOpenWorkspace(selectedRole)}
+            isEmbedded={isEmbedded}
           />
         )}
       </main>
 
-      {/* Enterprise Footer */}
-      <footer className={styles.portalFooter}>
-        <span>Proofline Enterprise Portal · Novacore Production Workspace · Cryptographic Evidence Engine</span>
-        <span>
-          <Link href="/privacy">AI &amp; Data Disclosure</Link> · Novacore Brand Safety Standards
-        </span>
-      </footer>
+      {!isEmbedded && (
+        <footer className={styles.portalFooter}>
+          <span>Proofline Enterprise Portal · Novacore Production Workspace · Cryptographic Evidence Engine</span>
+          <span>
+            <Link href="/privacy">AI &amp; Data Disclosure</Link> · Novacore Brand Safety Standards
+          </span>
+        </footer>
+      )}
     </div>
   );
 }
 
 // -------------------------------------------------------------
-// SEPARATE MAIN SCREEN: 5 DEDICATED LOGINS & ENTERPRISE SSO
+// STREAMLINED ROLE PORTAL SELECTION (Clean & Minimal)
 // -------------------------------------------------------------
 function PortalMainLoginView({ onSelectRole }: { onSelectRole: (role: ProoflineRole) => void }) {
   const personas = useMemo(() => Object.values(demoPersonas), []);
-  const [ssoEmail, setSsoEmail] = useState("");
-  const [ssoPassword, setSsoPassword] = useState("");
-  const [ssoFeedback, setSsoFeedback] = useState<string | null>(null);
-
-  const handleSsoSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const clean = ssoEmail.trim().toLowerCase();
-    const match = personas.find((p) => p.email.toLowerCase() === clean);
-    if (match) {
-      setSsoFeedback(`Signing in as ${match.name}...`);
-      setTimeout(() => onSelectRole(match.role), 250);
-    } else {
-      setSsoFeedback(`Signing in with enterprise identity (${clean})...`);
-      setTimeout(() => onSelectRole("legal_reviewer"), 250);
-    }
-  };
 
   return (
     <>
-      <div className={styles.portalHero}>
-        <span className={styles.heroKicker}>Novacore Identity &amp; Role Gateways</span>
-        <h1 className={styles.heroTitle}>Select Your Role to Access Your Dedicated Dashboard</h1>
-        <p className={styles.heroSubtitle}>
-          Each department in Novacore has separate responsibilities and governance tools. Sign in to your dedicated role portal below to access specialized workflows, automated checks, and audit controls.
+      <div className={styles.portalHero} style={{ marginBottom: 28 }}>
+        <h1 className={styles.heroTitle} style={{ fontSize: 26, margin: "0 0 8px" }}>
+          Select Your Role to Access Your Dedicated Dashboard
+        </h1>
+        <p className={styles.heroSubtitle} style={{ fontSize: 13, margin: 0 }}>
+          Choose a role to access specialized governance workflows and automated checks.
         </p>
       </div>
 
-      {/* Universal Enterprise SSO Quick Bar */}
-      <form className={styles.ssoBar} onSubmit={handleSsoSubmit}>
-        <div>
-          <div className={styles.ssoBarTitle}>Enterprise Corporate SSO Sign In</div>
-          <div className={styles.ssoBarSub}>Enter your Novacore corporate address to route to your specific dashboard</div>
-        </div>
-        <div className={styles.ssoInputs}>
-          <input
-            type="email"
-            required
-            placeholder="e.g. maya.chen@novacore.io"
-            value={ssoEmail}
-            onChange={(e) => setSsoEmail(e.target.value)}
-            className={styles.ssoInput}
-          />
-          <input
-            type="password"
-            placeholder="••••••••••••"
-            value={ssoPassword}
-            onChange={(e) => setSsoPassword(e.target.value)}
-            className={styles.ssoInput}
-          />
-          <button type="submit" className={styles.ssoSubmitBtn}>
-            Sign In with SSO →
-          </button>
-        </div>
-        {ssoFeedback ? (
-          <div style={{ width: "100%", fontSize: 11, fontWeight: 700, color: "#22C55E", fontFamily: "var(--ind-font-mono, monospace)", marginTop: 8 }}>
-            ✓ {ssoFeedback}
-          </div>
-        ) : null}
-      </form>
-
-      {/* 5 SEPARATE ROLE LOGINS */}
+      {/* 5 COMPACT ROLE LOGINS */}
       <section className={styles.loginCardsSection} aria-label="Separate Role Logins">
         <div className={styles.loginCardsGrid}>
           {personas.map((persona) => {
@@ -210,6 +183,8 @@ function PortalMainLoginView({ onSelectRole }: { onSelectRole: (role: ProoflineR
                 key={persona.role}
                 className={`${styles.loginCard} ${styles[persona.badgeTone]}`}
                 aria-label={`${persona.title} Login`}
+                onClick={() => onSelectRole(persona.role)}
+                style={{ cursor: "pointer" }}
               >
                 <div className={styles.loginCardHeader}>
                   <div className={`${styles.roleAvatar} ${styles[persona.badgeTone]}`}>
@@ -218,30 +193,17 @@ function PortalMainLoginView({ onSelectRole }: { onSelectRole: (role: ProoflineR
                   <div className={styles.roleMeta}>
                     <h2 className={styles.roleName}>{persona.name}</h2>
                     <div className={styles.roleTitle}>{persona.title}</div>
-                    <div className={styles.roleDepartment}>{persona.department}</div>
                   </div>
                 </div>
 
-                <div className={styles.roleEmailBadge}>{persona.email}</div>
-
-                <div className={styles.roleFocusBox}>
-                  <strong>Focus:</strong> {persona.focus}
-                </div>
-
-                <ul className={styles.capabilitiesList}>
-                  {persona.coreCapabilities.slice(0, 3).map((cap, i) => (
-                    <li key={i} className={styles.capabilityItem}>
-                      <span className={styles.capabilityCheck}>✓</span>
-                      <span>{cap}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className={styles.loginCardAction}>
+                <div className={styles.loginCardAction} style={{ marginTop: 16 }}>
                   <button
                     type="button"
                     className={`${styles.loginLaunchBtn} ${styles[persona.badgeTone]}`}
-                    onClick={() => onSelectRole(persona.role)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectRole(persona.role);
+                    }}
                   >
                     <span>Sign In to {persona.name.split(" ")[0]}&apos;s Dashboard</span>
                     <span>→</span>
@@ -265,12 +227,14 @@ function RoleDedicatedDashboard({
   onSwitchRole,
   onLogout,
   onOpenWorkspace,
+  isEmbedded = false,
 }: {
   role: ProoflineRole;
   persona: DemoPersona;
   onSwitchRole: (role: ProoflineRole) => void;
   onLogout: () => void;
   onOpenWorkspace: () => void;
+  isEmbedded?: boolean;
 }) {
   return (
     <div className={styles.dashboardContainer}>
@@ -280,14 +244,25 @@ function RoleDedicatedDashboard({
           <button type="button" className={styles.backBtn} onClick={onLogout} title="Return to Role Logins screen">
             ← Switch Login / All Roles
           </button>
-          <div className={styles.activePersonaPill}>
-            <div className={`${styles.pillAvatar} ${styles[persona.badgeTone]}`}>
-              {persona.initials}
-            </div>
-            <div className={styles.pillDetails}>
-              <span className={styles.pillName}>{persona.name}</span>
-              <span className={styles.pillRoleTag}>{persona.title} · {persona.email}</span>
-            </div>
+          <div className={styles.roleQuickTabs} role="tablist" aria-label="Switch Role Dashboard">
+            {Object.values(demoPersonas).map((p) => {
+              const isActive = p.role === role;
+              return (
+                <button
+                  key={p.role}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  className={`${styles.roleTabPill} ${isActive ? styles.roleTabPillActive : ""}`}
+                  onClick={() => onSwitchRole(p.role)}
+                  title={`Switch to ${p.name} (${p.title})`}
+                >
+                  <span className={`${styles.tabDot} ${styles[p.badgeTone]}`} />
+                  <span>{p.name.split(" ")[0]}</span>
+                  <span className={styles.tabRoleShort}>· {p.title}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -307,14 +282,16 @@ function RoleDedicatedDashboard({
               ))}
             </select>
           </label>
-          <button
-            type="button"
-            className={styles.workspaceLink}
-            onClick={onOpenWorkspace}
-            title="Open comprehensive workspace for this role"
-          >
-            Open Full Workspace ↗
-          </button>
+          {!isEmbedded && (
+            <button
+              type="button"
+              className={styles.workspaceLink}
+              onClick={onOpenWorkspace}
+              title="Open comprehensive workspace for this role"
+            >
+              Open Full Workspace ↗
+            </button>
+          )}
         </div>
       </div>
 

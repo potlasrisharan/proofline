@@ -15,6 +15,16 @@
   z-index: 1;
 }
 
+.embeddedWrapper {
+  min-height: auto;
+  background: transparent;
+}
+
+.embeddedWrapper .portalMain {
+  padding: 0;
+  max-width: 100%;
+}
+
 /* 1. STICKY HEADER (80px, #EBEBE8 @ 0.85 opacity, 12px backdrop-blur, 1px border) */
 .portalHeader {
   background: rgba(235, 235, 232, 0.95);
@@ -70,34 +80,9 @@
   margin-top: 3px;
 }
 
-/* Centered Logo in Grid */
+/* Centered Logo in Grid (hidden to avoid header collisions) */
 .logoCenter {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 6px;
-  text-decoration: none;
-  color: var(--ind-fg, #18181B);
-  white-space: nowrap;
-}
-
-.logoSerif {
-  font-family: var(--ind-font-serif, 'Playfair Display', Georgia, serif);
-  font-style: italic;
-  font-size: 24px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-}
-
-.logoSans {
-  font-family: var(--ind-font-sans, 'Inter', sans-serif);
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  display: none;
 }
 
 .headerPills {
@@ -528,6 +513,56 @@
   background: var(--ind-fg, #18181B);
   color: #FFFFFF;
 }
+
+.roleQuickTabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.roleTabPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--ind-border, #D4D4D8);
+  background: #F4F4F5;
+  color: var(--ind-fg, #18181B);
+  font-family: var(--ind-font-sans, 'Inter', sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.roleTabPill:hover {
+  background: #E4E4E7;
+  border-color: #A1A1AA;
+}
+
+.roleTabPillActive {
+  background: var(--ind-fg, #18181B);
+  color: #FFFFFF;
+  border-color: var(--ind-fg, #18181B);
+}
+
+.tabRoleShort {
+  opacity: 0.7;
+  font-size: 10px;
+}
+
+.tabDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.tabDot.coral { background: #EF4444; }
+.tabDot.amber { background: #F59E0B; }
+.tabDot.blue { background: #0066FF; }
+.tabDot.mint { background: #22C55E; }
+.tabDot.teal { background: #0D9488; }
 
 .activePersonaPill {
   display: flex;

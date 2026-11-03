@@ -20,6 +20,7 @@ import {
   demoPersonas,
 } from "./components/role-dashboard-showcase";
 import { CreatorPlatformStudioModal } from "./components/creator-platform-studio";
+import { ProductWorkflowSitemap } from "./components/workflow-sitemap";
 import PortalPage from "./portal/page";
 import type { ProoflineRole } from "./lib/proofline-api";
 
@@ -894,8 +895,7 @@ export default function Home() {
           <div className="industrial-header-inner">
             {/* Left Nav Links (10px uppercase tracking 0.22em) */}
             <nav className="industrial-header-left">
-              <a href="#services-section" className="industrial-nav-link">Services</a>
-              <a href="#dashboards-section" className="industrial-nav-link">Dashboards</a>
+              <a href="#workflow-sitemap" className="industrial-nav-link">Workflow Sitemap</a>
               <button
                 type="button"
                 className="industrial-nav-link"
@@ -912,6 +912,7 @@ export default function Home() {
               </button>
               <Link href="/impact" className="industrial-nav-link">Impact radar</Link>
               <Link href="/privacy" className="industrial-nav-link">Trust &amp; Privacy</Link>
+              <Link href="/portal" className="industrial-nav-link">Role Portal</Link>
             </nav>
 
             {/* Absolute Centered Logo Brand Mark */}
@@ -1107,14 +1108,122 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 7. INTERACTIVE PROJECT / DASHBOARD LIST (Rows with Clip-Path Reveal) */}
+        {/* 7. COMPREHENSIVE PRODUCT WORKFLOW SITEMAP */}
+        <ProductWorkflowSitemap
+          onNavigateView={navigate}
+          onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
+          onOpenStartReview={() => setIsStartModalOpen(true)}
+          onOpenDispatchModal={() => setIsPublishModalOpen(true)}
+        />
+
+        {/* 8. SEQUENTIAL WORKFLOW STAGE PIPELINE */}
         <section id="dashboards-section" className="industrial-project-section">
           <div className="industrial-section-label-bar" id="services-section">
-            <span className="industrial-mono-10">01 // WORKSPACE MODULES · WE OFFER THESE SERVICES</span>
-            <span className="industrial-mono-10-muted">CLICK ROW TO ENTER DIRECT DASHBOARD</span>
+            <span className="industrial-mono-10">02 // SEQUENTIAL WORKFLOW EXPLORER · 4 CORE STAGES</span>
+            <span className="industrial-mono-10-muted">EXPLORE HOW CLAIMS FLOW FROM INGESTION TO VERIFIED DISPATCH</span>
           </div>
 
-          {/* Row 01: Creator Content Studio */}
+          {/* ==============================================================
+              STAGE 01 · TRUTH INGESTION & GROUNDING (INPUT LAYER)
+              ============================================================== */}
+          <div id="stage-01" className="industrial-stage-divider-bar">
+            <div className="stage-divider-left">
+              <span className="stage-divider-badge">STAGE 01</span>
+              <span className="stage-divider-title">TRUTH INGESTION &amp; GROUNDING (INPUT LAYER)</span>
+            </div>
+            <span className="stage-divider-right">OWNER: FACT &amp; BRAND OWNERS · NOTION, DOCS &amp; ERP</span>
+          </div>
+
+          {/* Row 01: Dynamic Brand Truth Sync */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push("/sync")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/sync")}
+          >
+            <span className="industrial-project-idx">01 / SYNC</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">ENTERPRISE INGESTION · NOTION, GOOGLE DOCS &amp; SHOPIFY</span>
+              <h2 className="industrial-project-title">Dynamic Brand Truth Sync</h2>
+            </div>
+            <p className="industrial-project-desc">
+              Live corporate data ingestion syncing specs from Notion, Google Docs, and real-time inventory from Shopify ERP into versioned truth records.
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-02-truth.jpg" alt="Dynamic Brand Truth Sync" fill sizes="500px" style={{ objectFit: "cover" }} />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 01 · NOTION &amp; ERP CONNECTOR</span>
+            </div>
+          </div>
+
+          {/* Row 02: Brand Truth Registry */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("registry")}
+            onKeyDown={(e) => e.key === "Enter" && navigate("registry")}
+          >
+            <span className="industrial-project-idx">02 / REGISTRY</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">BRAND LEADERSHIP · LENA ORTIZ</span>
+              <h2 className="industrial-project-title">Brand Truth Registry</h2>
+            </div>
+            <p className="industrial-project-desc">
+              Maintain immutable product specifications, 12h IEEE battery hours, approved pricing qualifiers, and strict validity windows.
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-02-truth.jpg" alt="Brand Truth Registry" fill sizes="500px" style={{ objectFit: "cover" }} />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 02 · IMMUTABLE SPEC LEDGER</span>
+            </div>
+          </div>
+
+          {/* Row 03: Fact-Change Impact Radar */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push("/impact")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/impact")}
+          >
+            <span className="industrial-project-idx">03 / IMPACT</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">ENTERPRISE WIDE · ALL ROLES</span>
+              <h2 className="industrial-project-title">Fact-Change Impact Radar</h2>
+            </div>
+            <p className="industrial-project-desc">
+              When an engineering specification updates (e.g. 12h → 14h), automatically trace and flag all marketing and support collateral affected downstream.
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-05-drift.jpg" alt="Fact-Change Impact Radar" fill sizes="500px" style={{ objectFit: "cover" }} />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 03 · IMPACT TRACING ENGINE</span>
+            </div>
+          </div>
+
+          {/* ==============================================================
+              STAGE 02 · CONTENT CREATION & MULTIMODAL CAPTURE (DRAFTING LAYER)
+              ============================================================== */}
+          <div id="stage-02" className="industrial-stage-divider-bar">
+            <div className="stage-divider-left">
+              <span className="stage-divider-badge" style={{ background: "#22C55E" }}>STAGE 02</span>
+              <span className="stage-divider-title">CONTENT CREATION &amp; MULTIMODAL CAPTURE (DRAFTING LAYER)</span>
+            </div>
+            <span className="stage-divider-right">OWNER: CONTENT CREATORS &amp; DESIGNERS · GROQ, GEMINI &amp; SARVAM</span>
+          </div>
+
+          {/* Row 04: Creator Content Studio */}
           <div
             className="industrial-project-row"
             role="button"
@@ -1122,13 +1231,13 @@ export default function Home() {
             onClick={() => setIsCreatorStudioOpen(true)}
             onKeyDown={(e) => e.key === "Enter" && setIsCreatorStudioOpen(true)}
           >
-            <span className="industrial-project-idx">01 / DRAFT</span>
+            <span className="industrial-project-idx">04 / STUDIO</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">CONTENT CREATOR LEAD · AISHA RAHMAN</span>
               <h2 className="industrial-project-title">Creator Content Studio</h2>
             </div>
             <p className="industrial-project-desc">
-              Draft copy with live spec-matching, 12h battery lab replacements, and Indic localization in Hindi and Telugu.
+              Draft pre-flight copy with real-time spec-diffing, 1-click 12h battery lab replacements, and pre-submission compliance scorecards.
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
@@ -1136,11 +1245,74 @@ export default function Home() {
                 <Image src="/previews/preview-01-workspace.jpg" alt="Creator Content Studio" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 01 · SARVAM AI &amp; SPEC DIFF</span>
+              <span className="industrial-reveal-badge">MODULE 04 · PRE-FLIGHT SPEC DIFF</span>
             </div>
           </div>
 
-          {/* Row 02: Campaign Review Queue */}
+          {/* Row 05: Indic Multilingual Engine */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => setIsCreatorStudioOpen(true)}
+            onKeyDown={(e) => e.key === "Enter" && setIsCreatorStudioOpen(true)}
+          >
+            <span className="industrial-project-idx">05 / INDIC</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">REGIONAL LOCALIZATION · SARVAM AI</span>
+              <h2 className="industrial-project-title">Indic Multilingual Localization</h2>
+            </div>
+            <p className="industrial-project-desc">
+              Guarantees factual compliance across Hindi and Telugu marketing assets, ensuring translated technical claims strictly match verified specifications.
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-01-workspace.jpg" alt="Indic Multilingual Localization" fill sizes="500px" style={{ objectFit: "cover" }} />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 05 · SARVAM AI HINDI &amp; TELUGU</span>
+            </div>
+          </div>
+
+          {/* Row 06: Multimodal Video & Carousel Radar */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => router.push("/multimodal")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/multimodal")}
+          >
+            <span className="industrial-project-idx">06 / VISION</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">MULTIMODAL AI · GEMINI 2.5 FLASH</span>
+              <h2 className="industrial-project-title">Multimodal Video &amp; Carousel Radar</h2>
+            </div>
+            <p className="industrial-project-desc">
+              Audits image carousels, Figma exports, and video frames (Reels/Shorts) for claim veracity and FTC mandatory disclaimer font height ratios (≥ 2.5%).
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-07-vault.jpg" alt="Multimodal Video &amp; Carousel Compliance" fill sizes="500px" style={{ objectFit: "cover" }} />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 06 · GEMINI MULTIMODAL VISION</span>
+            </div>
+          </div>
+
+          {/* ==============================================================
+              STAGE 03 · DETERMINISTIC CLAIM AUDIT & LEGAL GATE (VERIFICATION LAYER)
+              ============================================================== */}
+          <div id="stage-03" className="industrial-stage-divider-bar">
+            <div className="stage-divider-left">
+              <span className="stage-divider-badge" style={{ background: "#F59E0B" }}>STAGE 03</span>
+              <span className="stage-divider-title">DETERMINISTIC CLAIM AUDIT &amp; LEGAL GATE (VERIFICATION LAYER)</span>
+            </div>
+            <span className="stage-divider-right">OWNER: EDITORIAL MANAGERS &amp; LEGAL COUNSEL · FTC §5 &amp; LANHAM §43(A)</span>
+          </div>
+
+          {/* Row 07: Campaign Review Queue */}
           <div
             className="industrial-project-row"
             role="button"
@@ -1160,13 +1332,13 @@ export default function Home() {
               }
             }}
           >
-            <span className="industrial-project-idx">02 / TRIAGE</span>
+            <span className="industrial-project-idx">07 / TRIAGE</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">EDITORIAL MANAGER · MARCUS VANCE</span>
-              <h2 className="industrial-project-title">Campaign Review Queue</h2>
+              <h2 className="industrial-project-title">Campaign Review Queue &amp; Triage</h2>
             </div>
             <p className="industrial-project-desc">
-              Triage marketing submissions, resolve claim discrepancies against immutable specs, and clear publishing gates.
+              Triage marketing submissions by risk score, resolve claim discrepancies against immutable specs, and inspect evidence-linked source spans.
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
@@ -1174,25 +1346,25 @@ export default function Home() {
                 <Image src="/previews/preview-03-compliance.jpg" alt="Campaign Review Queue" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 02 · QUEUE TRIAGE ENGINE</span>
+              <span className="industrial-reveal-badge">MODULE 07 · QUEUE TRIAGE ENGINE</span>
             </div>
           </div>
 
-          {/* Row 03: Regulatory Quality Gate */}
+          {/* Row 08: Regulatory Quality Gate */}
           <div
             className="industrial-project-row"
             role="button"
             tabIndex={0}
-            onClick={() => launchRoleDashboard("legal_reviewer")}
-            onKeyDown={(e) => e.key === "Enter" && launchRoleDashboard("legal_reviewer")}
+            onClick={() => router.push("/findings")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/findings")}
           >
-            <span className="industrial-project-idx">03 / AUDIT</span>
+            <span className="industrial-project-idx">08 / AUDIT</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">AUTHORISED LEGAL REVIEWER · MAYA CHEN</span>
               <h2 className="industrial-project-title">Regulatory Quality Gate</h2>
             </div>
             <p className="industrial-project-desc">
-              Deterministic statutory compliance checks for FTC §5 deceptive claims, Lanham Act §43(a), and safe-harbor rewrites.
+              Deterministic statutory compliance checks for FTC §5 deceptive claims, Lanham Act §43(a) comparative claims, and safe-harbor rewrites.
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
@@ -1200,63 +1372,11 @@ export default function Home() {
                 <Image src="/previews/preview-03-compliance.jpg" alt="Regulatory Quality Gate" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 03 · STATUTORY COMPLIANCE</span>
+              <span className="industrial-reveal-badge">MODULE 08 · STATUTORY COMPLIANCE</span>
             </div>
           </div>
 
-          {/* Row 04: Truth Registry & Dispatch */}
-          <div
-            className="industrial-project-row"
-            role="button"
-            tabIndex={0}
-            onClick={() => navigate("registry")}
-            onKeyDown={(e) => e.key === "Enter" && navigate("registry")}
-          >
-            <span className="industrial-project-idx">04 / DISPATCH</span>
-            <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">BRAND LEADERSHIP · LENA ORTIZ</span>
-              <h2 className="industrial-project-title">Truth Registry &amp; Dispatch</h2>
-            </div>
-            <p className="industrial-project-desc">
-              Maintain immutable product specifications, battery hours, benchmarks, and gated multi-platform dispatch.
-            </p>
-            <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-02-truth.jpg" alt="Truth Registry & Dispatch" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 04 · IMMUTABLE REGISTRY</span>
-            </div>
-          </div>
-
-          {/* Row 05: Fact-Change Impact Radar */}
-          <div
-            className="industrial-project-row"
-            role="button"
-            tabIndex={0}
-            onClick={() => router.push("/impact")}
-            onKeyDown={(e) => e.key === "Enter" && router.push("/impact")}
-          >
-            <span className="industrial-project-idx">05 / RADAR</span>
-            <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">ENTERPRISE WIDE · ALL ROLES</span>
-              <h2 className="industrial-project-title">Fact-Change Impact Radar</h2>
-            </div>
-            <p className="industrial-project-desc">
-              Automatically trace and flag all marketing and support collateral affected when engineering specifications change.
-            </p>
-            <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-05-drift.jpg" alt="Fact-Change Impact Radar" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 05 · IMPACT TRACING ENGINE</span>
-            </div>
-          </div>
-
-          {/* Row 06: Cryptographic Audit Chain */}
+          {/* Row 09: Collaborative Revision Audit Trail */}
           <div
             className="industrial-project-row"
             role="button"
@@ -1264,13 +1384,13 @@ export default function Home() {
             onClick={() => navigate("audit-log")}
             onKeyDown={(e) => e.key === "Enter" && navigate("audit-log")}
           >
-            <span className="industrial-project-idx">06 / LEDGER</span>
+            <span className="industrial-project-idx">09 / LEDGER</span>
             <div className="industrial-project-title-box">
               <span className="industrial-mono-10-muted">COMPLIANCE &amp; GOVERNANCE · ALL STAKEHOLDERS</span>
-              <h2 className="industrial-project-title">Cryptographic Audit Chain</h2>
+              <h2 className="industrial-project-title">Collaborative Revision Ledger</h2>
             </div>
             <p className="industrial-project-desc">
-              Immutable SHA-256 hash ledger linking every suggestion, edit, and sign-off into a tamper-evident audit record.
+              Immutable SHA-256 hash ledger linking every suggestion, redline diff, span comment, and sign-off into a tamper-evident audit record.
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
@@ -1278,37 +1398,74 @@ export default function Home() {
                 <Image src="/previews/preview-04-audit.jpg" alt="Cryptographic Audit Chain" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 06 · SHA-256 PROVENANCE</span>
+              <span className="industrial-reveal-badge">MODULE 09 · SHA-256 PROVENANCE</span>
             </div>
           </div>
 
-          {/* Row 07: Multimodal Visual & Video Compliance Engine */}
+          {/* ==============================================================
+              STAGE 04 · ROLE GOVERNANCE, DISPATCH & CONTINUOUS RADAR (OUTPUT LAYER)
+              ============================================================== */}
+          <div id="stage-04" className="industrial-stage-divider-bar">
+            <div className="stage-divider-left">
+              <span className="stage-divider-badge" style={{ background: "#8B5CF6" }}>STAGE 04</span>
+              <span className="stage-divider-title">ROLE GOVERNANCE, DISPATCH &amp; DRIFT RADAR (OUTPUT LAYER)</span>
+            </div>
+            <span className="stage-divider-right">OWNER: AUTHORISED SIGNERS &amp; COUNSEL · ZERNIO, 60S RADAR &amp; VAULT</span>
+          </div>
+
+          {/* Row 10: Enterprise Multi-Role Governance */}
           <div
             className="industrial-project-row"
             role="button"
             tabIndex={0}
-            onClick={() => router.push("/multimodal")}
-            onKeyDown={(e) => e.key === "Enter" && router.push("/multimodal")}
+            onClick={() => router.push("/portal")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/portal")}
           >
-            <span className="industrial-project-idx">07 / VISION</span>
+            <span className="industrial-project-idx">10 / PORTAL</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">MULTIMODAL AI · GEMINI 2.5 FLASH</span>
-              <h2 className="industrial-project-title">Multimodal Video &amp; Carousel Compliance</h2>
+              <span className="industrial-mono-10-muted">STAKEHOLDER ACCESS · 5 PERSONAS</span>
+              <h2 className="industrial-project-title">Enterprise Multi-Role Governance</h2>
             </div>
             <p className="industrial-project-desc">
-              Audits image carousels, Figma exports, and video frames (Instagram Reels/Shorts) for claim truth and FTC mandatory disclaimer font height ratios.
+              Deterministic, least-privilege role boundaries providing dedicated portals for Content Creator, Editorial Manager, Legal Counsel, and Brand Owner.
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
               <div className="industrial-reveal-image">
-                <Image src="/previews/preview-07-vault.jpg" alt="Multimodal Video &amp; Carousel Compliance" fill sizes="500px" style={{ objectFit: "cover" }} />
+                <Image src="/previews/preview-06-dispatch.jpg" alt="Enterprise Multi-Role Governance" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 07 · GEMINI MULTIMODAL VISION</span>
+              <span className="industrial-reveal-badge">MODULE 10 · ROLE-BASED ACCESS CONTROL</span>
             </div>
           </div>
 
-          {/* Row 08: Post-Publish Drift Radar & Live Dispatch */}
+          {/* Row 11: Gated Multi-Channel Dispatch */}
+          <div
+            className="industrial-project-row"
+            role="button"
+            tabIndex={0}
+            onClick={() => setIsPublishModalOpen(true)}
+            onKeyDown={(e) => e.key === "Enter" && setIsPublishModalOpen(true)}
+          >
+            <span className="industrial-project-idx">11 / DISPATCH</span>
+            <div className="industrial-project-title-box">
+              <span className="industrial-mono-10-muted">PRODUCTION PUBLISHING · ZERNIO LIVE GATEWAY</span>
+              <h2 className="industrial-project-title">Gated Multi-Platform Dispatch</h2>
+            </div>
+            <p className="industrial-project-desc">
+              Dispatches cryptographically approved revisions across LinkedIn, X (Twitter), Meta, and Instagram via Zernio multi-channel APIs.
+            </p>
+            <div className="industrial-project-view-btn">→</div>
+            <div className="industrial-project-reveal">
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-06-dispatch.jpg" alt="Gated Multi-Platform Dispatch" fill sizes="500px" style={{ objectFit: "cover" }} />
+              </div>
+              <div className="industrial-reveal-overlay" />
+              <span className="industrial-reveal-badge">MODULE 11 · ZERNIO GATEWAY DISPATCH</span>
+            </div>
+          </div>
+
+          {/* Row 12: Post-Publish Drift Radar */}
           <div
             className="industrial-project-row"
             role="button"
@@ -1316,47 +1473,47 @@ export default function Home() {
             onClick={() => router.push("/drift")}
             onKeyDown={(e) => e.key === "Enter" && router.push("/drift")}
           >
-            <span className="industrial-project-idx">08 / DRIFT</span>
+            <span className="industrial-project-idx">12 / DRIFT</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">PRODUCTION PUBLISHING · META, X &amp; LINKEDIN</span>
-              <h2 className="industrial-project-title">Post-Publish Drift Radar &amp; Live Dispatch</h2>
+              <span className="industrial-mono-10-muted">CONTINUOUS SURVEILLANCE · 60s INTERVAL</span>
+              <h2 className="industrial-project-title">Post-Publish Drift Radar</h2>
             </div>
             <p className="industrial-project-desc">
-              Replaces sandbox dispatch with live platform APIs and actively monitors live published posts, alerting when an expired truth record causes compliance drift.
+              Continuously monitors live published social posts and raises automated compliance drift alerts when underlying product specifications change or expire.
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
               <div className="industrial-reveal-image">
-                <Image src="/previews/preview-06-dispatch.jpg" alt="Post-Publish Drift Radar &amp; Live Dispatch" fill sizes="500px" style={{ objectFit: "cover" }} />
+                <Image src="/previews/preview-05-drift.jpg" alt="Post-Publish Drift Radar" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 08 · CONTINUOUS DRIFT RADAR</span>
+              <span className="industrial-reveal-badge">MODULE 12 · CONTINUOUS DRIFT RADAR</span>
             </div>
           </div>
 
-          {/* Row 09: Dynamic Brand Truth Sync & Ingestion */}
+          {/* Row 13: Cryptographic Proof Vault */}
           <div
             className="industrial-project-row"
             role="button"
             tabIndex={0}
-            onClick={() => router.push("/sync")}
-            onKeyDown={(e) => e.key === "Enter" && router.push("/sync")}
+            onClick={() => router.push("/vault")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/vault")}
           >
-            <span className="industrial-project-idx">09 / SYNC</span>
+            <span className="industrial-project-idx">13 / VAULT</span>
             <div className="industrial-project-title-box">
-              <span className="industrial-mono-10-muted">ENTERPRISE INGESTION · NOTION, GOOGLE DOCS &amp; SHOPIFY</span>
-              <h2 className="industrial-project-title">Dynamic Brand Truth Sync &amp; Ingestion</h2>
+              <span className="industrial-mono-10-muted">PROVENANCE &amp; AUDIT ARCHIVE · LEGAL DEFENSE</span>
+              <h2 className="industrial-project-title">Cryptographic Proof Vault</h2>
             </div>
             <p className="industrial-project-desc">
-              Live corporate data ingestion syncing specs from Notion, Google Docs, and real-time inventory from Shopify ERP into the versioned Truth Registry.
+              Permanent vault maintaining SHA-256 hash chains of every source, rule, edit, and sign-off. Exports tamper-evident audit packages for regulatory review.
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
               <div className="industrial-reveal-image">
-                <Image src="/previews/preview-02-truth.jpg" alt="Dynamic Brand Truth Sync &amp; Ingestion" fill sizes="500px" style={{ objectFit: "cover" }} />
+                <Image src="/previews/preview-07-vault.jpg" alt="Cryptographic Proof Vault" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 09 · DYNAMIC TRUTH SYNC</span>
+              <span className="industrial-reveal-badge">MODULE 13 · COURT-READY PROOF ARCHIVE</span>
             </div>
           </div>
         </section>
@@ -1557,6 +1714,57 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Structured 4-Stage Sitemap Directory */}
+            <div className="industrial-footer-sitemap-grid">
+              <div className="footer-sitemap-col">
+                <span className="footer-col-title">
+                  <span className="footer-sitemap-badge">01</span> TRUTH &amp; INGESTION
+                </span>
+                <div className="footer-col-links">
+                  <Link href="/sync" className="footer-sitemap-item">Dynamic Truth Sync (Notion/ERP)</Link>
+                  <button type="button" onClick={() => navigate("registry")} className="footer-sitemap-item">Brand Truth Registry</button>
+                  <Link href="/impact" className="footer-sitemap-item">Dependency Impact Tree</Link>
+                </div>
+              </div>
+
+              <div className="footer-sitemap-col">
+                <span className="footer-col-title">
+                  <span className="footer-sitemap-badge">02</span> CREATION &amp; VISION
+                </span>
+                <div className="footer-col-links">
+                  <button type="button" onClick={() => setIsCreatorStudioOpen(true)} className="footer-sitemap-item">Creator Content Studio</button>
+                  <button type="button" onClick={() => setIsCreatorStudioOpen(true)} className="footer-sitemap-item">Indic Localization (Sarvam AI)</button>
+                  <Link href="/multimodal" className="footer-sitemap-item">Multimodal Video &amp; Frame Radar</Link>
+                  <Link href="/submit" className="footer-sitemap-item">Quick Draft Intake</Link>
+                </div>
+              </div>
+
+              <div className="footer-sitemap-col">
+                <span className="footer-col-title">
+                  <span className="footer-sitemap-badge">03</span> AUDIT &amp; QUALITY GATE
+                </span>
+                <div className="footer-col-links">
+                  <button type="button" onClick={() => { navigate("reviews"); setSelectedReviewId("novabook-launch"); }} className="footer-sitemap-item">Campaign Review Queue</button>
+                  <Link href="/findings" className="footer-sitemap-item">Regulatory Quality Gate (FTC §5)</Link>
+                  <button type="button" onClick={() => navigate("audit-log")} className="footer-sitemap-item">Collaborative Revision Ledger</button>
+                  <button type="button" onClick={() => navigate("insights")} className="footer-sitemap-item">Governance Analytics</button>
+                </div>
+              </div>
+
+              <div className="footer-sitemap-col">
+                <span className="footer-col-title">
+                  <span className="footer-sitemap-badge">04</span> DISPATCH &amp; DRIFT
+                </span>
+                <div className="footer-col-links">
+                  <Link href="/portal" className="footer-sitemap-item">Enterprise Role Access Portal</Link>
+                  <button type="button" onClick={() => setIsPublishModalOpen(true)} className="footer-sitemap-item">Gated Multi-Channel Dispatch</button>
+                  <Link href="/drift" className="footer-sitemap-item">Post-Publish Drift Radar</Link>
+                  <Link href="/vault" className="footer-sitemap-item">Cryptographic Proof Vault</Link>
+                  <Link href="/privacy" className="footer-sitemap-item">Security &amp; AI Disclosure</Link>
+                </div>
+              </div>
+            </div>
+
             <div className="industrial-footer-bottom">
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <span className="industrial-status-pulse" />
@@ -1676,11 +1884,13 @@ export default function Home() {
         </header>
 
         <div className="content-wrap">
-          <ActiveRoleWorkflowBanner
-            currentRole={currentRole}
-            onOpenSwitchRole={() => setIsRoleModalOpen(true)}
-            onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
-          />
+          {activeView !== "portal" ? (
+            <ActiveRoleWorkflowBanner
+              currentRole={currentRole}
+              onOpenSwitchRole={() => setIsRoleModalOpen(true)}
+              onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
+            />
+          ) : null}
 
           {activeView === "reviews" ? (
             <section className="view-panel" aria-labelledby="reviews-heading">
@@ -1843,7 +2053,13 @@ export default function Home() {
 
           {activeView === "audit-log" && permissions.canViewAuditLog ? <ReviewAuditLog events={auditLog} chainState={chainState} chainError={chainError} kindLabels={auditKindLabels} roleLabels={roleLabels} /> : null}
 
-          {activeView === "portal" ? <PortalPage /> : null}
+          {activeView === "portal" ? (
+            <PortalPage
+              activeRole={currentRole}
+              onRoleChange={(newRole) => changeRole(newRole)}
+              isEmbedded={true}
+            />
+          ) : null}
         </div>
       </section>
 
