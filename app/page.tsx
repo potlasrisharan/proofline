@@ -904,6 +904,13 @@ export default function Home() {
               >
                 Truth registry
               </button>
+              <button
+                type="button"
+                className="landing-nav-link"
+                onClick={() => navigate("audit-log")}
+              >
+                Audit log
+              </button>
               <Link href="/impact" className="landing-nav-link">Impact radar</Link>
               <Link href="/privacy" className="landing-nav-link">Trust &amp; Privacy</Link>
             </nav>
