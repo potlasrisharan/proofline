@@ -456,28 +456,56 @@ function severityLabel(severity: Severity) {
   return severity[0].toUpperCase() + severity.slice(1);
 }
 
-function initialDashboardView(): View {
-  if (typeof window === "undefined") return "overview";
-  const requestedView = new URLSearchParams(window.location.search).get("view");
-  return requestedView === "portal" || requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log" ? requestedView : "overview";
-}
-
 export default function Home() {
   const router = useRouter();
-  const [activeView, setActiveView] = useState<View>(initialDashboardView);
+  const [activeView, setActiveView] = useState<View>("overview");
 
   useEffect(() => {
-    const handleUrlView = () => {
-      const requestedView = new URLSearchParams(window.location.search).get("view");
-      if (requestedView === "portal" || requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log") {
+    const handleUrlState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const requestedView = params.get("view");
+      if (
+        requestedView === "portal" ||
+        requestedView === "reviews" ||
+        requestedView === "registry" ||
+        requestedView === "insights" ||
+        requestedView === "audit-log"
+      ) {
         setActiveView(requestedView);
       } else if (!requestedView && window.location.pathname === "/") {
         setActiveView("overview");
       }
+
+      if (params.get("openSwitchRole") === "true" || params.get("switchRole") === "1") {
+        setIsRoleModalOpen(true);
+      }
     };
-    handleUrlView();
-    window.addEventListener("popstate", handleUrlView);
-    return () => window.removeEventListener("popstate", handleUrlView);
+
+    handleUrlState();
+    window.addEventListener("popstate", handleUrlState);
+
+    // Sync persisted role safely on client after hydration to avoid React error #418
+    const storedRole =
+      window.sessionStorage.getItem("proofline:active-role") ||
+      window.localStorage.getItem("proofline:active-role");
+    if (
+      storedRole &&
+      (storedRole === "creator" ||
+        storedRole === "manager" ||
+        storedRole === "legal_reviewer" ||
+        storedRole === "brand_owner" ||
+        storedRole === "agency")
+    ) {
+      setCurrentRole(storedRole as ProoflineRole);
+    }
+
+    // Sync persisted engine mode safely on client after hydration
+    const savedEngine = window.localStorage.getItem("proofline.execution_mode");
+    if (savedEngine === "api" || savedEngine === "browser") {
+      setEngineMode(savedEngine);
+    }
+
+    return () => window.removeEventListener("popstate", handleUrlState);
   }, []);
 
   const [detailTab, setDetailTab] = useState<DetailTab>("findings");
@@ -490,15 +518,7 @@ export default function Home() {
   const [activeRevisionId, setActiveRevisionId] = useState("revision-2");
   const [selectedReviewId, setSelectedReviewId] = useState("novabook-launch");
   const [selectedSpanId, setSelectedSpanId] = useState("battery");
-  const [currentRole, setCurrentRole] = useState<ProoflineRole>(() => {
-    if (typeof window !== "undefined") {
-      const stored = window.sessionStorage.getItem("proofline:active-role") || window.localStorage.getItem("proofline:active-role");
-      if (stored === "creator" || stored === "manager" || stored === "legal_reviewer" || stored === "brand_owner" || stored === "agency") {
-        return stored;
-      }
-    }
-    return "legal_reviewer";
-  });
+  const [currentRole, setCurrentRole] = useState<ProoflineRole>("legal_reviewer");
   const [queueRiskFilter, setQueueRiskFilter] = useState<"all" | QueueRisk>("all");
   const [queueStatusFilter, setQueueStatusFilter] = useState<"all" | QueueStatus>("all");
   const [queueSort, setQueueSort] = useState<QueueSort>("risk");
@@ -511,23 +531,11 @@ export default function Home() {
   const [isDisclosureOpen, setIsDisclosureOpen] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isComplianceCertOpen, setIsComplianceCertOpen] = useState(false);
-  const [isRoleModalOpen, setIsRoleModalOpen] = useState(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("openSwitchRole") === "true" || params.get("switchRole") === "1";
-    }
-    return false;
-  });
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [isCreatorStudioOpen, setIsCreatorStudioOpen] = useState(false);
   const [isIndicModalOpen, setIsIndicModalOpen] = useState(false);
   const [indicLang, setIndicLang] = useState<"te" | "hi">("te");
-  const [engineMode, setEngineMode] = useState<"api" | "browser">(() => {
-    if (typeof window !== "undefined") {
-      const saved = window.localStorage.getItem("proofline.execution_mode");
-      if (saved === "api" || saved === "browser") return saved;
-    }
-    return "api";
-  });
+  const [engineMode, setEngineMode] = useState<"api" | "browser">("api");
   const [selectedChannels, setSelectedChannels] = useState<string[]>(["LinkedIn", "Instagram", "X"]);
   const [isDispatching, setIsDispatching] = useState(false);
   const [dispatchReceipts, setDispatchReceipts] = useState<{ channel: string; platformPostId: string; status: string }[] | null>(null);
@@ -571,11 +579,19 @@ export default function Home() {
 
   function navigate(view: View) {
     if (view === "audit-log" && !permissions.canViewAuditLog) {
-      notify("Audit history is limited to managers, authorised reviewers, and brand owners.");
+      notify("Audit log is restricted to Reviewers & Managers. Switched to Maya Chen (Authorised Reviewer) to inspect hash chain.");
+      changeRole("legal_reviewer");
+      setActiveView("audit-log");
+      window.history.replaceState(null, "", "/?view=audit-log");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     if (view === "insights" && !permissions.canViewInsights) {
-      notify("Governance insights are limited to workspace reviewers and managers.");
+      notify("Governance insights are limited to Reviewers & Managers. Switched to Marcus Thorne (Marketing Lead) to inspect metrics.");
+      changeRole("manager");
+      setActiveView("insights");
+      window.history.replaceState(null, "", "/?view=insights");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     setActiveView(view);
