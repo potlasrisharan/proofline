@@ -371,7 +371,7 @@
   align-items: center;
   gap: 16px;
   background: var(--ind-fg);
-  color: #FFFFFF !important;
+  color: #FFFFFF;
   font-family: var(--ind-font-sans);
   font-size: 13px;
   font-weight: 700;
@@ -388,6 +388,19 @@
 .industrial-start-btn:hover {
   background: var(--ind-accent);
   border-color: var(--ind-accent);
+  color: #FFFFFF;
+}
+
+.industrial-start-btn.industrial-start-btn-secondary {
+  background: transparent;
+  color: var(--ind-fg) !important;
+  border: 1px solid var(--ind-fg);
+}
+
+.industrial-start-btn.industrial-start-btn-secondary:hover {
+  background: var(--ind-fg);
+  color: #FFFFFF !important;
+  border-color: var(--ind-fg);
 }
 
 .industrial-arrow-rotate {
@@ -1188,6 +1201,7 @@
     gap: 12px;
   }
   .industrial-hero-cta-box .industrial-cta-pill,
+  .industrial-hero-cta-box .industrial-start-btn,
   .industrial-hero-cta-box .industrial-ghost-btn {
     width: 100%;
     justify-content: center;

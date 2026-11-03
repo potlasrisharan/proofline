@@ -1001,8 +1001,7 @@ export default function Home() {
               {permissions.canStartReview ? (
                 <button
                   type="button"
-                  className="industrial-start-btn"
-                  style={{ background: "transparent", color: "var(--ind-fg)", borderColor: "var(--ind-fg)" }}
+                  className="industrial-start-btn industrial-start-btn-secondary"
                   onClick={() => setIsStartModalOpen(true)}
                 >
                   <span>Start a review</span>
@@ -1054,7 +1053,6 @@ export default function Home() {
                 />
                 <div className="industrial-frame-caption">
                   <span className="industrial-frame-tag">CONTENT CREATION STUDIO</span>
-                  <span className="industrial-frame-ratio">9:16 VERTICAL CAPTURE</span>
                 </div>
               </div>
             </div>
