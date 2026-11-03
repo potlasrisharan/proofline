@@ -199,9 +199,9 @@ export const WORKFLOW_MODULES: WorkflowModule[] = [
     statusVariant: "green",
     badge: "ACCESS CONTROL",
     description: "Strict deterministic role-based boundaries with 5 distinct stakeholder portals: Content Lead, Editorial Manager, Legal Counsel, Brand Owner, Fact Owner.",
-    routeHref: "/portal",
+    routeHref: "/dashboards",
     actionType: "navigate",
-    actionTarget: "/portal",
+    actionTarget: "/dashboards",
     keyOutputs: ["5 Specialized Dashboards", "Role Privilege Scoping", "Zero Unauthorized Approvals"],
   },
   {

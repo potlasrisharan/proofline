@@ -954,11 +954,19 @@ export default function Home() {
           <div className="industrial-header-inner">
             {/* Left Nav Links (10px uppercase tracking 0.22em) */}
             <nav className="industrial-header-left">
-              <Link href="/#services-section" className="industrial-nav-link">Services</Link>
-              <Link href="/dashboards" className="industrial-nav-link">Dashboards</Link>
+              <Link href="/#services-section" className="industrial-nav-link">Services (13)</Link>
+              <Link href="/dashboards" className="industrial-nav-link">Role Dashboards (5)</Link>
+              <button
+                type="button"
+                onClick={() => navigate("reviews")}
+                className="industrial-nav-link"
+                style={{ background: "none", border: "none", cursor: "pointer", font: "inherit", padding: 0 }}
+                title="Launch Common Judge Review Cockpit (All 4 Stages)"
+              >
+                Judge Cockpit
+              </button>
               <Link href="/impact" className="industrial-nav-link">Impact radar</Link>
               <Link href="/privacy" className="industrial-nav-link">Trust &amp; Privacy</Link>
-              <Link href="/portal" className="industrial-nav-link">Role Portal</Link>
             </nav>
 
             {/* Absolute Centered Logo: Serif Italic + Bold Sans */}
@@ -1422,8 +1430,8 @@ export default function Home() {
             className="industrial-project-row"
             role="button"
             tabIndex={0}
-            onClick={() => router.push("/portal")}
-            onKeyDown={(e) => e.key === "Enter" && router.push("/portal")}
+            onClick={() => router.push("/dashboards")}
+            onKeyDown={(e) => e.key === "Enter" && router.push("/dashboards")}
           >
             <span className="industrial-project-idx">10 / PORTAL</span>
             <div className="industrial-project-title-box">
@@ -1513,6 +1521,44 @@ export default function Home() {
               >
                 Open Fullscreen Dashboards Portal (/dashboards) →
               </Link>
+            </div>
+          </div>
+          <div
+            style={{
+              padding: "16px 24px",
+              background: "#FFFFFF",
+              border: "1px solid var(--ind-border, #D4D4D8)",
+              borderLeft: "4px solid var(--ind-accent, #0066FF)",
+              margin: "16px 0 24px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 16,
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 10, fontFamily: "var(--ind-font-mono)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#0066FF", marginBottom: 4 }}>
+                Architecture: 5 Dedicated Role Dashboards + 1 Common Judge Review Cockpit
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#18181B", marginBottom: 4 }}>
+                Distinct Stakeholder Portals (Least Privilege) vs Unified Evaluation Cockpit
+              </div>
+              <p style={{ fontSize: 12, color: "#52525B", margin: 0, maxWidth: 840, lineHeight: 1.5 }}>
+                Each enterprise stakeholder (Aisha, Marcus, Maya, Lena, Carlos) operates in a dedicated dashboard with strict role boundaries. For end-to-end evaluation, the <strong>Common Judge Cockpit</strong> connects all 4 stages into one continuous quality gate.
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                type="button"
+                className="industrial-start-btn"
+                onClick={() => navigate("reviews")}
+                style={{ padding: "10px 20px", fontSize: 11 }}
+                title="Launch Common Judge Review Cockpit"
+              >
+                <span>⚖️ Launch Judge Cockpit</span>
+                <span>→</span>
+              </button>
             </div>
           </div>
           <EnterpriseSingleLogin
@@ -1859,11 +1905,20 @@ export default function Home() {
               className="ghost-button"
               style={{ fontSize: 11, padding: "4px 9px", height: 30, display: "inline-flex", alignItems: "center", gap: 5 }}
               onClick={() => navigate("overview")}
-              title="Return to Home Page & Role Logins"
+              title="Return to Home Landing Page"
             >
               <span>🏠</span>
-              <span>Home Landing Page</span>
+              <span>Home</span>
             </button>
+            <Link
+              href={`/dashboards?role=${currentRole}`}
+              className="ghost-button"
+              style={{ fontSize: 11, padding: "4px 9px", height: 30, display: "inline-flex", alignItems: "center", gap: 5, textDecoration: "none" }}
+              title={`Open ${activePersona.name}'s Dedicated Role Dashboard`}
+            >
+              <span>📊</span>
+              <span>{activePersona.name.split(" ")[0]}&apos;s Dashboard</span>
+            </Link>
             <label className="role-preview"><span>Role preview</span><select aria-label="Role preview" value={currentRole} onChange={(event) => changeRole(event.target.value as ProoflineRole)}>{(Object.keys(roleLabels) as ProoflineRole[]).map((role) => <option value={role} key={role}>{roleLabels[role]}</option>)}</select></label>
             <button className="icon-button" type="button" aria-label="Open AI and services disclosure" onClick={() => setIsDisclosureOpen(true)}>?</button>
             <button
@@ -1880,11 +1935,52 @@ export default function Home() {
 
         <div className="content-wrap">
           {activeView !== "portal" ? (
-            <ActiveRoleWorkflowBanner
-              currentRole={currentRole}
-              onOpenSwitchRole={() => setIsRoleModalOpen(true)}
-              onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
-            />
+            <>
+              <ActiveRoleWorkflowBanner
+                currentRole={currentRole}
+                onOpenSwitchRole={() => setIsRoleModalOpen(true)}
+                onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "10px 16px",
+                  background: "#FFFFFF",
+                  border: "1px solid var(--ind-border, #D4D4D8)",
+                  borderRadius: 6,
+                  margin: "12px 0 20px",
+                  fontSize: 11,
+                  fontFamily: "var(--ind-font-mono, monospace)",
+                  gap: 12,
+                  flexWrap: "wrap",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ background: "#0066FF", color: "#FFFFFF", padding: "3px 8px", borderRadius: 4, fontWeight: 700, fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    ⚖️ COMMON JUDGE &amp; REVIEW COCKPIT
+                  </span>
+                  <span style={{ color: "var(--ind-fg, #18181B)" }}>
+                    Evaluating unified 4-stage quality gate. Identity: <strong>{activePersona.name} ({activePersona.title})</strong>
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <Link
+                    href={`/dashboards?role=${currentRole}`}
+                    style={{ color: "#0066FF", fontWeight: 700, textDecoration: "underline", fontSize: 11 }}
+                  >
+                    Open {activePersona.name.split(" ")[0]}&apos;s Dedicated Dashboard →
+                  </Link>
+                  <Link
+                    href="/dashboards"
+                    style={{ color: "var(--ind-fg, #18181B)", textDecoration: "underline", fontSize: 11 }}
+                  >
+                    All 5 Role Dashboards
+                  </Link>
+                </div>
+              </div>
+            </>
           ) : null}
 
           {activeView === "reviews" ? (

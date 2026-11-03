@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ProoflineRole } from "../lib/proofline-api";
 
@@ -251,6 +252,53 @@ export function EnterpriseSingleLogin({
           })}
         </div>
 
+        {/* Direct Action Bar to Dedicated Dashboard vs All Dashboards */}
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
+          <Link
+            href={`/dashboards?role=${currentRole}`}
+            style={{
+              padding: "10px 20px",
+              background: "#18181B",
+              color: "#FFFFFF",
+              borderRadius: 6,
+              fontSize: 12,
+              fontWeight: 700,
+              fontFamily: "var(--ind-font-sans, sans-serif)",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            <span>📊</span>
+            <span>Open {activePersona.name.split(" ")[0]}&apos;s Dedicated Dashboard →</span>
+          </Link>
+          <Link
+            href="/dashboards"
+            style={{
+              padding: "10px 20px",
+              background: "#FFFFFF",
+              color: "#18181B",
+              border: "1px solid var(--ind-border, #D4D4D8)",
+              borderRadius: 6,
+              fontSize: 12,
+              fontWeight: 700,
+              fontFamily: "var(--ind-font-sans, sans-serif)",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            <span>⊞</span>
+            <span>View All 5 Role Dashboards Portal →</span>
+          </Link>
+        </div>
+
         {/* Collapsible Corporate Credentials for Minimal Noise */}
         <details className="single-login-details">
           <summary className="single-login-summary">
@@ -403,6 +451,29 @@ export function ActiveRoleWorkflowBanner({
             >
               Audit log
             </button>
+            <Link
+              href={`/dashboards?role=${currentRole}`}
+              className="role-quick-nav-btn"
+              title={`Open ${persona.name}'s dedicated dashboard`}
+              style={{
+                background: "#18181B",
+                color: "#FFFFFF",
+                border: "1px solid #18181B",
+                borderRadius: 4,
+                padding: "4px 8px",
+                fontSize: 10,
+                fontFamily: "var(--ind-font-mono)",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <span>📊</span>
+              <span>{persona.name.split(" ")[0]}&apos;s Dashboard</span>
+            </Link>
           </div>
         ) : null}
         <button

@@ -134,14 +134,14 @@ export default function PortalPage({
       {/* Main Body: Portal Login Screen OR Dedicated Dashboard */}
       <main className={styles.portalMain}>
         {selectedRole === null ? (
-          <PortalMainLoginView onSelectRole={handleLogin} />
+          <PortalMainLoginView onSelectRole={handleLogin} onOpenJudgeCockpit={() => router.push("/?view=reviews")} />
         ) : (
           <RoleDedicatedDashboard
             role={selectedRole}
             persona={demoPersonas[selectedRole]}
             onSwitchRole={handleLogin}
             onLogout={handleLogout}
-            onOpenWorkspace={() => handleOpenWorkspace(selectedRole)}
+            onOpenWorkspace={() => router.push("/?view=reviews")}
             isEmbedded={isEmbedded}
           />
         )}
@@ -162,18 +162,48 @@ export default function PortalPage({
 // -------------------------------------------------------------
 // STREAMLINED ROLE PORTAL SELECTION (Clean & Minimal)
 // -------------------------------------------------------------
-function PortalMainLoginView({ onSelectRole }: { onSelectRole: (role: ProoflineRole) => void }) {
+function PortalMainLoginView({
+  onSelectRole,
+  onOpenJudgeCockpit,
+}: {
+  onSelectRole: (role: ProoflineRole) => void;
+  onOpenJudgeCockpit: () => void;
+}) {
   const personas = useMemo(() => Object.values(demoPersonas), []);
 
   return (
     <>
-      <div className={styles.portalHero} style={{ marginBottom: 28 }}>
+      <div className={styles.portalHero} style={{ marginBottom: 24 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", background: "#FFFFFF", border: "1px solid var(--ind-border, #D4D4D8)", borderRadius: 9999, fontSize: 10, fontFamily: "var(--ind-font-mono)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 12 }}>
+          <span className="industrial-status-pulse" />
+          <span>Architecture: 5 Dedicated Role Dashboards + 1 Common Judge Cockpit</span>
+        </div>
         <h1 className={styles.heroTitle} style={{ fontSize: 26, margin: "0 0 8px" }}>
           Select Your Role to Access Your Dedicated Dashboard
         </h1>
-        <p className={styles.heroSubtitle} style={{ fontSize: 13, margin: 0 }}>
-          Choose a role to access specialized governance workflows and automated checks.
+        <p className={styles.heroSubtitle} style={{ fontSize: 13, margin: "0 auto 16px", maxWidth: 760, lineHeight: 1.6 }}>
+          Each enterprise stakeholder (Creator, Editorial Manager, Legal Counsel, Brand Owner, Agency Partner) operates in an isolated, role-scoped dashboard. Or, launch the <strong>Common Judge Review Cockpit</strong> to evaluate the entire continuous quality gate in one unified screen.
         </p>
+
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 12 }}>
+          <button
+            type="button"
+            className={styles.workspaceLink}
+            onClick={onOpenJudgeCockpit}
+            style={{ padding: "8px 18px", fontSize: 11, fontWeight: 700 }}
+            title="Open unified review cockpit across all 4 lifecycle stages"
+          >
+            ⚖️ Launch Common Judge Review Cockpit (All 4 Stages) →
+          </button>
+          <Link
+            href="/"
+            className={styles.backBtn}
+            style={{ padding: "8px 16px", fontSize: 11, textDecoration: "none", display: "inline-flex", alignItems: "center" }}
+            title="Return to Welcome Landing Page"
+          >
+            🏠 Return to Landing Page
+          </Link>
+        </div>
       </div>
 
       {/* 5 COMPACT ROLE LOGINS */}
@@ -246,6 +276,9 @@ function RoleDedicatedDashboard({
           <button type="button" className={styles.backBtn} onClick={onLogout} title="Return to Role Logins screen">
             ← Switch Login / All Roles
           </button>
+          <Link href="/" className={styles.backBtn} style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }} title="Return to Landing Page">
+            🏠 Home
+          </Link>
           <div className={styles.roleQuickTabs} role="tablist" aria-label="Switch Role Dashboard">
             {Object.values(demoPersonas).map((p) => {
               const isActive = p.role === role;
@@ -265,6 +298,15 @@ function RoleDedicatedDashboard({
                 </button>
               );
             })}
+            <button
+              type="button"
+              className={styles.roleTabPill}
+              style={{ background: "#18181B", color: "#FFFFFF", borderColor: "#18181B" }}
+              onClick={onOpenWorkspace}
+              title="Open unified 4-stage evaluation cockpit for judges"
+            >
+              <span>⚖️ Judge Review Cockpit ↗</span>
+            </button>
           </div>
         </div>
 
@@ -289,9 +331,9 @@ function RoleDedicatedDashboard({
               type="button"
               className={styles.workspaceLink}
               onClick={onOpenWorkspace}
-              title="Open comprehensive workspace for this role"
+              title="Open comprehensive review cockpit for judges"
             >
-              Open Full Workspace ↗
+              ⚖️ Open Judge Cockpit ↗
             </button>
           )}
         </div>

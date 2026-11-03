@@ -30,19 +30,19 @@ export default function DynamicSyncPage() {
         <div className="industrial-header-inner">
           <nav className="industrial-header-left">
             <Link href="/#services-section" className="industrial-nav-link">
-              Services
+              Services (13)
             </Link>
             <Link href="/dashboards" className="industrial-nav-link">
-              Dashboards
+              Role Dashboards (5)
+            </Link>
+            <Link href="/?view=reviews" className="industrial-nav-link">
+              Judge Cockpit
             </Link>
             <Link href="/impact" className="industrial-nav-link">
               Impact radar
             </Link>
             <Link href="/privacy" className="industrial-nav-link">
               Trust &amp; Privacy
-            </Link>
-            <Link href="/portal" className="industrial-nav-link">
-              Role Portal
             </Link>
           </nav>
 
