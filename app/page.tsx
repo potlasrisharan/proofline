@@ -1175,6 +1175,12 @@ export default function Home() {
           onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
           onOpenStartReview={() => setIsStartModalOpen(true)}
           onOpenDispatchModal={() => setIsPublishModalOpen(true)}
+          onOpenIndicModal={() => setIsIndicModalOpen(true)}
+          onOpenCertificateModal={() => setIsComplianceCertOpen(true)}
+          registryCount={localRegistryRecords.length}
+          queueCount={reviewItems.length}
+          auditCount={auditLog.length}
+          currentRole={currentRole}
         />
 
         {/* 8. SEQUENTIAL WORKFLOW STAGE PIPELINE */}
@@ -1212,13 +1218,6 @@ export default function Home() {
               Live corporate data ingestion syncing specs from Notion, Google Docs, and real-time inventory from Shopify ERP into versioned truth records.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-02-truth.jpg" alt="Dynamic Brand Truth Sync" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 01 · NOTION &amp; ERP CONNECTOR</span>
-            </div>
           </div>
 
           {/* Row 02: Brand Truth Registry */}
@@ -1238,13 +1237,6 @@ export default function Home() {
               Maintain immutable product specifications, 12h IEEE battery hours, approved pricing qualifiers, and strict validity windows.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-02-truth.jpg" alt="Brand Truth Registry" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 02 · IMMUTABLE SPEC LEDGER</span>
-            </div>
           </div>
 
           {/* Row 03: Fact-Change Impact Radar */}
@@ -1264,13 +1256,6 @@ export default function Home() {
               When an engineering specification updates (e.g. 12h → 14h), automatically trace and flag all marketing and support collateral affected downstream.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-05-drift.jpg" alt="Fact-Change Impact Radar" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 03 · IMPACT TRACING ENGINE</span>
-            </div>
           </div>
 
           {/* ==============================================================
@@ -1301,13 +1286,6 @@ export default function Home() {
               Draft pre-flight copy with real-time spec-diffing, 1-click 12h battery lab replacements, and pre-submission compliance scorecards.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-01-workspace.jpg" alt="Creator Content Studio" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 04 · PRE-FLIGHT SPEC DIFF</span>
-            </div>
           </div>
 
           {/* Row 05: Indic Multilingual Engine */}
@@ -1315,8 +1293,8 @@ export default function Home() {
             className="industrial-project-row"
             role="button"
             tabIndex={0}
-            onClick={() => setIsCreatorStudioOpen(true)}
-            onKeyDown={(e) => e.key === "Enter" && setIsCreatorStudioOpen(true)}
+            onClick={() => setIsIndicModalOpen(true)}
+            onKeyDown={(e) => e.key === "Enter" && setIsIndicModalOpen(true)}
           >
             <span className="industrial-project-idx">05 / INDIC</span>
             <div className="industrial-project-title-box">
@@ -1327,13 +1305,6 @@ export default function Home() {
               Guarantees factual compliance across Hindi and Telugu marketing assets, ensuring translated technical claims strictly match verified specifications.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-01-workspace.jpg" alt="Indic Multilingual Localization" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 05 · SARVAM AI HINDI &amp; TELUGU</span>
-            </div>
           </div>
 
           {/* Row 06: Multimodal Video & Carousel Radar */}
@@ -1353,13 +1324,6 @@ export default function Home() {
               Audits image carousels, Figma exports, and video frames (Reels/Shorts) for claim veracity and FTC mandatory disclaimer font height ratios (≥ 2.5%).
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-07-vault.jpg" alt="Multimodal Video &amp; Carousel Compliance" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 06 · GEMINI MULTIMODAL VISION</span>
-            </div>
           </div>
 
           {/* ==============================================================
@@ -1402,13 +1366,6 @@ export default function Home() {
               Triage marketing submissions by risk score, resolve claim discrepancies against immutable specs, and inspect evidence-linked source spans.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-03-compliance.jpg" alt="Campaign Review Queue" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 07 · QUEUE TRIAGE ENGINE</span>
-            </div>
           </div>
 
           {/* Row 08: Regulatory Quality Gate */}
@@ -1428,13 +1385,6 @@ export default function Home() {
               Deterministic statutory compliance checks for FTC §5 deceptive claims, Lanham Act §43(a) comparative claims, and safe-harbor rewrites.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-03-compliance.jpg" alt="Regulatory Quality Gate" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 08 · STATUTORY COMPLIANCE</span>
-            </div>
           </div>
 
           {/* Row 09: Collaborative Revision Audit Trail */}
@@ -1454,13 +1404,6 @@ export default function Home() {
               Immutable SHA-256 hash ledger linking every suggestion, redline diff, span comment, and sign-off into a tamper-evident audit record.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-04-audit.jpg" alt="Cryptographic Audit Chain" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 09 · SHA-256 PROVENANCE</span>
-            </div>
           </div>
 
           {/* ==============================================================
@@ -1491,13 +1434,6 @@ export default function Home() {
               Deterministic, least-privilege role boundaries providing dedicated portals for Content Creator, Editorial Manager, Legal Counsel, and Brand Owner.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-06-dispatch.jpg" alt="Enterprise Multi-Role Governance" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 10 · ROLE-BASED ACCESS CONTROL</span>
-            </div>
           </div>
 
           {/* Row 11: Gated Multi-Channel Dispatch */}
@@ -1517,13 +1453,6 @@ export default function Home() {
               Dispatches cryptographically approved revisions across LinkedIn, X (Twitter), Meta, and Instagram via Zernio multi-channel APIs.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-06-dispatch.jpg" alt="Gated Multi-Platform Dispatch" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 11 · ZERNIO GATEWAY DISPATCH</span>
-            </div>
           </div>
 
           {/* Row 12: Post-Publish Drift Radar */}
@@ -1543,13 +1472,6 @@ export default function Home() {
               Continuously monitors live published social posts and raises automated compliance drift alerts when underlying product specifications change or expire.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-05-drift.jpg" alt="Post-Publish Drift Radar" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 12 · CONTINUOUS DRIFT RADAR</span>
-            </div>
           </div>
 
           {/* Row 13: Cryptographic Proof Vault */}
@@ -1569,13 +1491,6 @@ export default function Home() {
               Permanent vault maintaining SHA-256 hash chains of every source, rule, edit, and sign-off. Exports tamper-evident audit packages for regulatory review.
             </p>
             <div className="industrial-project-view-btn">→</div>
-            <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image">
-                <Image src="/previews/preview-07-vault.jpg" alt="Cryptographic Proof Vault" fill sizes="500px" style={{ objectFit: "cover" }} />
-              </div>
-              <div className="industrial-reveal-overlay" />
-              <span className="industrial-reveal-badge">MODULE 13 · COURT-READY PROOF ARCHIVE</span>
-            </div>
           </div>
         </section>
 

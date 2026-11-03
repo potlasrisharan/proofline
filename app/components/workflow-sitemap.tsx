@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { ProoflineRole } from "../lib/proofline-api";
+import { demoPersonas } from "./role-dashboard-showcase";
 
 export type WorkflowStageId = "stage-01" | "stage-02" | "stage-03" | "stage-04";
 
@@ -294,7 +296,7 @@ export const WORKFLOW_STAGES = [
     description: "Gated Zernio social publishing, 60s post-publish drift radar, and SHA-256 Proof Vault.",
     role: "Authorised Signers & Counsel",
     color: "#8B5CF6",
-    count: 4,
+    count: 3,
   },
 ];
 
@@ -303,6 +305,12 @@ interface ProductWorkflowSitemapProps {
   onOpenCreatorStudio: () => void;
   onOpenStartReview: () => void;
   onOpenDispatchModal?: () => void;
+  onOpenIndicModal?: () => void;
+  onOpenCertificateModal?: () => void;
+  registryCount?: number;
+  queueCount?: number;
+  auditCount?: number;
+  currentRole?: ProoflineRole;
 }
 
 export function ProductWorkflowSitemap({
@@ -310,25 +318,89 @@ export function ProductWorkflowSitemap({
   onOpenCreatorStudio,
   onOpenStartReview,
   onOpenDispatchModal,
+  onOpenIndicModal,
+  onOpenCertificateModal,
+  registryCount = 5,
+  queueCount = 4,
+  auditCount = 12,
+  currentRole = "legal_reviewer",
 }: ProductWorkflowSitemapProps) {
   const router = useRouter();
   const [activeStageFilter, setActiveStageFilter] = useState<WorkflowStageId | "all">("all");
   const [selectedPersonaFilter, setSelectedPersonaFilter] = useState<string>("all");
+  const [driftCountdown, setDriftCountdown] = useState(58);
 
-  const filteredModules = WORKFLOW_MODULES.filter((mod) => {
-    if (activeStageFilter !== "all" && mod.stage !== activeStageFilter) {
-      return false;
-    }
-    if (selectedPersonaFilter !== "all") {
-      if (!mod.ownerPersona.toLowerCase().includes(selectedPersonaFilter.toLowerCase())) {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDriftCountdown((prev) => (prev <= 1 ? 60 : prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const activePersona = demoPersonas[currentRole] ?? demoPersonas.legal_reviewer;
+
+  const dynamicModules = useMemo(() => {
+    return WORKFLOW_MODULES.map((m) => {
+      if (m.id === "truth-registry") {
+        return {
+          ...m,
+          statusText: `IMMUTABLE · ${registryCount} SOURCES`,
+        };
+      }
+      if (m.id === "review-queue") {
+        return {
+          ...m,
+          statusText: `LIVE QUEUE · ${queueCount} CAMPAIGNS`,
+        };
+      }
+      if (m.id === "audit-trail") {
+        return {
+          ...m,
+          statusText: `IMMUTABLE · ${auditCount} EVENTS`,
+        };
+      }
+      if (m.id === "role-portal") {
+        return {
+          ...m,
+          statusText: `ACTIVE IDENTITY · ${activePersona.name.toUpperCase()}`,
+          ownerPersona: `${activePersona.name} (${activePersona.title})`,
+        };
+      }
+      if (m.id === "drift-radar") {
+        return {
+          ...m,
+          statusText: `HEARTBEAT · ${driftCountdown}s INTERVAL`,
+        };
+      }
+      return m;
+    });
+  }, [registryCount, queueCount, auditCount, activePersona, driftCountdown]);
+
+  const filteredModules = useMemo(() => {
+    return dynamicModules.filter((mod) => {
+      if (activeStageFilter !== "all" && mod.stage !== activeStageFilter) {
         return false;
       }
-    }
-    return true;
-  });
+      if (selectedPersonaFilter !== "all") {
+        if (!mod.ownerPersona.toLowerCase().includes(selectedPersonaFilter.toLowerCase())) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [dynamicModules, activeStageFilter, selectedPersonaFilter]);
+
+  const vaultModule = useMemo(() => {
+    return dynamicModules.find((m) => m.id === "proof-vault");
+  }, [dynamicModules]);
 
   const handleModuleAction = (mod: WorkflowModule) => {
-    if (mod.actionType === "studio") {
+    if (mod.id === "indic-engine" && onOpenIndicModal) {
+      onOpenIndicModal();
+    } else if (mod.id === "proof-vault") {
+      onNavigateView("audit-log");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (mod.actionType === "studio") {
       onOpenCreatorStudio();
     } else if (mod.actionType === "start-review") {
       onOpenStartReview();
@@ -342,8 +414,7 @@ export function ProductWorkflowSitemap({
         mod.actionTarget === "insights"
       ) {
         onNavigateView(mod.actionTarget);
-        const el = document.getElementById("main-content");
-        if (el) el.scrollIntoView({ behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } else if (mod.routeHref) {
       router.push(mod.routeHref);
@@ -368,13 +439,20 @@ export function ProductWorkflowSitemap({
         </div>
 
         <div className="sitemap-legend-stats">
-          <div className="sitemap-stat-pill">
-            <span className="stat-num">4</span>
+          <button
+            type="button"
+            className={`sitemap-stat-pill ${activeStageFilter !== "all" ? "active" : ""}`}
+            onClick={() => setActiveStageFilter("all")}
+            title="Reset to view all 4 lifecycle stages"
+          >
+            <span className="stat-num">{activeStageFilter === "all" ? 4 : 1}</span>
             <span className="stat-label">LIFECYCLE STAGES</span>
-          </div>
+          </button>
           <div className="sitemap-stat-pill">
-            <span className="stat-num">13</span>
-            <span className="stat-label">GOVERNANCE MODULES</span>
+            <span className="stat-num">{filteredModules.length}</span>
+            <span className="stat-label">
+              {activeStageFilter === "all" && selectedPersonaFilter === "all" ? "GOVERNANCE MODULES" : "ACTIVE MODULES"}
+            </span>
           </div>
           <div className="sitemap-stat-pill">
             <span className="stat-num">5</span>
@@ -384,33 +462,57 @@ export function ProductWorkflowSitemap({
       </div>
 
       {/* 2. Interactive Pipeline Flow Ribbon */}
-      <div className="sitemap-pipeline-flow">
-        <div className="flow-step-node">
+      <div className="sitemap-pipeline-flow" role="toolbar" aria-label="Interactive pipeline stage filters">
+        <button
+          type="button"
+          className={`flow-step-node ${activeStageFilter === "stage-01" ? "active" : ""}`}
+          onClick={() => setActiveStageFilter((prev) => (prev === "stage-01" ? "all" : "stage-01"))}
+          aria-pressed={activeStageFilter === "stage-01"}
+          title="Filter to Stage 01 · Truth Ingestion"
+        >
           <div className="flow-badge">INPUT 01</div>
           <span className="flow-title">Truth Ingestion</span>
           <span className="flow-sub">Notion, Docs &amp; ERP</span>
-        </div>
-        <div className="flow-arrow">⟶</div>
+        </button>
+        <div className="flow-arrow" aria-hidden="true">⟶</div>
 
-        <div className="flow-step-node">
+        <button
+          type="button"
+          className={`flow-step-node ${activeStageFilter === "stage-02" ? "active" : ""}`}
+          onClick={() => setActiveStageFilter((prev) => (prev === "stage-02" ? "all" : "stage-02"))}
+          aria-pressed={activeStageFilter === "stage-02"}
+          title="Filter to Stage 02 · Creator Studio"
+        >
           <div className="flow-badge">CREATION 02</div>
           <span className="flow-title">Creator Studio</span>
           <span className="flow-sub">Spec-Diff &amp; Multimodal</span>
-        </div>
-        <div className="flow-arrow">⟶</div>
+        </button>
+        <div className="flow-arrow" aria-hidden="true">⟶</div>
 
-        <div className="flow-step-node">
+        <button
+          type="button"
+          className={`flow-step-node ${activeStageFilter === "stage-03" ? "active" : ""}`}
+          onClick={() => setActiveStageFilter((prev) => (prev === "stage-03" ? "all" : "stage-03"))}
+          aria-pressed={activeStageFilter === "stage-03"}
+          title="Filter to Stage 03 · Deterministic Audit"
+        >
           <div className="flow-badge">QUALITY GATE 03</div>
           <span className="flow-title">Deterministic Audit</span>
           <span className="flow-sub">FTC §5 &amp; Citations</span>
-        </div>
-        <div className="flow-arrow">⟶</div>
+        </button>
+        <div className="flow-arrow" aria-hidden="true">⟶</div>
 
-        <div className="flow-step-node">
+        <button
+          type="button"
+          className={`flow-step-node ${activeStageFilter === "stage-04" ? "active" : ""}`}
+          onClick={() => setActiveStageFilter((prev) => (prev === "stage-04" ? "all" : "stage-04"))}
+          aria-pressed={activeStageFilter === "stage-04"}
+          title="Filter to Stage 04 · Dispatch &amp; Drift"
+        >
           <div className="flow-badge">OUTPUT 04</div>
           <span className="flow-title">Dispatch &amp; Drift</span>
           <span className="flow-sub">Zernio &amp; 60s Radar</span>
-        </div>
+        </button>
       </div>
 
       {/* 3. Stage & Persona Filter Bar */}
@@ -455,10 +557,10 @@ export function ProductWorkflowSitemap({
         </div>
       </div>
 
-      {/* 4. 4-Stage Architecture Grid */}
+      {/* 4. 4-Stage Architecture Grid (3 Cards Per Column = Perfect Symmetry) */}
       <div className="sitemap-stages-grid">
         {WORKFLOW_STAGES.filter((st) => activeStageFilter === "all" || activeStageFilter === st.id).map((st) => {
-          const stageModules = filteredModules.filter((m) => m.stage === st.id);
+          const stageModules = filteredModules.filter((m) => m.stage === st.id && m.id !== "proof-vault");
           if (stageModules.length === 0 && selectedPersonaFilter !== "all") return null;
 
           return (
@@ -478,7 +580,20 @@ export function ProductWorkflowSitemap({
               {/* Module Cards */}
               <div className="stage-modules-stack">
                 {stageModules.map((mod) => (
-                  <div key={mod.id} className="sitemap-module-card">
+                  <div
+                    key={mod.id}
+                    className="sitemap-module-card"
+                    onClick={() => handleModuleAction(mod)}
+                    style={{ cursor: "pointer" }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleModuleAction(mod);
+                      }
+                    }}
+                  >
                     <div className="module-card-header">
                       <div className="module-id-group">
                         <span className="module-code">{mod.code}</span>
@@ -513,7 +628,10 @@ export function ProductWorkflowSitemap({
                       <button
                         type="button"
                         className="module-launch-btn"
-                        onClick={() => handleModuleAction(mod)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleModuleAction(mod);
+                        }}
                         title={`Open ${mod.name}`}
                       >
                         Launch Module →
@@ -526,6 +644,66 @@ export function ProductWorkflowSitemap({
           );
         })}
       </div>
+
+      {/* 4b. Foundational Proof Vault (Organized Full-Width Panoramic Layer) */}
+      {vaultModule && (activeStageFilter === "all" || activeStageFilter === "stage-04") ? (
+        <div
+          className="sitemap-vault-banner"
+          role="region"
+          aria-label="Cryptographic Proof Vault Foundation"
+        >
+          <div className="sitemap-vault-left">
+            <div className="sitemap-vault-header-row">
+              <span className="module-code">{vaultModule.code}</span>
+              <span className="module-status-pill status-blue">
+                <span className="status-dot" />
+                {vaultModule.statusText}
+              </span>
+              <span className="module-badge-kicker">ENTERPRISE FOUNDATION LAYER · PROVENANCE</span>
+            </div>
+            <h3 className="sitemap-vault-title">{vaultModule.name}</h3>
+            <p className="sitemap-vault-desc">{vaultModule.description}</p>
+            <div className="sitemap-vault-owner">
+              <span className="owner-persona">{vaultModule.ownerPersona}</span>
+              <span className="owner-role-title">· {vaultModule.ownerRole}</span>
+            </div>
+          </div>
+
+          <div className="sitemap-vault-outputs">
+            <span className="outputs-label">IMMUTABLE CAPABILITIES:</span>
+            <div className="sitemap-vault-chips">
+              {vaultModule.keyOutputs.map((out, i) => (
+                <span key={i} className="output-chip">
+                  ✓ {out}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="sitemap-vault-actions">
+            <button
+              type="button"
+              className="module-launch-btn"
+              onClick={() => handleModuleAction(vaultModule)}
+              title="Open Cryptographic Proof Vault & Audit Ledger"
+              style={{ width: "100%", justifyContent: "center" }}
+            >
+              Launch Proof Vault (/vault) →
+            </button>
+            {onOpenCertificateModal ? (
+              <button
+                type="button"
+                className="industrial-ghost-btn"
+                style={{ padding: "8px 14px", fontSize: 10, width: "100%", justifyContent: "center" }}
+                onClick={onOpenCertificateModal}
+                title="Inspect Tamper-Proof Cryptographic Certificate"
+              >
+                📜 Inspect Certificate
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
 
       {/* 5. Sitemap Quick Jump Anchors */}
       <div className="sitemap-quick-anchors-bar">
