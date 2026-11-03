@@ -116,12 +116,20 @@ export const demoPersonas: Record<ProoflineRole, DemoPersona> = {
   },
 };
 
+const roleShortTitles: Record<ProoflineRole, string> = {
+  creator: "Content Lead",
+  manager: "Campaign Manager",
+  legal_reviewer: "Legal Reviewer",
+  brand_owner: "VP Brand",
+  agency: "Agency Partner",
+};
+
 const roleOneLiners: Record<ProoflineRole, string> = {
-  creator: "Draft copy, inspect spec mismatches, and apply 1-click verified corrections.",
-  manager: "Triage submissions by risk score (0–100), leave change notes, and route to legal.",
-  legal_reviewer: "Audit FTC §5 compliance, verify evidence against specs, and sign certificates.",
-  brand_owner: "Manage approved brand truth records and trigger multi-channel dispatch.",
-  agency: "Test copy against client specifications with isolated permissions and zero data leakage.",
+  creator: "Draft copy & claim verification",
+  manager: "Campaign triage & legal routing",
+  legal_reviewer: "FTC §5 audit & compliance sign-off",
+  brand_owner: "Brand truth & multi-channel dispatch",
+  agency: "Sandboxed client copy review",
 };
 
 const roleIndexes: Record<ProoflineRole, string> = {
@@ -186,7 +194,7 @@ export function EnterpriseSingleLogin({
           </div>
           <h2 className="single-login-title" id="single-login-modal-title">Sign In to Enterprise Brand Workspace</h2>
           <p className="single-login-sub">
-            Every department operates under deterministic, least-privilege boundaries. Select a stakeholder persona below to test their specialized verification workbench:
+            Select a stakeholder persona to launch their specialized verification workspace:
           </p>
         </div>
 
@@ -194,6 +202,8 @@ export function EnterpriseSingleLogin({
         <div className="single-login-role-buttons" role="region" aria-label="1-Click Enterprise Role Logins">
           {personas.map((p) => {
             const isActive = currentRole === p.role;
+            const firstName = p.name.split(" ")[0];
+            const lastName = p.name.split(" ").slice(1).join(" ");
             return (
               <button
                 key={p.role}
@@ -201,7 +211,7 @@ export function EnterpriseSingleLogin({
                 className={`single-role-btn ${p.badgeTone} ${isActive ? "active" : ""}`}
                 onClick={() => handleQuickLogin(p.role)}
                 title={`Sign in as ${p.name} (${p.title})`}
-                aria-label={`Sign in as ${p.name} (${p.title})`}
+                aria-label={`Sign in as ${p.name}`}
               >
                 <div className="single-role-card-header">
                   <span className="single-role-index-label">{roleIndexes[p.role]}</span>
@@ -213,9 +223,9 @@ export function EnterpriseSingleLogin({
                 <div className="single-role-identity">
                   <div className="single-role-name-row">
                     <strong className="single-role-name">{p.name}</strong>
-                    <span className="single-role-tag">{p.title}</span>
+                    <span className="single-role-tag" title={p.title}>{roleShortTitles[p.role]}</span>
                   </div>
-                  <span className="single-role-email">{p.email}</span>
+                  <span className="single-role-email" title={p.email}>{p.email}</span>
                 </div>
 
                 <p className="single-role-oneliner">
@@ -226,11 +236,12 @@ export function EnterpriseSingleLogin({
                   {isActive ? (
                     <span className="active-pill">
                       <span className="industrial-status-pulse" style={{ marginRight: 6 }} />
-                      Active · In Workspace
+                      Active
                     </span>
                   ) : (
                     <span className="single-role-action-label">
-                      <span>Sign in as {p.name}</span>
+                      <span>Sign in as {firstName}</span>
+                      <span className="sr-only"> {lastName}</span>
                       <span>→</span>
                     </span>
                   )}
