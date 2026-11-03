@@ -328,8 +328,8 @@ def build_pdf():
 
     test_metrics = [
         [Paragraph("Test Category", table_header), Paragraph("Count & Status", table_header), Paragraph("Verified Criteria & Failure-Mode Prevention", table_header)],
-        [Paragraph("Playwright E2E Tests", table_cell), Paragraph("<b>21 Tests Passed</b><br/>(1 skipped local-only)", table_cell), Paragraph("Chromium/WebKit verification of judge 1-click flows, intake, diff rendering, Sarvam AI modal, and engine switching.", table_cell)],
-        [Paragraph("Backend Pytest Suite", table_cell), Paragraph("<b>155 Tests Passed</b><br/>(0 failures)", table_cell), Paragraph("Complete coverage of FastAPI routes, role RBAC, ingestion parsers (PDF, DOCX, images), and impact controllers.", table_cell)],
+        [Paragraph("Playwright E2E Tests", table_cell), Paragraph("<b>49 Tests Passed</b><br/>(1 skipped, 50 total)", table_cell), Paragraph("Chromium/WebKit verification of judge 1-click flows, intake, diff rendering, Sarvam AI modal, role login, and engine switching.", table_cell)],
+        [Paragraph("Backend Pytest Suite", table_cell), Paragraph("<b>159 Tests Passed</b><br/>(0 failures)", table_cell), Paragraph("Complete coverage of FastAPI routes, role RBAC, ingestion parsers (PDF, DOCX, images), impact controllers, and Groq/Sarvam fallbacks.", table_cell)],
         [Paragraph("VoltEdge Golden Dataset", table_cell), Paragraph("<b>194 Cases Checked</b><br/>(100% precision)", table_cell), Paragraph("154/154 factual precision, unit conversions, currency parsing (USD/EUR/GBP/INR), prompt injection defence.", table_cell)],
         [Paragraph("Type & Code Quality", table_cell), Paragraph("<b>0 Errors / 0 Warnings</b>", table_cell), Paragraph("TypeScript strict mode (tsc --noEmit) and ESLint 9 pass clean across all client and worker code.", table_cell)],
     ]
