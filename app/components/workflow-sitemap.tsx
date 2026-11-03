@@ -717,17 +717,31 @@ export function ProductWorkflowSitemap({
           <span className="anchor-sep">·</span>
           <button type="button" onClick={onOpenCreatorStudio} className="sitemap-anchor-btn">04 / Creator Studio</button>
           <span className="anchor-sep">·</span>
-          <Link href="/multimodal" className="sitemap-anchor-link">05 / Multimodal Video</Link>
+          {onOpenIndicModal ? (
+            <>
+              <button type="button" onClick={onOpenIndicModal} className="sitemap-anchor-btn">05 / Indic Localization</button>
+              <span className="anchor-sep">·</span>
+            </>
+          ) : null}
+          <Link href="/multimodal" className="sitemap-anchor-link">06 / Multimodal Video</Link>
           <span className="anchor-sep">·</span>
-          <button type="button" onClick={() => onNavigateView("reviews")} className="sitemap-anchor-btn">06 / Review Queue</button>
+          <button type="button" onClick={() => onNavigateView("reviews")} className="sitemap-anchor-btn">07 / Review Queue</button>
           <span className="anchor-sep">·</span>
-          <Link href="/findings" className="sitemap-anchor-link">07 / Regulatory Gate</Link>
+          <Link href="/findings" className="sitemap-anchor-link">08 / Regulatory Gate</Link>
           <span className="anchor-sep">·</span>
-          <Link href="/portal" className="sitemap-anchor-link">08 / Enterprise Portal</Link>
+          <button type="button" onClick={() => onNavigateView("audit-log")} className="sitemap-anchor-btn">09 / Revision Ledger</button>
           <span className="anchor-sep">·</span>
-          <Link href="/drift" className="sitemap-anchor-link">09 / Drift Radar</Link>
+          <Link href="/portal" className="sitemap-anchor-link">10 / Enterprise Portal</Link>
           <span className="anchor-sep">·</span>
-          <Link href="/vault" className="sitemap-anchor-link">10 / Proof Vault</Link>
+          {onOpenDispatchModal ? (
+            <>
+              <button type="button" onClick={onOpenDispatchModal} className="sitemap-anchor-btn">11 / Gated Dispatch</button>
+              <span className="anchor-sep">·</span>
+            </>
+          ) : null}
+          <Link href="/drift" className="sitemap-anchor-link">12 / Drift Radar</Link>
+          <span className="anchor-sep">·</span>
+          <Link href="/vault" className="sitemap-anchor-link">13 / Proof Vault</Link>
         </div>
       </div>
     </section>

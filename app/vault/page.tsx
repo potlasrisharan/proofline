@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function VaultPage() {
-  redirect("/?view=registry");
+  redirect("/?view=audit-log");
 }
