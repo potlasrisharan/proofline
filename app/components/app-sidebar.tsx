@@ -84,11 +84,12 @@ export function AppSidebar({
     icon: string;
     label: string;
     href: string;
-    isHomeView?: "overview" | "reviews" | "registry" | "insights" | "audit-log";
+    isHomeView?: "overview" | "reviews" | "registry" | "insights" | "audit-log" | "portal";
     badge?: number | null;
     title: string;
   }> = [
     { key: "overview", icon: "◈", label: "Overview", href: "/", isHomeView: "overview", title: "Overview · Workspace summary and quality gate status" },
+    { key: "portal", icon: "⊞", label: "Role Dashboards", href: "/dashboards", isHomeView: "portal", title: "Role Dashboards · Dedicated portals for Creator, Manager, Legal, Brand Owner, and Agency" },
     { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Inspect and approve pending drafts" },
     { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: findingsBadge, title: "Findings · Flagged claims with 1-click suggested fixes" },
     { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry", title: "Truth registry · Official specs and approved brand facts" },
@@ -110,7 +111,7 @@ export function AppSidebar({
           priority
         />
         <span className="brand-text-col">
-          <span className="brand-name">Proofline</span>
+          <span className="brand-name"><span style={{ fontFamily: "var(--ind-font-serif, 'Playfair Display', Georgia, serif)", fontStyle: "italic", fontWeight: 400, textTransform: "none", marginRight: 4, letterSpacing: "-0.02em" }}>PROOF</span>LINE</span>
           <span className="brand-caption">Brand truth, before publish.</span>
         </span>
       </Link>

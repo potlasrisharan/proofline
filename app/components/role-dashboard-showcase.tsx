@@ -124,6 +124,14 @@ const roleOneLiners: Record<ProoflineRole, string> = {
   agency: "Test copy against client specifications with isolated permissions and zero data leakage.",
 };
 
+const roleIndexes: Record<ProoflineRole, string> = {
+  creator: "01 / DRAFT",
+  manager: "02 / TRIAGE",
+  legal_reviewer: "03 / AUDIT",
+  brand_owner: "04 / GOVERN",
+  agency: "05 / PARTNER",
+};
+
 export function EnterpriseSingleLogin({
   currentRole,
   onSelectRole,
@@ -170,14 +178,15 @@ export function EnterpriseSingleLogin({
       <div className="single-login-card">
         <div className="single-login-header">
           <div className="single-login-kicker-row">
-            <span className="single-login-badge">CONNECTED ROLE DASHBOARDS</span>
+            <span className="single-login-badge">SYS.PORTAL // ROLE ACCESS LAUNCHPAD</span>
             <span className="single-login-active-tag">
-              ● Active: <strong>{activePersona.name}</strong> ({activePersona.role})
+              <span className="industrial-status-pulse" style={{ marginRight: 6 }} />
+              ACTIVE IDENTITY: <strong>{activePersona.name.toUpperCase()}</strong> ({activePersona.role.toUpperCase()})
             </span>
           </div>
           <h2 className="single-login-title" id="single-login-modal-title">Sign In to VoltEdge Workspace</h2>
           <p className="single-login-sub">
-            Each role below has a dedicated dashboard with tailored tools. Click to enter and test:
+            Every department operates under deterministic, least-privilege boundaries. Select a stakeholder persona below to test their specialized verification workbench:
           </p>
         </div>
 
@@ -195,14 +204,18 @@ export function EnterpriseSingleLogin({
                 aria-label={`Sign in as ${p.name} (${p.title})`}
               >
                 <div className="single-role-card-header">
-                  <div className={`single-role-avatar ${p.badgeTone}`}>{p.initials}</div>
-                  <div className="single-role-identity">
-                    <div className="single-role-name-row">
-                      <strong className="single-role-name">{p.name}</strong>
-                      <span className="single-role-tag">{p.title}</span>
-                    </div>
-                    <span className="single-role-email">{p.email}</span>
+                  <span className="single-role-index-label">{roleIndexes[p.role]}</span>
+                  <div className={`single-role-avatar ${p.badgeTone} ${isActive ? "avatar-active" : ""}`}>
+                    {p.initials}
                   </div>
+                </div>
+
+                <div className="single-role-identity">
+                  <div className="single-role-name-row">
+                    <strong className="single-role-name">{p.name}</strong>
+                    <span className="single-role-tag">{p.title}</span>
+                  </div>
+                  <span className="single-role-email">{p.email}</span>
                 </div>
 
                 <p className="single-role-oneliner">
@@ -211,9 +224,15 @@ export function EnterpriseSingleLogin({
 
                 <div className="single-role-footer">
                   {isActive ? (
-                    <span className="active-pill">● Active · In Workspace</span>
+                    <span className="active-pill">
+                      <span className="industrial-status-pulse" style={{ marginRight: 6 }} />
+                      Active · In Workspace
+                    </span>
                   ) : (
-                    <span className="single-role-action-label">Sign in as {p.name} →</span>
+                    <span className="single-role-action-label">
+                      <span>Sign in as {p.name}</span>
+                      <span>→</span>
+                    </span>
                   )}
                 </div>
               </button>
@@ -302,18 +321,22 @@ export function ActiveRoleWorkflowBanner({
             onClick={onOpenCreatorStudio}
             title="Open Creator Multi-Platform Studio with Groq & Sarvam AI"
             style={{
-              background: "#143e33",
+              background: "#18181B",
               color: "#ffffff",
-              border: "none",
-              borderRadius: 6,
-              padding: "6px 11px",
+              border: "1px solid #18181B",
+              borderRadius: 9999,
+              padding: "6px 14px",
               fontSize: 10,
-              fontWeight: 800,
+              fontWeight: 700,
+              fontFamily: "var(--ind-font-sans, sans-serif)",
+              textTransform: "uppercase",
+              letterSpacing: "0.14em",
               cursor: "pointer",
               display: "inline-flex",
               alignItems: "center",
-              gap: 5,
-              marginRight: 6,
+              gap: 6,
+              marginRight: 8,
+              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           >
             <span>✨</span> Creator Studio (Groq + Sarvam)

@@ -58,9 +58,19 @@ export default function PortalPage() {
 
   return (
     <div className={styles.portalWrapper}>
+      {/* 1. Global Noise Texture Overlay */}
+      <div className="industrial-noise-overlay" aria-hidden="true" />
+
+      {/* 2. Structural 12-Column Persistent Grid */}
+      <div className="industrial-grid-bg" aria-hidden="true">
+        {Array.from({ length: 12 }).map((_, idx) => (
+          <div key={idx} className="industrial-grid-col" />
+        ))}
+      </div>
+
       {/* Enterprise Header */}
       <header className={styles.portalHeader}>
-        <div className={styles.brandLockup}>
+        <Link href="/" className={styles.brandLockup}>
           <Image
             src="/logo.png"
             alt="Proofline Logo"
@@ -73,7 +83,13 @@ export default function PortalPage() {
             <span className={styles.brandName}>Proofline Enterprise</span>
             <span className={styles.brandSub}>Brand truth, before publish.</span>
           </div>
-        </div>
+        </Link>
+
+        {/* Absolute Centered Logo matching landing page */}
+        <Link href="/" className={styles.logoCenter}>
+          <span className={styles.logoSerif}>PROOF</span>
+          <span className={styles.logoSans}>LINE</span>
+        </Link>
 
         <div className={styles.headerPills}>
           <span className={styles.systemBadge}>
@@ -179,7 +195,7 @@ function PortalMainLoginView({ onSelectRole }: { onSelectRole: (role: ProoflineR
           </button>
         </div>
         {ssoFeedback ? (
-          <div style={{ width: "100%", fontSize: 11, fontWeight: 700, color: "#196855", marginTop: 4 }}>
+          <div style={{ width: "100%", fontSize: 11, fontWeight: 700, color: "#22C55E", fontFamily: "var(--ind-font-mono, monospace)", marginTop: 8 }}>
             ✓ {ssoFeedback}
           </div>
         ) : null}
@@ -276,7 +292,7 @@ function RoleDedicatedDashboard({
         </div>
 
         <div className={styles.navRight}>
-          <label style={{ fontSize: 11, fontWeight: 700, color: "#194a3d", display: "flex", alignItems: "center", gap: 6 }}>
+          <label style={{ fontSize: 10, fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)", textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--ind-fg, #18181B)", display: "flex", alignItems: "center", gap: 8 }}>
             <span>Dashboard:</span>
             <select
               className={styles.roleSelectDropdown}
@@ -332,6 +348,8 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
   const [batteryFixed, setBatteryFixed] = useState(false);
   const [scanStatus, setScanStatus] = useState<string | null>(null);
   const [selectedLang, setSelectedLang] = useState<"en" | "te" | "hi">("en");
+  const [submittedToTriage, setSubmittedToTriage] = useState(false);
+  const [activeDraftKey, setActiveDraftKey] = useState<"novabook" | "teaser" | "charger">("novabook");
 
   const handleApplyFix = () => {
     setBatteryFixed(true);
@@ -346,7 +364,12 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
           ? "✓ Re-scan complete: 0 contradictions found. Ready for editorial review."
           : "⚠️ Re-scan complete: 1 spec contradiction (claimed 20h vs lab 12h)."
       );
-    }, 400);
+    }, 350);
+  };
+
+  const handleSubmitToManager = () => {
+    setSubmittedToTriage(true);
+    setScanStatus("✓ Draft submitted to Marcus Vance (Editorial Manager) with risk score 24 (LOW, ready for sign-off).");
   };
 
   return (
@@ -355,16 +378,24 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Drafts in Progress</div>
           <div className={styles.metricValue}>4 <span className={styles.metricChange}>Active</span></div>
-          <div className={styles.metricSubtext}>2 submitted for editorial review</div>
+          <div className={styles.metricSubtext}>{submittedToTriage ? "3 submitted for editorial review" : "2 submitted for editorial review"}</div>
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Contradictions Highlighted</div>
-          <div className={styles.metricValue}>{batteryFixed ? "0" : "1"} <span className={styles.metricChange} style={{ color: batteryFixed ? "#1e8369" : "#dc7968" }}>{batteryFixed ? "Resolved" : "Needs Fix"}</span></div>
+          <div className={styles.metricValue}>
+            {batteryFixed ? "0" : "1"}
+            <span className={styles.metricChange} style={{ color: batteryFixed ? "#22C55E" : "#EF4444" }}>
+              {batteryFixed ? "Resolved" : "Needs Fix"}
+            </span>
+          </div>
           <div className={styles.metricSubtext}>NovaBook S1 battery claim</div>
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>1-Click Lab Fixes Applied</div>
-          <div className={styles.metricValue}>{batteryFixed ? "3" : "2"} <span className={styles.metricChange}>+1 today</span></div>
+          <div className={styles.metricValue}>
+            {batteryFixed ? "3" : "2"}
+            <span className={styles.metricChange}>+1 today</span>
+          </div>
           <div className={styles.metricSubtext}>Backed by IEEE Wi-Fi 6 lab test</div>
         </div>
         <div className={styles.metricCard}>
@@ -379,7 +410,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
         <section className={styles.panelCard}>
           <h2 className={styles.panelTitle}>Interactive Claims &amp; Spec Inspector</h2>
           <p className={styles.panelSub}>
-            Draft: <strong>NovaBook S1 Launch Email</strong> (Channel: Email campaign)
+            Draft: <strong>{activeDraftKey === "novabook" ? "NovaBook S1 Launch Email" : activeDraftKey === "teaser" ? "Q4 Spring Laptop Teaser" : "UltraSpeed Charger Social Post"}</strong> (Channel: Email campaign)
           </p>
 
           <div className={styles.diffInspectorBox}>
@@ -387,7 +418,9 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
               <span className={`${styles.diffTag} ${batteryFixed ? styles.verified : styles.contradiction}`}>
                 {batteryFixed ? "✓ Verified Spec Alignment" : "⚠️ Hard Specification Mismatch"}
               </span>
-              <span style={{ fontSize: 11, color: "#69897f" }}>Source: Hardware Spec v2.1</span>
+              <span style={{ fontSize: 11, fontFamily: "var(--ind-font-mono, monospace)", color: "#71717A" }}>
+                Source: Hardware Spec v2.1
+              </span>
             </div>
 
             <div className={styles.draftTextBox}>
@@ -403,13 +436,15 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
             <div className={styles.evidenceComparisonRow}>
               <div className={styles.evidenceCompareCard}>
                 <div className={styles.evidenceCompareTitle}>Drafted Claim</div>
-                <div style={{ color: batteryFixed ? "#176d54" : "#bc3b27", fontWeight: 700 }}>
+                <div style={{ color: batteryFixed ? "#22C55E" : "#EF4444", fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)" }}>
                   {batteryFixed ? "12 hours (Lab Benchmark)" : "20 hours (Unverified)"}
                 </div>
               </div>
               <div className={styles.evidenceCompareCard}>
                 <div className={styles.evidenceCompareTitle}>Official Approved Spec</div>
-                <div style={{ color: "#176d54", fontWeight: 700 }}>12 hours (Wi-Fi test)</div>
+                <div style={{ color: "#22C55E", fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)" }}>
+                  12 hours (Wi-Fi test)
+                </div>
               </div>
             </div>
 
@@ -423,14 +458,21 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
             </button>
           </div>
 
-          <div style={{ display: "flex", gap: 10 }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button
               type="button"
               className={styles.ssoSubmitBtn}
               onClick={handleRescan}
-              style={{ background: "#176450" }}
             >
               Re-scan Draft
+            </button>
+            <button
+              type="button"
+              className={styles.ssoSubmitBtn}
+              onClick={handleSubmitToManager}
+              style={{ background: submittedToTriage ? "#22C55E" : "#18181B" }}
+            >
+              {submittedToTriage ? "✓ Submitted to Editorial" : "Submit to Manager Triage →"}
             </button>
             <button
               type="button"
@@ -442,7 +484,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
           </div>
 
           {scanStatus ? (
-            <div style={{ marginTop: 12, padding: "8px 12px", background: "#f0f8f4", border: "1px solid #cce8dc", borderRadius: 6, fontSize: 11, fontWeight: 700, color: "#165e4d" }}>
+            <div className={styles.actionFeedback}>
               {scanStatus}
             </div>
           ) : null}
@@ -456,24 +498,21 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
           <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
             <button
               type="button"
-              className={styles.backBtn}
-              style={{ background: selectedLang === "en" ? "#143e33" : "#edf5f1", color: selectedLang === "en" ? "#fff" : "#194a3d" }}
+              className={`${styles.langTabBtn} ${selectedLang === "en" ? styles.langTabBtnActive : ""}`}
               onClick={() => setSelectedLang("en")}
             >
               English (US)
             </button>
             <button
               type="button"
-              className={styles.backBtn}
-              style={{ background: selectedLang === "te" ? "#143e33" : "#edf5f1", color: selectedLang === "te" ? "#fff" : "#194a3d" }}
+              className={`${styles.langTabBtn} ${selectedLang === "te" ? styles.langTabBtnActive : ""}`}
               onClick={() => setSelectedLang("te")}
             >
               Telugu (తెలుగు)
             </button>
             <button
               type="button"
-              className={styles.backBtn}
-              style={{ background: selectedLang === "hi" ? "#143e33" : "#edf5f1", color: selectedLang === "hi" ? "#fff" : "#194a3d" }}
+              className={`${styles.langTabBtn} ${selectedLang === "hi" ? styles.langTabBtnActive : ""}`}
               onClick={() => setSelectedLang("hi")}
             >
               Hindi (हिन्दी)
@@ -498,19 +537,39 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
             )}
           </div>
 
-          <div style={{ marginTop: 14, background: "#fafdfb", border: "1px solid #dcece4", borderRadius: 8, padding: "12px 14px" }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: "#143d32", marginBottom: 6 }}>Recent Creator Submissions</div>
-            <div style={{ fontSize: 11, display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #eef5f1" }}>
-              <span>NovaBook S1 Launch Email</span>
-              <span style={{ color: "#bd8338", fontWeight: 700 }}>In Review (Risk 78)</span>
+          <div className={styles.subtleCard}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: "#18181B", marginBottom: 8, fontFamily: "var(--ind-font-sans, sans-serif)" }}>
+              Recent Creator Submissions (Click to Inspect)
             </div>
-            <div style={{ fontSize: 11, display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #eef5f1" }}>
-              <span>Q4 Spring Laptop Teaser</span>
-              <span style={{ color: "#1e8369", fontWeight: 700 }}>Approved</span>
+            <div
+              className={styles.interactiveRow}
+              onClick={() => setActiveDraftKey("novabook")}
+              style={{ background: activeDraftKey === "novabook" ? "rgba(0, 102, 255, 0.08)" : undefined }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 600 }}>NovaBook S1 Launch Email</span>
+              <span style={{ color: "#F59E0B", fontWeight: 700, fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)" }}>
+                {submittedToTriage ? "In Review (Risk 24)" : "In Review (Risk 78)"}
+              </span>
             </div>
-            <div style={{ fontSize: 11, display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
-              <span>UltraSpeed Charger Social Post</span>
-              <span style={{ color: "#5579d7", fontWeight: 700 }}>Submitted</span>
+            <div
+              className={styles.interactiveRow}
+              onClick={() => setActiveDraftKey("teaser")}
+              style={{ background: activeDraftKey === "teaser" ? "rgba(0, 102, 255, 0.08)" : undefined }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 600 }}>Q4 Spring Laptop Teaser</span>
+              <span style={{ color: "#22C55E", fontWeight: 700, fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)" }}>
+                Approved
+              </span>
+            </div>
+            <div
+              className={styles.interactiveRow}
+              onClick={() => setActiveDraftKey("charger")}
+              style={{ background: activeDraftKey === "charger" ? "rgba(0, 102, 255, 0.08)" : undefined }}
+            >
+              <span style={{ fontSize: 11, fontWeight: 600 }}>UltraSpeed Charger Social Post</span>
+              <span style={{ color: "#0066FF", fontWeight: 700, fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)" }}>
+                Submitted
+              </span>
             </div>
           </div>
         </section>
@@ -524,14 +583,63 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
 // -------------------------------------------------------------
 function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [selectedQueueId, setSelectedQueueId] = useState<string>("novabook-launch");
+  const [queueRows, setQueueRows] = useState([
+    {
+      id: "novabook-launch",
+      title: "NovaBook S1 launch email",
+      author: "Aisha Rahman",
+      channel: "Email",
+      riskScore: 78,
+      riskLevel: "high",
+      status: "In Review",
+      notes: "Battery claim contradicts hardware spec v2.1 (20h vs 12h lab benchmark).",
+    },
+    {
+      id: "ultradock-spec",
+      title: "Enterprise UltraDock Spec Sheet",
+      author: "Carlos Mendez",
+      channel: "Web",
+      riskScore: 52,
+      riskLevel: "medium",
+      status: "In Review",
+      notes: "Superlative phrase needs substantiation before client partner release.",
+    },
+    {
+      id: "sustainability-whitepaper",
+      title: "Q4 Sustainability Whitepaper",
+      author: "Aisha Rahman",
+      channel: "PR / Web",
+      riskScore: 24,
+      riskLevel: "low",
+      status: "Approved",
+      notes: "Clean statutory check; carbon offset claims grounded in ISO certs.",
+    },
+  ]);
 
   const handleRouteToLegal = () => {
-    setActionMessage("✓ NovaBook S1 launch email routed to Maya Chen (Legal Ops) for regulatory clearance.");
+    setQueueRows((prev) =>
+      prev.map((r) =>
+        r.id === "novabook-launch"
+          ? { ...r, status: "Routed to Legal (Maya Chen)", riskScore: 38, riskLevel: "medium" }
+          : r
+      )
+    );
+    setActionMessage("✓ NovaBook S1 launch email routed to Maya Chen (Legal Ops) for statutory clearance.");
   };
 
   const handleRequestChanges = () => {
+    setQueueRows((prev) =>
+      prev.map((r) =>
+        r.id === "novabook-launch"
+          ? { ...r, status: "Changes Requested (Aisha Rahman)" }
+          : r
+      )
+    );
     setActionMessage("✓ Change request sent to Aisha Rahman: 'Ensure 12h lab benchmark is applied before re-submission.'");
   };
+
+  const selectedItem = queueRows.find((r) => r.id === selectedQueueId) ?? queueRows[0];
 
   return (
     <>
@@ -553,7 +661,12 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Ready for Legal Sign-off</div>
-          <div className={styles.metricValue}>1 <span className={styles.metricChange} style={{ color: "#5579d7" }}>Pending</span></div>
+          <div className={styles.metricValue}>
+            {queueRows[0].status.includes("Legal") ? "2" : "1"}
+            <span className={styles.metricChange} style={{ color: "#0066FF" }}>
+              {queueRows[0].status.includes("Legal") ? "Dispatched" : "Pending"}
+            </span>
+          </div>
           <div className={styles.metricSubtext}>Editorial review passed</div>
         </div>
       </div>
@@ -572,34 +685,55 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
                 <th>Channel</th>
                 <th>Risk Score</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><strong>NovaBook S1 launch email</strong></td>
-                <td>Aisha Rahman</td>
-                <td>Email</td>
-                <td><span className={`${styles.riskBadge} ${styles.high}`}>78 High</span></td>
-                <td><span style={{ color: "#bd8338", fontWeight: 700 }}>In Review</span></td>
-              </tr>
-              <tr>
-                <td><strong>Enterprise UltraDock Spec Sheet</strong></td>
-                <td>Carlos Mendez</td>
-                <td>Web</td>
-                <td><span className={`${styles.riskBadge} ${styles.medium}`}>52 Med</span></td>
-                <td><span style={{ color: "#bd8338", fontWeight: 700 }}>In Review</span></td>
-              </tr>
-              <tr>
-                <td><strong>Q4 Sustainability Whitepaper</strong></td>
-                <td>Aisha Rahman</td>
-                <td>PR / Web</td>
-                <td><span className={`${styles.riskBadge} ${styles.low}`}>24 Low</span></td>
-                <td><span style={{ color: "#1e8369", fontWeight: 700 }}>Approved</span></td>
-              </tr>
+              {queueRows.map((row) => (
+                <tr
+                  key={row.id}
+                  style={{
+                    background: selectedQueueId === row.id ? "rgba(0, 102, 255, 0.04)" : undefined,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setSelectedQueueId(row.id)}
+                >
+                  <td><strong>{row.title}</strong></td>
+                  <td>{row.author}</td>
+                  <td>{row.channel}</td>
+                  <td>
+                    <span className={`${styles.riskBadge} ${styles[row.riskLevel]}`}>
+                      {row.riskScore} {row.riskLevel.toUpperCase()}
+                    </span>
+                  </td>
+                  <td>
+                    <span style={{
+                      color: row.status.includes("Approved") ? "#22C55E" : row.status.includes("Legal") ? "#0066FF" : "#F59E0B",
+                      fontWeight: 700,
+                      fontFamily: "var(--ind-font-mono, monospace)",
+                      fontSize: 10,
+                    }}>
+                      {row.status}
+                    </span>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className={styles.tableActionBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedQueueId(row.id);
+                      }}
+                    >
+                      Inspect
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
 
-          <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
+          <div style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button
               type="button"
               className={styles.ssoSubmitBtn}
@@ -617,7 +751,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
           </div>
 
           {actionMessage ? (
-            <div style={{ marginTop: 12, padding: "8px 12px", background: "#f0f8f4", border: "1px solid #cce8dc", borderRadius: 6, fontSize: 11, fontWeight: 700, color: "#165e4d" }}>
+            <div className={styles.actionFeedback}>
               {actionMessage}
             </div>
           ) : null}
@@ -625,8 +759,17 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
 
         {/* Right: Channel Breakdown & Team Workload */}
         <section className={styles.panelCard}>
-          <h2 className={styles.panelTitle}>Campaign Operations &amp; Workload</h2>
-          <p className={styles.panelSub}>Review distribution across publishing surfaces</p>
+          <h2 className={styles.panelTitle}>Active Inspection: {selectedItem.title}</h2>
+          <p className={styles.panelSub}>Triage context, claims breakdown, and reviewer notes</p>
+
+          <div className={styles.subtleCard} style={{ marginTop: 0, marginBottom: 16 }}>
+            <div style={{ fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#71717A", marginBottom: 6 }}>
+              Reviewer Assessment &amp; Context
+            </div>
+            <p style={{ margin: 0, fontSize: 12, color: "#18181B", lineHeight: 1.55 }}>
+              {selectedItem.notes}
+            </p>
+          </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 18 }}>
             <div className={styles.pillarRow}>
@@ -635,7 +778,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
                 <span>45% of queue</span>
               </div>
               <div className={styles.pillarBarBg}>
-                <div className={`${styles.pillarBarFill} ${styles.amber}`} style={{ width: "45%" }} />
+                <div className={`${styles.pillarBarFill} ${styles.blue}`} style={{ width: "45%" }} />
               </div>
             </div>
 
@@ -645,7 +788,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
                 <span>35% of queue</span>
               </div>
               <div className={styles.pillarBarBg}>
-                <div className={`${styles.pillarBarFill} ${styles.amber}`} style={{ width: "35%" }} />
+                <div className={`${styles.pillarBarFill} ${styles.blue}`} style={{ width: "35%" }} />
               </div>
             </div>
 
@@ -655,23 +798,19 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
                 <span>20% of queue</span>
               </div>
               <div className={styles.pillarBarBg}>
-                <div className={`${styles.pillarBarFill} ${styles.amber}`} style={{ width: "20%" }} />
+                <div className={`${styles.pillarBarFill} ${styles.blue}`} style={{ width: "20%" }} />
               </div>
             </div>
           </div>
 
-          <div style={{ background: "#fafdfb", border: "1px solid #dcece4", borderRadius: 8, padding: 12, fontSize: 11 }}>
-            <div style={{ fontWeight: 800, color: "#10352c", marginBottom: 4 }}>Manager Decision Log</div>
-            <p style={{ margin: 0, color: "#486a60", lineHeight: 1.5 }}>
-              Marcus Vance flagged superlative phrase &ldquo;our most reliable laptop yet&rdquo; for statutory review by Maya Chen under Lanham Act §43(a).
-            </p>
-          </div>
-
-          <div style={{ marginTop: 14 }}>
-            <button type="button" className={styles.backBtn} onClick={onOpenWorkspace} style={{ width: "100%", justifyContent: "center" }}>
-              Open Manager Full Workspace →
-            </button>
-          </div>
+          <button
+            type="button"
+            className={styles.backBtn}
+            onClick={onOpenWorkspace}
+            style={{ width: "100%", justifyContent: "center" }}
+          >
+            Open Manager Full Workspace →
+          </button>
         </section>
       </div>
     </>
@@ -684,6 +823,15 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
 function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
   const [certSigned, setCertSigned] = useState(false);
   const [safeHarborApplied, setSafeHarborApplied] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+
+  const handleCopyHash = () => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+      setCopyFeedback("✓ SHA-256 Hash copied to clipboard.");
+      setTimeout(() => setCopyFeedback(null), 3000);
+    }
+  };
 
   return (
     <>
@@ -695,17 +843,28 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Lanham Act §43(a) Risk</div>
-          <div className={styles.metricValue}>{safeHarborApplied ? "0" : "1"} <span className={styles.metricChange} style={{ color: safeHarborApplied ? "#1e8369" : "#dc7968" }}>{safeHarborApplied ? "Mitigated" : "Superlative"}</span></div>
+          <div className={styles.metricValue}>
+            {safeHarborApplied ? "0" : "1"}
+            <span className={styles.metricChange} style={{ color: safeHarborApplied ? "#22C55E" : "#EF4444" }}>
+              {safeHarborApplied ? "Mitigated" : "Superlative"}
+            </span>
+          </div>
           <div className={styles.metricSubtext}>&ldquo;most reliable&rdquo; claim</div>
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Quality Score Index</div>
-          <div className={styles.metricValue}>95.2 <span className={styles.metricChange}>/ 100</span></div>
+          <div className={styles.metricValue}>
+            {safeHarborApplied ? "98.4" : "95.2"}
+            <span className={styles.metricChange}>/ 100</span>
+          </div>
           <div className={styles.metricSubtext}>Accuracy + Legal + A11y</div>
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Signed Certificates</div>
-          <div className={styles.metricValue}>{certSigned ? "15" : "14"} <span className={styles.metricChange}>SHA-256</span></div>
+          <div className={styles.metricValue}>
+            {certSigned ? "15" : "14"}
+            <span className={styles.metricChange}>SHA-256</span>
+          </div>
           <div className={styles.metricSubtext}>Audit-proof legal gate</div>
         </div>
       </div>
@@ -720,7 +879,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
             <div className={styles.pillarRow}>
               <div className={styles.pillarMeta}>
                 <span>1. Spec Accuracy &amp; Lab Benchmarking</span>
-                <span style={{ color: "#176d54", fontWeight: 800 }}>96% (PASS)</span>
+                <span style={{ color: "#22C55E", fontWeight: 800 }}>96% (PASS)</span>
               </div>
               <div className={styles.pillarBarBg}>
                 <div className={`${styles.pillarBarFill} ${styles.blue}`} style={{ width: "96%" }} />
@@ -730,7 +889,9 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
             <div className={styles.pillarRow}>
               <div className={styles.pillarMeta}>
                 <span>2. Statutory Legal Rules (FTC §5 &amp; Lanham Act)</span>
-                <span style={{ color: safeHarborApplied ? "#176d54" : "#bd8338", fontWeight: 800 }}>{safeHarborApplied ? "98% (CLEARED)" : "92% (REVIEW)"}</span>
+                <span style={{ color: safeHarborApplied ? "#22C55E" : "#F59E0B", fontWeight: 800 }}>
+                  {safeHarborApplied ? "98% (CLEARED)" : "92% (REVIEW)"}
+                </span>
               </div>
               <div className={styles.pillarBarBg}>
                 <div className={`${styles.pillarBarFill} ${styles.blue}`} style={{ width: safeHarborApplied ? "98%" : "92%" }} />
@@ -740,7 +901,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
             <div className={styles.pillarRow}>
               <div className={styles.pillarMeta}>
                 <span>3. VoltEdge Brand Guidelines Voice</span>
-                <span style={{ color: "#176d54", fontWeight: 800 }}>95% (PASS)</span>
+                <span style={{ color: "#22C55E", fontWeight: 800 }}>95% (PASS)</span>
               </div>
               <div className={styles.pillarBarBg}>
                 <div className={`${styles.pillarBarFill} ${styles.blue}`} style={{ width: "95%" }} />
@@ -750,7 +911,7 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
             <div className={styles.pillarRow}>
               <div className={styles.pillarMeta}>
                 <span>4. Accessibility &amp; Non-Deceptive Pricing</span>
-                <span style={{ color: "#176d54", fontWeight: 800 }}>98% (PASS)</span>
+                <span style={{ color: "#22C55E", fontWeight: 800 }}>98% (PASS)</span>
               </div>
               <div className={styles.pillarBarBg}>
                 <div className={`${styles.pillarBarFill} ${styles.blue}`} style={{ width: "98%" }} />
@@ -758,18 +919,18 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
             </div>
           </div>
 
-          <div style={{ background: "#f8fbfd", border: "1px solid #d3e4f3", borderRadius: 8, padding: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: "#154278", marginBottom: 6 }}>
+          <div className={styles.subtleCard}>
+            <div style={{ fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "#18181B", marginBottom: 6 }}>
               Superlative &amp; Comparative Claim Scanner
             </div>
-            <p style={{ fontSize: 11, margin: 0, color: "#2d5483", lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, margin: 0, color: "#52525B", lineHeight: 1.55 }}>
               Claim flagged: <em>&ldquo;our most reliable laptop yet&rdquo;</em> (High-risk comparative claim under Lanham Act §43(a)).
             </p>
-            <div style={{ marginTop: 10 }}>
+            <div style={{ marginTop: 12 }}>
               <button
                 type="button"
                 className={styles.ssoSubmitBtn}
-                style={{ background: safeHarborApplied ? "#176450" : "#5579d7" }}
+                style={{ background: safeHarborApplied ? "#22C55E" : "#18181B" }}
                 onClick={() => setSafeHarborApplied(true)}
               >
                 {safeHarborApplied
@@ -795,16 +956,39 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
             </div>
           </div>
 
-          <button
-            type="button"
-            className={styles.signCertBtn}
-            onClick={() => setCertSigned(true)}
-          >
-            {certSigned ? "✓ Certificate Signed & Exported" : "✍ Sign & Export Compliance Certificate"}
-          </button>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className={styles.signCertBtn}
+              onClick={() => setCertSigned(true)}
+              style={{ flex: 1 }}
+            >
+              {certSigned ? "✓ Certificate Signed & Exported" : "✍ Sign & Export Compliance Certificate"}
+            </button>
+            {certSigned ? (
+              <button
+                type="button"
+                className={styles.backBtn}
+                onClick={handleCopyHash}
+              >
+                Copy Hash
+              </button>
+            ) : null}
+          </div>
 
-          <div style={{ marginTop: 14 }}>
-            <button type="button" className={styles.backBtn} onClick={onOpenWorkspace} style={{ width: "100%", justifyContent: "center" }}>
+          {copyFeedback ? (
+            <div className={styles.actionFeedback}>
+              {copyFeedback}
+            </div>
+          ) : null}
+
+          <div style={{ marginTop: 16 }}>
+            <button
+              type="button"
+              className={styles.backBtn}
+              onClick={onOpenWorkspace}
+              style={{ width: "100%", justifyContent: "center" }}
+            >
               Open Legal Clearance Workspace →
             </button>
           </div>
@@ -820,18 +1004,36 @@ function LegalDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
 function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
   const [gapApproved, setGapApproved] = useState(false);
   const [dispatched, setDispatched] = useState(false);
+  const [dispatchReceipts, setDispatchReceipts] = useState<Array<{ channel: string; id: string; status: string }>>([]);
+
+  const handleDispatch = () => {
+    setDispatched(true);
+    setDispatchReceipts([
+      { channel: "LinkedIn Business Page (@VoltEdgeLabs)", id: "urn:li:share:712984102941", status: "LIVE · 100% Verified Grounding" },
+      { channel: "X / Twitter Corporate (@VoltEdge)", id: "tweet_id:18492049102941", status: "LIVE · Spec Matched" },
+      { channel: "Instagram Product Studio (@voltedge_tech)", id: "media_id:18029419402941", status: "LIVE · Legal Cleared" },
+    ]);
+  };
 
   return (
     <>
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Truth Registry Coverage</div>
-          <div className={styles.metricValue}>86% <span className={styles.metricChange}>18/21 Active</span></div>
+          <div className={styles.metricValue}>
+            {gapApproved ? "90%" : "86%"}
+            <span className={styles.metricChange}>{gapApproved ? "19/21 Active" : "18/21 Active"}</span>
+          </div>
           <div className={styles.metricSubtext}>Hardware, battery &amp; speed specs</div>
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Guideline Gaps Detected</div>
-          <div className={styles.metricValue}>{gapApproved ? "0" : "1"} <span className={styles.metricChange} style={{ color: gapApproved ? "#1e8369" : "#dc7968" }}>{gapApproved ? "Approved" : "Needs Review"}</span></div>
+          <div className={styles.metricValue}>
+            {gapApproved ? "0" : "1"}
+            <span className={styles.metricChange} style={{ color: gapApproved ? "#22C55E" : "#EF4444" }}>
+              {gapApproved ? "Approved" : "Needs Review"}
+            </span>
+          </div>
           <div className={styles.metricSubtext}>AI-discovered guideline update</div>
         </div>
         <div className={styles.metricCard}>
@@ -841,7 +1043,10 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Multi-Channel Dispatch</div>
-          <div className={styles.metricValue}>{dispatched ? "9" : "8"} <span className={styles.metricChange}>Channels Active</span></div>
+          <div className={styles.metricValue}>
+            {dispatched ? "9" : "8"}
+            <span className={styles.metricChange}>Channels Active</span>
+          </div>
           <div className={styles.metricSubtext}>LinkedIn, X, Instagram</div>
         </div>
       </div>
@@ -852,21 +1057,21 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
           <h2 className={styles.panelTitle}>Guideline-Gap Detector (AI Discovery)</h2>
           <p className={styles.panelSub}>Automatically flags recurring ambiguities in marketing drafts</p>
 
-          <div style={{ background: "#f8fbf9", border: "1px solid #dbeae2", borderRadius: 8, padding: 14, marginBottom: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "#196855", textTransform: "uppercase", marginBottom: 4 }}>
+          <div className={styles.subtleCard} style={{ marginTop: 0, marginBottom: 16 }}>
+            <div style={{ fontSize: 10, fontWeight: 800, color: "#0066FF", textTransform: "uppercase", letterSpacing: "0.14em", fontFamily: "var(--ind-font-mono, monospace)", marginBottom: 4 }}>
               Recurring Pattern: Comparative Reliability Claims
             </div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#0e3127", marginBottom: 6 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#18181B", marginBottom: 6 }}>
               Rule Clarification: &ldquo;Most reliable&rdquo; requires IEEE benchmark citation.
             </div>
-            <p style={{ fontSize: 11, color: "#486a60", lineHeight: 1.5, margin: 0 }}>
+            <p style={{ fontSize: 12, color: "#52525B", lineHeight: 1.55, margin: 0 }}>
               Flagged in 3 recent drafts across Marketing and PR. Approving this rule automatically updates the Truth Registry and informs creators during text input.
             </p>
-            <div style={{ marginTop: 12 }}>
+            <div style={{ marginTop: 14 }}>
               <button
                 type="button"
                 className={styles.ssoSubmitBtn}
-                style={{ background: gapApproved ? "#176450" : "#3e9a82" }}
+                style={{ background: gapApproved ? "#22C55E" : "#18181B" }}
                 onClick={() => setGapApproved(true)}
               >
                 {gapApproved ? "✓ Guideline Rule Approved & Registered" : "✓ Approve Proposed Guideline Update"}
@@ -886,24 +1091,37 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
 
           <div className={styles.channelRow}>
             <span><strong>LinkedIn Business Page</strong> (@VoltEdgeLabs)</span>
-            <span style={{ color: "#176d54", fontWeight: 700 }}>✓ Ready</span>
+            <span style={{ color: "#22C55E", fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)" }}>✓ Ready</span>
           </div>
           <div className={styles.channelRow}>
             <span><strong>X / Twitter Corporate</strong> (@VoltEdge)</span>
-            <span style={{ color: "#176d54", fontWeight: 700 }}>✓ Ready</span>
+            <span style={{ color: "#22C55E", fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)" }}>✓ Ready</span>
           </div>
           <div className={styles.channelRow}>
             <span><strong>Instagram Product Studio</strong> (@voltedge_tech)</span>
-            <span style={{ color: "#176d54", fontWeight: 700 }}>✓ Ready</span>
+            <span style={{ color: "#22C55E", fontWeight: 700, fontFamily: "var(--ind-font-mono, monospace)" }}>✓ Ready</span>
           </div>
 
           <button
             type="button"
             className={styles.dispatchBtn}
-            onClick={() => setDispatched(true)}
+            onClick={handleDispatch}
           >
             {dispatched ? "✓ Content Dispatched to All Channels (Live)" : "🚀 1-Click Dispatch to Social Channels"}
           </button>
+
+          {dispatched ? (
+            <div className={styles.receiptCard}>
+              <div style={{ fontWeight: 700, marginBottom: 6, color: "#22C55E" }}>
+                ✓ DISPATCH RECEIPTS VERIFIED:
+              </div>
+              {dispatchReceipts.map((r, i) => (
+                <div key={i} style={{ marginBottom: 4 }}>
+                  <strong>{r.channel}</strong>: {r.id} ({r.status})
+                </div>
+              ))}
+            </div>
+          ) : null}
         </section>
       </div>
     </>
@@ -914,7 +1132,21 @@ function BrandOwnerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void 
 // 5. AGENCY PARTNER DASHBOARD
 // -------------------------------------------------------------
 function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
+  const [commentInput, setCommentInput] = useState("");
+  const [feedbackList, setFeedbackList] = useState<string[]>([
+    "Battery claim verified against client spec v2.1.",
+    "Superlative phrasing excluded from hero copy.",
+    "#VoltEdgePartner tag verified in all deliverables.",
+  ]);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
+  const handleAddComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentInput.trim()) return;
+    setFeedbackList((prev) => [...prev, commentInput.trim()]);
+    setCommentInput("");
+    setFeedbackSubmitted(true);
+  };
 
   return (
     <>
@@ -931,12 +1163,15 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
         </div>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Internal Telemetry</div>
-          <div className={styles.metricValue}>🔒 <span className={styles.metricChange} style={{ color: "#bd8338" }}>Masked</span></div>
+          <div className={styles.metricValue}>🔒 <span className={styles.metricChange} style={{ color: "#F59E0B" }}>Masked</span></div>
           <div className={styles.metricSubtext}>Protected client data boundary</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Pending Notes</div>
-          <div className={styles.metricValue}>{feedbackSubmitted ? "4" : "3"} <span className={styles.metricChange}>Threads</span></div>
+          <div className={styles.metricLabel}>Collaborative Notes</div>
+          <div className={styles.metricValue}>
+            {feedbackList.length}
+            <span className={styles.metricChange}>Threads</span>
+          </div>
           <div className={styles.metricSubtext}>Collaborative span comments</div>
         </div>
       </div>
@@ -947,27 +1182,46 @@ function AgencyDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
           <h2 className={styles.panelTitle}>Sandboxed Client Campaign View</h2>
           <p className={styles.panelSub}>External agency sandbox for Apex Creative</p>
 
-          <div style={{ background: "#f8fbf9", border: "1px solid #dcece4", borderRadius: 8, padding: 14, marginBottom: 14 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#10352c", marginBottom: 6 }}>
+          <div className={styles.subtleCard} style={{ marginTop: 0, marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#18181B", marginBottom: 8 }}>
               Campaign: VoltEdge NovaBook S1 Freelancer Promo
             </div>
-            <ul style={{ paddingLeft: 18, margin: "0 0 10px", fontSize: 11, color: "#486a60", lineHeight: 1.6 }}>
+            <ul style={{ paddingLeft: 18, margin: "0 0 14px", fontSize: 12, color: "#52525B", lineHeight: 1.6 }}>
               <li>Battery claim must not exceed 12 hours under any test scenario.</li>
               <li>Superlatives (&ldquo;best&rdquo;, &ldquo;most reliable&rdquo;) strictly barred in agency copy.</li>
               <li>Include #VoltEdgePartner tag as mandated by FTC 16 CFR § 255.</li>
             </ul>
-            <button
-              type="button"
-              className={styles.ssoSubmitBtn}
-              onClick={() => setFeedbackSubmitted(true)}
-            >
-              {feedbackSubmitted ? "✓ Comment Submitted to VoltEdge Team" : "＋ Add Span Feedback Comment"}
-            </button>
+
+            <form onSubmit={handleAddComment} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <input
+                type="text"
+                placeholder="Add feedback comment for client team..."
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                className={styles.ssoInput}
+                style={{ width: "100%" }}
+              />
+              <button
+                type="submit"
+                className={styles.ssoSubmitBtn}
+                style={{ alignSelf: "flex-start" }}
+              >
+                ＋ Submit Feedback Comment
+              </button>
+            </form>
+
+            {feedbackSubmitted ? (
+              <div className={styles.actionFeedback} style={{ marginTop: 10 }}>
+                ✓ Comment logged to VoltEdge review thread ({feedbackList.length} total notes).
+              </div>
+            ) : null}
           </div>
 
-          <button type="button" className={styles.backBtn} onClick={onOpenWorkspace}>
-            Open Sandboxed Review Queue →
-          </button>
+          <div style={{ marginTop: 14 }}>
+            <button type="button" className={styles.backBtn} onClick={onOpenWorkspace}>
+              Open Sandboxed Review Queue →
+            </button>
+          </div>
         </section>
 
         {/* Right: Data Protection & Masking */}

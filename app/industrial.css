@@ -21,18 +21,21 @@
   --ind-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 1. GLOBAL NOISE TEXTURE OVERLAY (0.04 Opacity Fractal Noise) */
+/* 1. ULTRA-LIGHTWEIGHT NOISE/GRAIN OVERLAY (Zero CPU Rasterization, Low VRAM) */
 .industrial-noise-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
+  opacity: 0.035;
+  background-image: radial-gradient(rgba(24, 24, 27, 0.12) 1px, transparent 0);
+  background-size: 16px 16px;
+  contain: strict;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
-/* 2. STRUCTURAL 12-COLUMN PERSISTENT GRID */
+/* 2. STRUCTURAL 12-COLUMN PERSISTENT GRID (Isolated Composite Layer) */
 .industrial-grid-bg {
   position: fixed;
   inset: 0;
@@ -43,6 +46,9 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   height: 100vh;
+  contain: strict;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .industrial-grid-col {
@@ -132,10 +138,11 @@
   top: 0;
   z-index: 100;
   height: 80px;
-  background: rgba(235, 235, 232, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(235, 235, 232, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--ind-border);
+  transform: translateZ(0);
 }
 
 .industrial-header-inner {
@@ -505,6 +512,7 @@
   display: flex;
   align-items: center;
   position: relative;
+  contain: paint layout;
 }
 
 .industrial-marquee-track {
@@ -513,6 +521,8 @@
   white-space: nowrap;
   animation: indMarqueeScroll 28s linear infinite;
   gap: 36px;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .industrial-marquee-track:hover {
@@ -550,6 +560,8 @@
   max-width: 1600px;
   margin: 0 auto;
   border-bottom: 1px solid var(--ind-border);
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 750px;
 }
 
 .industrial-section-label-bar {
@@ -700,6 +712,8 @@
   grid-template-columns: repeat(12, 1fr);
   gap: 48px;
   border-bottom: 1px solid var(--ind-border);
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
 }
 
 .industrial-philosophy-left {
@@ -725,8 +739,25 @@
   gap: 32px;
 }
 
+.industrial-role-launchpads-section {
+  padding: 64px 32px 72px;
+}
+
+@media (max-width: 768px) {
+  .industrial-role-launchpads-section {
+    padding: 36px 16px 48px;
+  }
+}
+
+.industrial-comparison-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .industrial-comparison-table {
   width: 100%;
+  min-width: 520px;
   border-collapse: collapse;
   font-family: var(--ind-font-mono);
   font-size: 11px;
@@ -754,6 +785,8 @@
   margin: 0 auto;
   padding: 80px 32px;
   border-bottom: 1px solid var(--ind-border);
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
 }
 
 .industrial-journal-grid {
@@ -788,6 +821,8 @@
   padding: 80px 32px 40px;
   position: relative;
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
 }
 
 .industrial-footer-inner {
@@ -893,15 +928,18 @@
   color: #FFFFFF;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments & Low-RAM Optimizations */
 @media (max-width: 1024px) {
   .industrial-hero {
     grid-template-columns: 1fr;
-    padding: 48px 20px 60px;
+    padding: 48px 24px 60px;
   }
   .industrial-hero-left,
   .industrial-hero-right {
     grid-column: span 12;
+  }
+  .industrial-header-inner {
+    padding: 0 24px;
   }
   .industrial-project-row {
     grid-template-columns: 60px 1fr;
@@ -918,9 +956,153 @@
   }
   .industrial-philosophy-section {
     grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 60px 24px;
   }
   .industrial-philosophy-left,
   .industrial-philosophy-right {
     grid-column: span 12;
+  }
+  .industrial-comparison-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .industrial-header {
+    height: auto;
+    min-height: 64px;
+    padding: 10px 0;
+  }
+  .industrial-header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+  }
+  .industrial-header-left {
+    display: none;
+  }
+  .industrial-logo-center {
+    order: 1;
+  }
+  .industrial-header-right {
+    order: 2;
+    gap: 8px;
+  }
+  .industrial-hero {
+    padding: 36px 16px 48px;
+    gap: 24px;
+  }
+  .industrial-hero-heading {
+    font-size: clamp(34px, 10vw, 56px);
+    margin-bottom: 20px;
+  }
+  .industrial-hero-subcopy {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .industrial-hero-cta-box {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 12px;
+  }
+  .industrial-hero-cta-box .industrial-cta-pill,
+  .industrial-hero-cta-box .industrial-ghost-btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  .industrial-readout-row {
+    gap: 16px;
+  }
+  .industrial-frame-container {
+    min-height: auto;
+    padding: 14px;
+  }
+  .industrial-marquee-wrap {
+    height: 80px;
+  }
+  .industrial-marquee-item {
+    font-size: clamp(26px, 6vw, 42px);
+    gap: 20px;
+  }
+  .industrial-section-label-bar {
+    padding: 16px;
+  }
+  .industrial-project-row {
+    padding: 24px 16px;
+    min-height: auto;
+  }
+  .industrial-philosophy-section {
+    padding: 40px 16px;
+  }
+  .industrial-journal-section {
+    padding: 40px 16px;
+  }
+  .industrial-journal-grid {
+    grid-template-columns: 1fr;
+  }
+  .industrial-footer {
+    padding: 48px 16px 32px;
+  }
+  .industrial-footer-top {
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 36px;
+  }
+  .industrial-footer-contact-link {
+    font-size: clamp(24px, 7vw, 40px);
+  }
+  .industrial-footer-bottom {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .industrial-cta-pill {
+    padding: 10px 16px;
+    font-size: 9.5px;
+  }
+  .industrial-select-clean {
+    padding: 6px 8px;
+    font-size: 9px;
+  }
+  .industrial-hero-heading {
+    font-size: clamp(28px, 9vw, 38px);
+    letter-spacing: -0.04em;
+  }
+  .industrial-project-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .industrial-project-desc {
+    grid-column: span 1;
+  }
+  .industrial-footer-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .industrial-marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .industrial-status-pulse {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

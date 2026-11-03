@@ -1329,7 +1329,7 @@ export default function Home() {
         </section>
 
         {/* 8. QUICK ROLE LAUNCHPADS (Direct login personas for evaluation) */}
-        <section className="industrial-project-section" style={{ background: "rgba(24, 24, 27, 0.02)", padding: "48px 32px" }}>
+        <section id="role-launchpads" className="industrial-project-section industrial-role-launchpads-section">
           <EnterpriseSingleLogin
             currentRole={currentRole}
             onSelectRole={launchRoleDashboard}
@@ -1353,37 +1353,39 @@ export default function Home() {
 
           <div className="industrial-philosophy-right">
             <span className="industrial-mono-10">COMPARATIVE SPECIFICATION MATRIX</span>
-            <table className="industrial-comparison-table">
-              <thead>
-                <tr>
-                  <th>EVALUATION DIMENSION</th>
-                  <th>PROBABILISTIC AI (TYPICAL)</th>
-                  <th>PROOFLINE TRUTH ENGINE</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>SPECIFICATION PRECISION</td>
-                  <td>82% – 89% (Hallucination risk)</td>
-                  <td style={{ color: "#0066FF", fontWeight: 700 }}>100.0% DETERMINISTIC MATCH</td>
-                </tr>
-                <tr>
-                  <td>REGULATORY ADMISSIBILITY</td>
-                  <td>None (Inadmissible in court)</td>
-                  <td style={{ color: "#0066FF", fontWeight: 700 }}>FTC §5 &amp; LANHAM SAFE-HARBOR</td>
-                </tr>
-                <tr>
-                  <td>TAMPER-EVIDENT RECORD</td>
-                  <td>Ephemeral session log</td>
-                  <td style={{ color: "#0066FF", fontWeight: 700 }}>SHA-256 MERKLE LINKED</td>
-                </tr>
-                <tr>
-                  <td>EXECUTION SPEED</td>
-                  <td>1,800ms – 4,500ms</td>
-                  <td style={{ color: "#0066FF", fontWeight: 700 }}>&lt; 14MS CLOUDFLARE EDGE</td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="industrial-comparison-table-wrap">
+              <table className="industrial-comparison-table">
+                <thead>
+                  <tr>
+                    <th>EVALUATION DIMENSION</th>
+                    <th>PROBABILISTIC AI (TYPICAL)</th>
+                    <th>PROOFLINE TRUTH ENGINE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>SPECIFICATION PRECISION</td>
+                    <td>82% – 89% (Hallucination risk)</td>
+                    <td style={{ color: "#0066FF", fontWeight: 700 }}>100.0% DETERMINISTIC MATCH</td>
+                  </tr>
+                  <tr>
+                    <td>REGULATORY ADMISSIBILITY</td>
+                    <td>None (Inadmissible in court)</td>
+                    <td style={{ color: "#0066FF", fontWeight: 700 }}>FTC §5 &amp; LANHAM SAFE-HARBOR</td>
+                  </tr>
+                  <tr>
+                    <td>TAMPER-EVIDENT RECORD</td>
+                    <td>Ephemeral session log</td>
+                    <td style={{ color: "#0066FF", fontWeight: 700 }}>SHA-256 MERKLE LINKED</td>
+                  </tr>
+                  <tr>
+                    <td>EXECUTION SPEED</td>
+                    <td>1,800ms – 4,500ms</td>
+                    <td style={{ color: "#0066FF", fontWeight: 700 }}>&lt; 14MS CLOUDFLARE EDGE</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -1882,7 +1884,7 @@ export default function Home() {
                     <code>{r.platformPostId}</code>
                   </div>
                 ))}
-                <p style={{ margin: "8px 0 0", fontSize: 9, color: "#4f756b" }}>
+                <p style={{ margin: "8px 0 0", fontSize: 9, color: "#71717A" }}>
                   Audit event recorded: Dispatched by Maya Chen ({roleLabels[currentRole]}).
                 </p>
               </div>
@@ -1969,14 +1971,14 @@ export default function Home() {
             </div>
 
             <div className="indic-preview-box">
-              <small style={{ color: "#7f938c", textTransform: "uppercase", fontSize: 9, fontWeight: 750 }}>
+              <small style={{ color: "#71717A", textTransform: "uppercase", fontSize: 9, fontWeight: 750 }}>
                 Source Copy (English)
               </small>
               <p className="indic-source-quote">
                 “VoltEdge NovaBook S1 delivers 36 hours of battery life and is twice as fast as all competitors.”
               </p>
               
-              <small style={{ color: "#7f938c", textTransform: "uppercase", fontSize: 9, fontWeight: 750 }}>
+              <small style={{ color: "#71717A", textTransform: "uppercase", fontSize: 9, fontWeight: 750 }}>
                 {indicLang === "te" ? "Telugu Translation (Sarvam Translate)" : "Hindi Translation (Sarvam Translate)"}
               </small>
               <p className="indic-quote">
@@ -1987,24 +1989,24 @@ export default function Home() {
             </div>
 
             <div style={{ display: "grid", gap: 8, marginBottom: 16 }}>
-              <div className="approved-fact-pill" style={{ background: "#fff5f5", borderColor: "#f9d2d2" }}>
-                <span style={{ color: "var(--coral)" }}>✗</span>
+              <div className="approved-fact-pill" style={{ background: "#FEF2F2", borderColor: "#FECACA" }}>
+                <span style={{ color: "#DC2626" }}>✗</span>
                 <span>
-                  <strong style={{ color: "var(--coral)" }}>Fact Mismatch:</strong>{" "}
+                  <strong style={{ color: "#DC2626" }}>Fact Mismatch:</strong>{" "}
                   {indicLang === "te" ? "36 గంటలు (36 hours)" : "36 घंटे (36 hours)"} contradicts Truth Registry spec (<strong>Up to 24 hours</strong>).
                 </span>
               </div>
-              <div className="approved-fact-pill" style={{ background: "#fffaf0", borderColor: "#fae6b8" }}>
-                <span style={{ color: "var(--amber)" }}>!</span>
+              <div className="approved-fact-pill" style={{ background: "#FFFBEB", borderColor: "#FDE68A" }}>
+                <span style={{ color: "#D97706" }}>!</span>
                 <span>
-                  <strong style={{ color: "#8a6d42" }}>Evidence Gap:</strong>{" "}
+                  <strong style={{ color: "#D97706" }}>Evidence Gap:</strong>{" "}
                   {indicLang === "te" ? "రెండు రెట్లు వేగవంతమైనది (Twice as fast)" : "दोगुना तेज (Twice as fast)"} lacks comparative benchmark documentation.
                 </span>
               </div>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 10, color: "#7a918a" }}>Model: sarvam-105b · saaras:v2</span>
+              <span style={{ fontSize: 10, color: "#71717A", fontFamily: "var(--ind-font-mono, 'JetBrains Mono', monospace)" }}>Model: sarvam-105b · saaras:v2</span>
               <button className="primary-button" type="button" onClick={() => setIsIndicModalOpen(false)}>
                 Done
               </button>

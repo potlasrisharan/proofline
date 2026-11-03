@@ -359,7 +359,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                 </div>
 
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "-6px 0 14px", alignItems: "center" }}>
-                  <span style={{ fontSize: 9.5, fontWeight: 750, color: "#386053" }}>Creator Platforms:</span>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, color: "#18181B", fontFamily: "var(--ind-font-mono, 'JetBrains Mono', monospace)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Creator Platforms:</span>
                   <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.linkedin.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · LinkedIn Announcement", channel: "social" })); setMessage("Loaded LinkedIn Creator Post with comparative claims & 20h spec."); }}>💼 LinkedIn</button>
                   <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.twitter.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · X/Twitter Thread", channel: "social" })); setMessage("Loaded X/Twitter Launch Thread (checks 280-char limit & FTC #ad disclosure)."); }}>𝕏 Twitter</button>
                   <button className="small-button" type="button" onClick={() => { setText(creatorPlatformPresets.instagram.sampleText); setScope((prev) => ({ ...prev, title: "VoltEdge NovaBook S1 · Instagram Caption", channel: "social" })); setMessage("Loaded Instagram Caption (checks FTC § 255 sponsorship disclosure)."); }}>📸 Instagram</button>
