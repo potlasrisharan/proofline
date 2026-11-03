@@ -895,21 +895,8 @@ export default function Home() {
           <div className="industrial-header-inner">
             {/* Left Nav Links (10px uppercase tracking 0.22em) */}
             <nav className="industrial-header-left">
-              <a href="#workflow-sitemap" className="industrial-nav-link">Workflow Sitemap</a>
-              <button
-                type="button"
-                className="industrial-nav-link"
-                onClick={() => navigate("registry")}
-              >
-                Truth registry
-              </button>
-              <button
-                type="button"
-                className="industrial-nav-link"
-                onClick={() => navigate("audit-log")}
-              >
-                Audit log
-              </button>
+              <a href="#services-section" className="industrial-nav-link">Services</a>
+              <a href="#dashboards-section" className="industrial-nav-link">Dashboards</a>
               <Link href="/impact" className="industrial-nav-link">Impact radar</Link>
               <Link href="/privacy" className="industrial-nav-link">Trust &amp; Privacy</Link>
               <Link href="/portal" className="industrial-nav-link">Role Portal</Link>
@@ -1048,6 +1035,7 @@ export default function Home() {
             currentRole={currentRole}
             onOpenSwitchRole={() => setIsRoleModalOpen(true)}
             onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
+            onNavigateView={navigate}
           />
           <label className="role-preview" style={{ position: "absolute", opacity: 0.001, pointerEvents: "none", width: 1, height: 1, overflow: "hidden", zIndex: -1, right: 0, bottom: 0 }}>
             <span>Role preview</span>
@@ -1117,9 +1105,9 @@ export default function Home() {
         />
 
         {/* 8. SEQUENTIAL WORKFLOW STAGE PIPELINE */}
-        <section id="dashboards-section" className="industrial-project-section">
-          <div className="industrial-section-label-bar" id="services-section">
-            <span className="industrial-mono-10">02 // SEQUENTIAL WORKFLOW EXPLORER · 4 CORE STAGES</span>
+        <section id="services-section" className="industrial-project-section">
+          <div className="industrial-section-label-bar">
+            <span className="industrial-mono-10">01 // PRODUCT SERVICES &amp; WORKFLOW PIPELINE</span>
             <span className="industrial-mono-10-muted">EXPLORE HOW CLAIMS FLOW FROM INGESTION TO VERIFIED DISPATCH</span>
           </div>
 
@@ -1519,7 +1507,11 @@ export default function Home() {
         </section>
 
         {/* 8. QUICK ROLE LAUNCHPADS (Direct login personas for evaluation) */}
-        <section id="role-launchpads" className="industrial-project-section industrial-role-launchpads-section">
+        <section id="dashboards-section" className="industrial-project-section industrial-role-launchpads-section">
+          <div className="industrial-section-label-bar">
+            <span className="industrial-mono-10">02 // STAKEHOLDER WORKSPACES &amp; ROLE DASHBOARDS</span>
+            <span className="industrial-mono-10-muted">5 PERSONA LOGINS · DEDICATED AUDIT &amp; REVIEW DASHBOARDS</span>
+          </div>
           <EnterpriseSingleLogin
             currentRole={currentRole}
             onSelectRole={launchRoleDashboard}

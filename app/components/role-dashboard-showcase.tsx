@@ -294,10 +294,12 @@ export function ActiveRoleWorkflowBanner({
   currentRole,
   onOpenSwitchRole,
   onOpenCreatorStudio,
+  onNavigateView,
 }: {
   currentRole: ProoflineRole;
   onOpenSwitchRole: () => void;
   onOpenCreatorStudio?: () => void;
+  onNavigateView?: (view: "reviews" | "registry" | "audit-log") => void;
 }) {
   const persona = demoPersonas[currentRole] ?? demoPersonas.legal_reviewer;
 
@@ -344,6 +346,53 @@ export function ActiveRoleWorkflowBanner({
           >
             <span>✨</span> Creator Studio (Groq + Sarvam)
           </button>
+        ) : null}
+        {onNavigateView ? (
+          <div className="role-quick-nav-group" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginRight: 8 }}>
+            <span style={{ fontSize: 10, fontFamily: "var(--ind-font-mono)", opacity: 0.6, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+              Active Workspace:
+            </span>
+            <button
+              type="button"
+              className="role-quick-nav-btn"
+              onClick={() => onNavigateView("registry")}
+              title="Open Brand Truth Registry for this role"
+              style={{
+                background: "transparent",
+                color: "var(--ind-fg)",
+                border: "1px solid var(--ind-border)",
+                borderRadius: 4,
+                padding: "4px 8px",
+                fontSize: 10,
+                fontFamily: "var(--ind-font-mono)",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                cursor: "pointer",
+              }}
+            >
+              Truth registry
+            </button>
+            <button
+              type="button"
+              className="role-quick-nav-btn"
+              onClick={() => onNavigateView("audit-log")}
+              title="Open Cryptographic Audit Log for this role"
+              style={{
+                background: "transparent",
+                color: "var(--ind-fg)",
+                border: "1px solid var(--ind-border)",
+                borderRadius: 4,
+                padding: "4px 8px",
+                fontSize: 10,
+                fontFamily: "var(--ind-font-mono)",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                cursor: "pointer",
+              }}
+            >
+              Audit log
+            </button>
+          </div>
         ) : null}
         <button
           type="button"
