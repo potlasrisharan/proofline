@@ -60,7 +60,7 @@ export function AppSidebar({
   activeKey,
   onNavigateView,
   openReviewCount = 3,
-  currentRole = "Authorised reviewer",
+  currentRole,
   roleKey,
   onSwitchRole,
 }: AppSidebarProps) {
@@ -179,7 +179,7 @@ export function AppSidebar({
           <div className={`avatar persona-avatar ${persona.badgeTone}`}>{persona.initials}</div>
           <div className="profile-text">
             <strong>{persona.name}</strong>
-            <small>{persona.title} ({currentRole})</small>
+            <small>{persona.title}{currentRole && currentRole !== persona.title ? ` · ${currentRole}` : ""}</small>
           </div>
           <span className="more" aria-hidden="true" title="Switch role">⇄</span>
         </button>

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useSyncExternalStore, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { AppSidebar } from "./components/app-sidebar";
 import { DisclosurePanel } from "./components/disclosure-panel";
 import { StatePanel } from "./components/status-state";
@@ -461,21 +461,6 @@ function initialDashboardView(): View {
   return requestedView === "portal" || requestedView === "reviews" || requestedView === "registry" || requestedView === "insights" || requestedView === "audit-log" ? requestedView : "overview";
 }
 
-const emptySubscribe = () => () => {};
-
-function getClientDateString(): string {
-  try {
-    return new Date().toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  } catch {
-    return "Sunday, October 25, 2026";
-  }
-}
-
 export default function Home() {
   const router = useRouter();
   const [activeView, setActiveView] = useState<View>(initialDashboardView);
@@ -549,7 +534,6 @@ export default function Home() {
   const [submittedContent, setSubmittedContent] = useState(defaultSubmitForm.content);
   const [localRegistryRecords, setLocalRegistryRecords] = useState<RegistryRecord[]>(registryRecords);
   const [sourceDraft, setSourceDraft] = useState({ title: "Campaign claims policy", scope: "VoltEdge Labs", validity: "Current · reviewed October 25, 2026" });
-  const currentDateStr = useSyncExternalStore(emptySubscribe, getClientDateString, () => "Sunday, October 25, 2026");
 
   const permissions = rolePermissions[currentRole];
   const activePersona = demoPersonas[currentRole] ?? demoPersonas.legal_reviewer;
@@ -911,20 +895,8 @@ export default function Home() {
             </Link>
 
             <nav className="landing-nav-links">
-              <a href="#services-section" className="landing-nav-link">Our Services</a>
-              <a href="#dashboards-section" className="landing-nav-link">Role Dashboards</a>
-              <button
-                type="button"
-                className="landing-nav-link"
-                onClick={() => {
-                  navigate("reviews");
-                  setSelectedReviewId("novabook-launch");
-                  setDetailTab("findings");
-                  setSelectedSpanId("battery");
-                }}
-              >
-                Review queue
-              </button>
+              <a href="#services-section" className="landing-nav-link">Services</a>
+              <a href="#dashboards-section" className="landing-nav-link">Dashboards</a>
               <button
                 type="button"
                 className="landing-nav-link"
@@ -932,18 +904,25 @@ export default function Home() {
               >
                 Truth registry
               </button>
-              <button
-                type="button"
-                className="landing-nav-link"
-                onClick={() => navigate("audit-log")}
-              >
-                Audit log
-              </button>
               <Link href="/impact" className="landing-nav-link">Impact radar</Link>
               <Link href="/privacy" className="landing-nav-link">Trust &amp; Privacy</Link>
             </nav>
 
             <div className="landing-nav-actions">
+              <button
+                type="button"
+                className="landing-pill-btn-primary"
+                style={{ padding: "8px 18px", fontSize: 12.5 }}
+                onClick={() => {
+                  navigate("reviews");
+                  setSelectedReviewId("novabook-launch");
+                  setDetailTab("findings");
+                  setSelectedSpanId("battery");
+                }}
+              >
+                Review queue →
+              </button>
+
               <span className="save-state" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11, color: "#166534" }}>
                 <span className="health-dot" /> Enterprise workspace
               </span>
@@ -972,21 +951,6 @@ export default function Home() {
               >
                 {activePersona.initials}
               </button>
-
-              <button
-                type="button"
-                className="landing-pill-btn-primary"
-                onClick={() => {
-                  navigate("reviews");
-                  setSelectedReviewId("novabook-launch");
-                  setDetailTab("findings");
-                  setSelectedSpanId("battery");
-                  notify("Entering Proofline workspace.");
-                }}
-              >
-                <span>Enter workspace</span>
-                <span>→</span>
-              </button>
             </div>
           </div>
         </header>
@@ -996,17 +960,17 @@ export default function Home() {
           <div className="landing-hero-left">
             <div className="landing-hero-kicker-pill">
               <span className="landing-kicker-dot" />
-              <span suppressHydrationWarning>The automated quality gate &amp; fact-checker · {currentDateStr}</span>
+              <span>• Automated brand truth, before publish</span>
             </div>
 
             <h1 className="landing-hero-title">
-              Welcome to Proofline.<br />
-              <span style={{ color: "#176553" }}>Brand truth,</span><br />
-              finally guaranteed.
+              <span className="landing-hero-eyebrow">Welcome to Proofline</span>
+              Brand truth,<br />
+              <span className="landing-hero-highlight">finally verified.</span>
             </h1>
 
             <p className="landing-hero-subtitle">
-              Automated quality gate from draft to publish. Built for copywriters, legal reviewers, and brand teams.
+              One continuous quality gate from draft to publish. For copywriters, legal reviewers, and marketing leaders.
             </p>
 
             <div className="landing-hero-cta-row">
@@ -1023,9 +987,6 @@ export default function Home() {
               >
                 Open Review Workspace →
               </button>
-              <a href="#dashboards-section" className="landing-pill-btn-ghost">
-                View role dashboards
-              </a>
               <button
                 className="landing-pill-btn-ghost"
                 type="button"
@@ -1046,7 +1007,7 @@ export default function Home() {
             </div>
 
             <div className="landing-trust-line">
-              <span>🛡️</span>
+              <span style={{ color: "#166534", fontWeight: 700 }}>✓</span>
               <span>Built around evidence. Backed by cryptographic SHA-256 proof.</span>
             </div>
           </div>
@@ -1128,22 +1089,6 @@ export default function Home() {
               <div className="home-service-title">Cryptographic Audit Chain</div>
               <p className="home-service-desc">
                 Every suggestion, edit, and approval is anchored to a tamper-proof SHA-256 hash log.
-              </p>
-            </div>
-
-            <div className="home-service-card">
-              <div className="home-service-icon">🚀</div>
-              <div className="home-service-title">Gated Multi-Channel Release</div>
-              <p className="home-service-desc">
-                Locks social and ad dispatch until all high-risk claim discrepancies are resolved.
-              </p>
-            </div>
-
-            <div className="home-service-card">
-              <div className="home-service-icon">🔒</div>
-              <div className="home-service-title">Private Execution Boundary</div>
-              <p className="home-service-desc">
-                Client-side deterministic evaluation. Confidential drafts never leak or train external models.
               </p>
             </div>
           </div>

@@ -116,6 +116,14 @@ export const demoPersonas: Record<ProoflineRole, DemoPersona> = {
   },
 };
 
+const roleOneLiners: Record<ProoflineRole, string> = {
+  creator: "Draft copy, inspect spec mismatches, and apply 1-click verified corrections.",
+  manager: "Triage submissions by risk score (0–100), leave change notes, and route to legal.",
+  legal_reviewer: "Audit FTC §5 compliance, verify evidence against specs, and sign certificates.",
+  brand_owner: "Manage approved brand truth records and trigger multi-channel dispatch.",
+  agency: "Test copy against client specifications with isolated permissions and zero data leakage.",
+};
+
 export function EnterpriseSingleLogin({
   currentRole,
   onSelectRole,
@@ -162,18 +170,18 @@ export function EnterpriseSingleLogin({
       <div className="single-login-card">
         <div className="single-login-header">
           <div className="single-login-kicker-row">
-            <span className="single-login-badge">ROLE DASHBOARDS &amp; ACCESS</span>
+            <span className="single-login-badge">CONNECTED ROLE DASHBOARDS</span>
             <span className="single-login-active-tag">
               ● Active: <strong>{activePersona.name}</strong> ({activePersona.role})
             </span>
           </div>
           <h2 className="single-login-title" id="single-login-modal-title">Sign In to VoltEdge Workspace</h2>
           <p className="single-login-sub">
-            Click any department role below to launch directly into that workspace, or use corporate credentials.
+            Each role below has a dedicated dashboard with tailored tools. Click to enter and test:
           </p>
         </div>
 
-        {/* Unified 1-Click Role Login Buttons Upfront */}
+        {/* 5 Clean Role Dashboard Cards with 1-Line Explanations */}
         <div className="single-login-role-buttons" role="region" aria-label="1-Click Enterprise Role Logins">
           {personas.map((p) => {
             const isActive = currentRole === p.role;
@@ -186,22 +194,26 @@ export function EnterpriseSingleLogin({
                 title={`Sign in as ${p.name} (${p.title})`}
                 aria-label={`Sign in as ${p.name} (${p.title})`}
               >
-                <div className={`single-role-avatar ${p.badgeTone}`}>{p.initials}</div>
-                <div className="single-role-info">
-                  <div className="single-role-top">
-                    <span className="single-role-name">{p.name}</span>
-                    <span className="single-role-tag">{p.title}</span>
-                  </div>
-                  <div className="single-role-email">{p.email}</div>
-                  <div className="single-role-focus">
-                    {p.focus}
+                <div className="single-role-card-header">
+                  <div className={`single-role-avatar ${p.badgeTone}`}>{p.initials}</div>
+                  <div className="single-role-identity">
+                    <div className="single-role-name-row">
+                      <strong className="single-role-name">{p.name}</strong>
+                      <span className="single-role-tag">{p.title}</span>
+                    </div>
+                    <span className="single-role-email">{p.email}</span>
                   </div>
                 </div>
-                <div className="single-role-action">
+
+                <p className="single-role-oneliner">
+                  {roleOneLiners[p.role]}
+                </p>
+
+                <div className="single-role-footer">
                   {isActive ? (
-                    <span className="active-pill">✓ Active Session</span>
+                    <span className="active-pill">● Active · In Workspace</span>
                   ) : (
-                    <span className="login-arrow">Sign in as {p.name.split(" ")[0]} →</span>
+                    <span className="single-role-action-label">Sign in as {p.name} →</span>
                   )}
                 </div>
               </button>
@@ -209,48 +221,48 @@ export function EnterpriseSingleLogin({
           })}
         </div>
 
-        {/* Divider */}
-        <div className="single-login-divider">
-          <span>Or sign in with corporate credentials</span>
-        </div>
-
-        {/* Standard Corporate Login Form */}
-        <form className="single-login-form" onSubmit={handleManualSubmit}>
-          <div className="single-login-fields-row">
-            <div className="login-field-group">
-              <label htmlFor="login-email-input">Corporate Email</label>
-              <input
-                id="login-email-input"
-                type="email"
-                required
-                value={emailInput}
-                onChange={(e) => setEmailInput(e.target.value)}
-                placeholder="name@voltedge.io"
-                className="login-input"
-              />
+        {/* Collapsible Corporate Credentials for Minimal Noise */}
+        <details className="single-login-details">
+          <summary className="single-login-summary">
+            Or sign in with corporate credentials ▾
+          </summary>
+          <form className="single-login-form" onSubmit={handleManualSubmit}>
+            <div className="single-login-fields-row">
+              <div className="login-field-group">
+                <label htmlFor="login-email-input">Corporate Email</label>
+                <input
+                  id="login-email-input"
+                  type="email"
+                  required
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  placeholder="name@voltedge.io"
+                  className="login-input"
+                />
+              </div>
+              <div className="login-field-group">
+                <label htmlFor="login-pwd-input">Password</label>
+                <input
+                  id="login-pwd-input"
+                  type="password"
+                  required
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="login-input"
+                />
+              </div>
+              <button type="submit" className="login-submit-button">
+                Sign In to Workspace →
+              </button>
             </div>
-            <div className="login-field-group">
-              <label htmlFor="login-pwd-input">Password</label>
-              <input
-                id="login-pwd-input"
-                type="password"
-                required
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder="••••••••••••"
-                className="login-input"
-              />
-            </div>
-            <button type="submit" className="login-submit-button">
-              Sign In to Workspace →
-            </button>
-          </div>
-          {loginMessage ? (
-            <div className="login-success-feedback" role="status">
-              ✓ {loginMessage}
-            </div>
-          ) : null}
-        </form>
+            {loginMessage ? (
+              <div className="login-success-feedback" role="status">
+                ✓ {loginMessage}
+              </div>
+            ) : null}
+          </form>
+        </details>
       </div>
     </section>
   );
