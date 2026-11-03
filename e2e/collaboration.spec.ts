@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 async function openReviews(page: Page, role: "creator" | "manager" | "legal_reviewer" | "brand_owner" | "agency") {
   await page.goto("/");
   await page.getByRole("combobox", { name: "Role preview" }).selectOption(role);
-  await page.getByRole("button", { name: /Review queue/ }).click();
+  await page.getByRole("button", { name: /Open Review Workspace/ }).click();
   await expect(page.getByRole("heading", { name: "NovaBook S1 launch email" })).toBeVisible();
 }
 

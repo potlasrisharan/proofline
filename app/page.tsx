@@ -926,21 +926,8 @@ export default function Home() {
               />
             </Link>
 
-            {/* Right Actions: CTA button & Persona profile */}
+            {/* Right Actions: Persona profile */}
             <div className="industrial-header-right">
-              <button
-                type="button"
-                className="industrial-cta-pill"
-                onClick={() => {
-                  navigate("reviews");
-                  setSelectedReviewId("novabook-launch");
-                  setDetailTab("findings");
-                  setSelectedSpanId("battery");
-                }}
-              >
-                Review queue →
-              </button>
-
               <button
                 className={`avatar avatar-button persona-avatar ${activePersona.badgeTone}`}
                 type="button"

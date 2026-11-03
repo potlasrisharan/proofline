@@ -7,7 +7,7 @@ test("loads the seeded workspace and navigates to the review queue", async ({ pa
   await expect(page.getByRole("heading", { name: /Welcome to Proofline/ })).toBeVisible();
   await expect(page.getByText("Enterprise workspace")).toBeVisible();
 
-  await page.getByRole("button", { name: /Review queue/ }).click();
+  await page.getByRole("button", { name: /Open Review Workspace/ }).click();
 
   await expect(page.getByRole("heading", { name: "Make the decision easy to defend." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "NovaBook S1 launch email" })).toBeVisible();
