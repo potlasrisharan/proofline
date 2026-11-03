@@ -3,6 +3,7 @@ import { ModalAccessibility } from "./components/modal-accessibility";
 import { ProductTour } from "./components/product-tour";
 import "./globals.css";
 import "./trust.css";
+import "./industrial.css";
 
 export const metadata: Metadata = {
   title: "Proofline — Brand truth, before publish",

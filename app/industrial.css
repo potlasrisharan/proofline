@@ -1,0 +1,926 @@
+/* ==========================================================================
+   WARM INDUSTRIAL-CHIC DESIGN SYSTEM (Proofline Enterprise)
+   Palette: Background #EBEBE8 | Foreground #18181B | Accent #0066FF | Border #D4D4D8
+   Typography: Inter (400, 700, 900) & Playfair Display (Italic 400)
+   Animation: cubic-bezier(0.16, 1, 0.3, 1)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --ind-bg: #EBEBE8;
+  --ind-fg: #18181B;
+  --ind-accent: #0066FF;
+  --ind-border: #D4D4D8;
+  --ind-ribbon: #F4F4F5;
+  --ind-dark: #18181B;
+  --ind-dark-text: #EBEBE8;
+  --ind-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ind-font-serif: 'Playfair Display', Georgia, serif;
+  --ind-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ind-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 1. GLOBAL NOISE TEXTURE OVERLAY (0.04 Opacity Fractal Noise) */
+.industrial-noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* 2. STRUCTURAL 12-COLUMN PERSISTENT GRID */
+.industrial-grid-bg {
+  position: fixed;
+  inset: 0;
+  max-width: 1600px;
+  margin: 0 auto;
+  pointer-events: none;
+  z-index: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  height: 100vh;
+}
+
+.industrial-grid-col {
+  border-right: 1px solid rgba(24, 24, 27, 0.08);
+  height: 100%;
+}
+
+.industrial-grid-col:first-child {
+  border-left: 1px solid rgba(24, 24, 27, 0.08);
+}
+
+/* Base Wrapper */
+.industrial-page-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--ind-bg);
+  color: var(--ind-fg);
+  font-family: var(--ind-font-sans);
+  overflow-x: hidden;
+  z-index: 1;
+}
+
+/* 10px Bold Uppercase Tracking Utility */
+.industrial-mono-10 {
+  font-family: var(--ind-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--ind-fg);
+}
+
+.industrial-mono-10-muted {
+  font-family: var(--ind-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: #71717A;
+}
+
+/* Technical Status Pulse (6px Green-500) */
+.industrial-status-pulse {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #22C55E;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  animation: indPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  vertical-align: middle;
+}
+
+@keyframes indPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* Stroke Text Effect */
+.industrial-stroke-text {
+  color: transparent !important;
+  -webkit-text-stroke: 1.5px var(--ind-fg);
+  text-stroke: 1.5px var(--ind-fg);
+  transition: all 0.4s var(--ind-ease);
+}
+
+/* Serif Italic Accent */
+.industrial-serif-italic {
+  font-family: var(--ind-font-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ==========================================================================
+   3. STICKY HEADER (80px, #EBEBE8 @ 0.8 opacity, 10px backdrop-blur, 1px border)
+   ========================================================================== */
+.industrial-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 80px;
+  background: rgba(235, 235, 232, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ind-border);
+}
+
+.industrial-header-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 32px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+}
+
+.industrial-header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  white-space: nowrap;
+}
+
+.industrial-nav-link {
+  font-family: var(--ind-font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--ind-fg);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0;
+  position: relative;
+  transition: color 0.2s var(--ind-ease);
+}
+
+.industrial-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--ind-accent);
+  transition: width 0.3s var(--ind-ease);
+}
+
+.industrial-nav-link:hover {
+  color: var(--ind-accent);
+}
+
+.industrial-nav-link:hover::after {
+  width: 100%;
+}
+
+/* Centered Logo in Grid */
+.industrial-logo-center {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--ind-fg);
+  white-space: nowrap;
+}
+
+.industrial-logo-serif {
+  font-family: var(--ind-font-serif);
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.industrial-logo-sans {
+  font-family: var(--ind-font-sans);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Right-aligned Header Actions */
+.industrial-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  white-space: nowrap;
+}
+
+.industrial-cta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ind-fg);
+  color: #FFFFFF !important;
+  font-family: var(--ind-font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  border: 1px solid var(--ind-fg);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s var(--ind-ease);
+}
+
+.industrial-cta-pill:hover {
+  background: var(--ind-accent);
+  border-color: var(--ind-accent);
+  transform: translateY(-1px);
+}
+
+.industrial-select-clean {
+  background: transparent;
+  border: 1px solid var(--ind-border);
+  font-family: var(--ind-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ind-fg);
+  padding: 8px 12px;
+  border-radius: 0;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.industrial-select-clean:focus {
+  border-color: var(--ind-accent);
+}
+
+/* ==========================================================================
+   4. SPLIT HERO SECTION (12-Column Layout: Left 7 cols, Right 5 cols)
+   ========================================================================== */
+.industrial-hero {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 64px 32px 80px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 32px;
+  align-items: stretch;
+  border-bottom: 1px solid var(--ind-border);
+}
+
+.industrial-hero-left {
+  grid-column: span 7;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 24px;
+}
+
+.industrial-hero-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.industrial-hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Massive 3-Line Heading (8xl to 10xl: 110px-150px) */
+.industrial-hero-heading {
+  font-size: clamp(52px, 8vw, 128px);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  margin: 0 0 32px;
+  font-weight: 900;
+  color: var(--ind-fg);
+  display: flex;
+  flex-direction: column;
+}
+
+.industrial-eyebrow-text {
+  font-size: clamp(14px, 1.8vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--ind-font-mono);
+  color: var(--ind-accent);
+  margin-bottom: 12px;
+}
+
+.industrial-hero-subcopy {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #3F3F46;
+  max-width: 620px;
+  margin: 0 0 36px;
+}
+
+.industrial-hero-cta-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+/* Rectangular Start Button with Hover-Rotating Arrow */
+.industrial-start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--ind-fg);
+  color: #FFFFFF !important;
+  font-family: var(--ind-font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 18px 36px;
+  border: 1px solid var(--ind-fg);
+  border-radius: 0; /* Strictly sharp per spec */
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s var(--ind-ease);
+}
+
+.industrial-start-btn:hover {
+  background: var(--ind-accent);
+  border-color: var(--ind-accent);
+}
+
+.industrial-arrow-rotate {
+  display: inline-block;
+  font-size: 16px;
+  transition: transform 0.4s var(--ind-ease);
+}
+
+.industrial-start-btn:hover .industrial-arrow-rotate {
+  transform: rotate(-45deg) translate(2px, -2px);
+}
+
+.industrial-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  color: var(--ind-fg) !important;
+  font-family: var(--ind-font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  padding: 18px 28px;
+  border: 1px solid var(--ind-border);
+  border-radius: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s var(--ind-ease);
+}
+
+.industrial-ghost-btn:hover {
+  border-color: var(--ind-fg);
+  background: rgba(24, 24, 27, 0.04);
+}
+
+/* Technical Readout Labels (10px Mono) */
+.industrial-readout-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ind-border);
+  flex-wrap: wrap;
+}
+
+.industrial-readout-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Hero Right Column (5 cols) */
+.industrial-hero-right {
+  grid-column: span 5;
+  display: flex;
+  flex-direction: column;
+}
+
+.industrial-frame-container {
+  border: 1px solid var(--ind-border);
+  background: #E4E4E1;
+  padding: 20px; /* 20px internal frame */
+  height: 100%;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.industrial-frame-visual {
+  width: 100%;
+  height: 220px;
+  background: #D4D4D8;
+  filter: grayscale(1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #A1A1AA;
+  position: relative;
+  overflow: hidden;
+}
+
+.industrial-schematic-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(24, 24, 27, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(24, 24, 27, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Glassmorphism UI Card Overlay */
+.industrial-glass-card {
+  background: rgba(235, 235, 232, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 20px 24px;
+  margin-top: 20px;
+  box-shadow: 0 12px 32px rgba(24, 24, 27, 0.08);
+}
+
+.industrial-status-bar-wrap {
+  margin: 12px 0;
+}
+
+.industrial-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #D4D4D8;
+  position: relative;
+  overflow: hidden;
+}
+
+.industrial-bar-fill {
+  height: 100%;
+  background: var(--ind-accent);
+  transition: width 1s var(--ind-ease);
+}
+
+/* ==========================================================================
+   5. MARQUEE TICKER (120px Height, Ribbon #F4F4F5, 7xl font, #0066FF stars)
+   ========================================================================== */
+.industrial-marquee-wrap {
+  width: 100%;
+  height: 120px;
+  background: var(--ind-ribbon);
+  border-top: 1px solid var(--ind-border);
+  border-bottom: 1px solid var(--ind-border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.industrial-marquee-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: indMarqueeScroll 28s linear infinite;
+  gap: 36px;
+}
+
+.industrial-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes indMarqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.industrial-marquee-item {
+  font-size: clamp(38px, 5vw, 68px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  display: inline-flex;
+  align-items: center;
+  gap: 36px;
+  text-transform: uppercase;
+}
+
+.industrial-star-icon {
+  color: var(--ind-accent);
+  font-size: clamp(24px, 3.5vw, 44px);
+  display: inline-block;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   6. INTERACTIVE PROJECT / DASHBOARD LIST (Clip-Path Image Reveal)
+   Row Height: 240px-300px, 1px bottom border
+   Hover: italic serif shift, clip-path reveal (inset 0 0 0 100% -> inset 0 0 0 0)
+   ========================================================================== */
+.industrial-project-section {
+  max-width: 1600px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--ind-border);
+}
+
+.industrial-section-label-bar {
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--ind-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.industrial-project-row {
+  position: relative;
+  min-height: 240px;
+  border-bottom: 1px solid var(--ind-border);
+  padding: 36px 32px;
+  display: grid;
+  grid-template-columns: 100px 1.5fr 1fr auto;
+  align-items: center;
+  gap: 32px;
+  cursor: pointer;
+  background: transparent;
+  text-decoration: none;
+  color: var(--ind-fg);
+  overflow: hidden;
+  transition: background-color 0.4s var(--ind-ease);
+}
+
+.industrial-project-row:hover {
+  background-color: rgba(24, 24, 27, 0.02);
+}
+
+.industrial-project-idx {
+  font-family: var(--ind-font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: #71717A;
+  letter-spacing: 0.2em;
+}
+
+.industrial-project-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2;
+}
+
+.industrial-project-title {
+  font-size: clamp(28px, 3.2vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0;
+  line-height: 1.1;
+  transition: font-family 0.3s var(--ind-ease), font-style 0.3s var(--ind-ease), color 0.3s var(--ind-ease);
+}
+
+.industrial-project-row:hover .industrial-project-title {
+  font-family: var(--ind-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ind-accent);
+}
+
+.industrial-project-desc {
+  font-size: 13.5px;
+  color: #52525B;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 420px;
+  z-index: 2;
+}
+
+/* Floating View Circle Button */
+.industrial-project-view-btn {
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--ind-fg);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  transition: all 0.4s var(--ind-ease);
+  z-index: 2;
+}
+
+.industrial-project-row:hover .industrial-project-view-btn {
+  background: var(--ind-accent);
+  border-color: var(--ind-accent);
+  color: #FFFFFF;
+  transform: scale(1.1) rotate(-45deg);
+}
+
+/* Clip-Path Project Reveal Container */
+.industrial-project-reveal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 500px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  clip-path: inset(0 0 0 100%);
+  transition: clip-path 0.6s var(--ind-ease);
+  overflow: hidden;
+  background: #E4E4E1;
+  border-left: 1px solid var(--ind-border);
+}
+
+.industrial-project-row:hover .industrial-project-reveal {
+  clip-path: inset(0 0 0 0);
+}
+
+.industrial-reveal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+  position: relative;
+}
+
+.industrial-reveal-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 102, 255, 0.18);
+  mix-blend-mode: multiply;
+}
+
+.industrial-reveal-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(24, 24, 27, 0.9);
+  color: #FFFFFF;
+  padding: 6px 12px;
+  font-family: var(--ind-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   7. PHILOSOPHICAL PARALLAX & TECHNICAL READOUT
+   ========================================================================== */
+.industrial-philosophy-section {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 48px;
+  border-bottom: 1px solid var(--ind-border);
+}
+
+.industrial-philosophy-left {
+  grid-column: span 5;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.industrial-philosophy-heading {
+  font-family: var(--ind-font-serif);
+  font-style: italic;
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 1.15;
+  margin: 0;
+  color: var(--ind-fg);
+}
+
+.industrial-philosophy-right {
+  grid-column: span 7;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.industrial-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ind-font-mono);
+  font-size: 11px;
+}
+
+.industrial-comparison-table th,
+.industrial-comparison-table td {
+  padding: 14px 16px;
+  border: 1px solid var(--ind-border);
+  text-align: left;
+}
+
+.industrial-comparison-table th {
+  background: #E4E4E1;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   8. TECHNICAL JOURNAL (Architectural Pillars)
+   ========================================================================== */
+.industrial-journal-section {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  border-bottom: 1px solid var(--ind-border);
+}
+
+.industrial-journal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.industrial-journal-card {
+  border: 1px solid var(--ind-border);
+  background: #E8E8E5;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s var(--ind-ease);
+}
+
+.industrial-journal-card:hover {
+  border-color: var(--ind-fg);
+  background: #FFFFFF;
+}
+
+/* ==========================================================================
+   9. MASSIVE FOOTER (#18181B Background, #EBEBE8 Text)
+   ========================================================================== */
+.industrial-footer {
+  background-color: var(--ind-dark);
+  color: var(--ind-dark-text);
+  border-top: 1px solid #27272A;
+  padding: 80px 32px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.industrial-footer-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.industrial-footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 60px;
+  border-bottom: 1px solid #27272A;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.industrial-footer-contact-link {
+  font-size: clamp(28px, 4.5vw, 64px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--ind-dark-text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 8px;
+  position: relative;
+  transition: color 0.3s var(--ind-ease);
+}
+
+.industrial-footer-contact-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--ind-dark-text);
+  transition: background-color 0.3s var(--ind-ease), transform 0.3s var(--ind-ease);
+}
+
+.industrial-footer-contact-link:hover {
+  color: var(--ind-accent);
+}
+
+.industrial-footer-contact-link:hover::after {
+  background: var(--ind-accent);
+  transform: translateY(-2px);
+}
+
+/* Massive 20vw Background Marquee (0.1 Opacity) */
+.industrial-footer-bg-marquee {
+  position: relative;
+  width: 100%;
+  padding: 40px 0;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
+.industrial-footer-bg-text {
+  font-size: 18vw;
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  opacity: 0.08;
+  white-space: nowrap;
+}
+
+.industrial-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 32px;
+  border-top: 1px solid #27272A;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.industrial-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.industrial-footer-link {
+  font-family: var(--ind-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #A1A1AA;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.industrial-footer-link:hover {
+  color: #FFFFFF;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .industrial-hero {
+    grid-template-columns: 1fr;
+    padding: 48px 20px 60px;
+  }
+  .industrial-hero-left,
+  .industrial-hero-right {
+    grid-column: span 12;
+  }
+  .industrial-project-row {
+    grid-template-columns: 60px 1fr;
+    gap: 16px;
+  }
+  .industrial-project-desc {
+    grid-column: span 2;
+  }
+  .industrial-project-view-btn {
+    display: none;
+  }
+  .industrial-project-reveal {
+    display: none;
+  }
+  .industrial-philosophy-section {
+    grid-template-columns: 1fr;
+  }
+  .industrial-philosophy-left,
+  .industrial-philosophy-right {
+    grid-column: span 12;
+  }
+}
