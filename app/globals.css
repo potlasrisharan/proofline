@@ -4112,6 +4112,29 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
   cursor: not-allowed;
 }
 
+.multimodal-upload-btn {
+  background: #18181B;
+  color: #E4E4E7;
+  border: 1px solid #3F3F46;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--ind-font-mono, monospace);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.multimodal-upload-btn:hover {
+  background: #27272A;
+  border-color: #00E599;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
 /* Grid Layout */
 .multimodal-grid {
   display: grid;
@@ -4216,7 +4239,7 @@ h2 { margin-bottom: 0; color: var(--navy); font-size: 19px; font-weight: 800; le
 
 .scrubber-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 8px;
 }
 

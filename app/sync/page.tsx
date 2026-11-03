@@ -10,11 +10,19 @@ export const metadata: Metadata = {
 
 export default function DynamicSyncPage() {
   return (
-    <div className="layout-root">
+    <main className="app-shell pl-workspace">
+      <a className="skip-link" href="#main-content">
+        Skip to main content
+      </a>
       <AppSidebar activeKey="sync" />
-      <main className="main-content" style={{ padding: "24px 32px" }}>
+      <section
+        id="main-content"
+        className="main-content"
+        tabIndex={-1}
+        style={{ padding: "24px 32px", overflowY: "auto", flex: 1 }}
+      >
         <DynamicTruthSync />
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }

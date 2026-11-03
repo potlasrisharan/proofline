@@ -178,7 +178,7 @@ export function EnterpriseSingleLogin({
       <div className="single-login-card">
         <div className="single-login-header">
           <div className="single-login-kicker-row">
-            <span className="single-login-badge">SYS.PORTAL // ROLE ACCESS LAUNCHPAD</span>
+            <span className="single-login-badge">ENTERPRISE PORTAL · ROLE ACCESS LAUNCHPAD</span>
             <span className="single-login-active-tag">
               <span className="industrial-status-pulse" style={{ marginRight: 6 }} />
               ACTIVE IDENTITY: <strong>{activePersona.name.toUpperCase()}</strong> ({activePersona.role.toUpperCase()})

@@ -6,7 +6,7 @@ test.describe("Final Round: Three Core Improvements Suite", () => {
 
     // Verify Heading and Gemini 2.5 Flash Engine Tag
     await expect(page.getByRole("heading", { name: "Visual & Video Frame Compliance Radar" })).toBeVisible();
-    await expect(page.getByText(/SYS.VISION \/\/ MULTIMODAL COMPLIANCE ENGINE/)).toBeVisible();
+    await expect(page.getByText(/MULTIMODAL COMPLIANCE ENGINE/)).toBeVisible();
     await expect(page.locator(".multimodal-engine-tag")).toContainText("Gemini 2.5 Flash");
 
     // Verify Canvas and Frame Scrubber

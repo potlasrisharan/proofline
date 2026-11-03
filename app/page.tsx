@@ -948,7 +948,7 @@ export default function Home() {
           <div className="industrial-hero-left">
             <div className="industrial-hero-status-bar">
               <span className="industrial-status-pulse" />
-              <span className="industrial-mono-10">SYS.ONLINE // REALTIME REASONING // SPEC ENGINE V3.4</span>
+              <span className="industrial-mono-10">CONTINUOUS BRAND TRUTH GATE · DETERMINISTIC EVIDENCE AUDIT</span>
             </div>
 
             <h1 className="industrial-hero-heading">
@@ -1020,68 +1020,21 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Column (5 cols): Grayscale Frame + Glassmorphism UI Card */}
+          {/* Right Column (5 cols): Full 9:16 Portrait Content Creation Visual */}
           <div className="industrial-hero-right">
             <div className="industrial-frame-container">
-              {/* Content Creation Studio Visual */}
-              <div className="industrial-frame-visual" style={{ position: "relative" }}>
+              <div className="industrial-frame-visual">
                 <Image
                   src="/content-creation.jpg"
                   alt="Content Creation & Video Recording Studio"
                   fill
+                  sizes="(max-width: 768px) 100vw, 440px"
                   style={{ objectFit: "cover" }}
                   priority
                 />
-                <div className="industrial-schematic-grid" style={{ zIndex: 2, opacity: 0.15 }} />
-                <span
-                  className="industrial-mono-10"
-                  style={{
-                    position: "absolute",
-                    bottom: 8,
-                    left: 12,
-                    fontSize: 8,
-                    zIndex: 3,
-                    background: "rgba(0, 0, 0, 0.75)",
-                    color: "#FFFFFF",
-                    padding: "3px 8px",
-                    borderRadius: 4,
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  FIG 1.0 // CONTENT CREATION &amp; VIDEO COMPLIANCE
-                </span>
-              </div>
-
-              {/* Glassmorphism System Status Card */}
-              <div className="industrial-glass-card">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <span className="industrial-mono-10">ACTIVE QUALITY GATE</span>
-                  <span className="industrial-mono-10" style={{ color: "#22C55E" }}>GATE LOCKED · 100% SECURE</span>
-                </div>
-
-                <div className="industrial-status-bar-wrap">
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span className="industrial-mono-10" style={{ fontSize: 9 }}>SPEC ALIGNMENT (NOVACORE S1)</span>
-                    <span className="industrial-mono-10" style={{ fontSize: 9 }}>94.8% PASS</span>
-                  </div>
-                  <div className="industrial-bar-track">
-                    <div className="industrial-bar-fill" style={{ width: "94.8%" }} />
-                  </div>
-                </div>
-
-                <div className="industrial-status-bar-wrap">
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span className="industrial-mono-10" style={{ fontSize: 9 }}>FTC STATUTORY COMPLIANCE</span>
-                    <span className="industrial-mono-10" style={{ fontSize: 9 }}>CLEARED</span>
-                  </div>
-                  <div className="industrial-bar-track">
-                    <div className="industrial-bar-fill" style={{ width: "100%", background: "#22C55E" }} />
-                  </div>
-                </div>
-
-                <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--ind-border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span className="industrial-mono-10-muted" style={{ fontSize: 8 }}>SYS.ID: PROOFLINE-SHA256-49BF</span>
-                  <span className="industrial-mono-10" style={{ fontSize: 8 }}>ENFORCED</span>
+                <div className="industrial-frame-caption">
+                  <span className="industrial-frame-tag">CONTENT CREATION STUDIO</span>
+                  <span className="industrial-frame-ratio">9:16 VERTICAL CAPTURE</span>
                 </div>
               </div>
             </div>
@@ -1179,8 +1132,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #A1A1AA 0%, #71717A 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-01-workspace.jpg" alt="Creator Content Studio" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 01 · SARVAM AI &amp; SPEC DIFF</span>
@@ -1217,8 +1170,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #71717A 0%, #52525B 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-03-compliance.jpg" alt="Campaign Review Queue" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 02 · QUEUE TRIAGE ENGINE</span>
@@ -1243,8 +1196,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #52525B 0%, #3F3F46 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-03-compliance.jpg" alt="Regulatory Quality Gate" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 03 · STATUTORY COMPLIANCE</span>
@@ -1269,8 +1222,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #3F3F46 0%, #27272A 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-02-truth.jpg" alt="Truth Registry & Dispatch" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 04 · IMMUTABLE REGISTRY</span>
@@ -1295,8 +1248,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #27272A 0%, #18181B 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-05-drift.jpg" alt="Fact-Change Impact Radar" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 05 · IMPACT TRACING ENGINE</span>
@@ -1321,8 +1274,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #18181B 0%, #09090B 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-04-audit.jpg" alt="Cryptographic Audit Chain" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 06 · SHA-256 PROVENANCE</span>
@@ -1347,8 +1300,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #065F46 0%, #047857 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-07-vault.jpg" alt="Multimodal Video &amp; Carousel Compliance" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 07 · GEMINI MULTIMODAL VISION</span>
@@ -1373,8 +1326,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #075985 0%, #0284C7 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-06-dispatch.jpg" alt="Post-Publish Drift Radar &amp; Live Dispatch" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 08 · CONTINUOUS DRIFT RADAR</span>
@@ -1399,8 +1352,8 @@ export default function Home() {
             </p>
             <div className="industrial-project-view-btn">→</div>
             <div className="industrial-project-reveal">
-              <div className="industrial-reveal-image" style={{ background: "linear-gradient(135deg, #581C87 0%, #7E22CE 100%)" }}>
-                <div className="industrial-schematic-grid" />
+              <div className="industrial-reveal-image">
+                <Image src="/previews/preview-02-truth.jpg" alt="Dynamic Brand Truth Sync &amp; Ingestion" fill sizes="500px" style={{ objectFit: "cover" }} />
               </div>
               <div className="industrial-reveal-overlay" />
               <span className="industrial-reveal-badge">MODULE 09 · DYNAMIC TRUTH SYNC</span>
@@ -1912,7 +1865,7 @@ export default function Home() {
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
               <Image src="/logo.png" alt="Proofline" width={22} height={22} style={{ borderRadius: 5, border: "1px solid rgba(0,0,0,0.1)" }} />
               <p className="eyebrow" style={{ margin: 0 }}>Gated Multi-Platform Dispatch</p>
-              <span className="badge-pill pill-risk" style={{ fontSize: 9 }}>SIMULATED · Multi-Channel Dispatch Mock</span>
+              <span className="badge-pill" style={{ fontSize: 9, background: "#059669", color: "#FFFFFF" }}>LIVE GATEWAY · Zernio Multi-Channel Dispatch</span>
             </div>
             <h2 id="dispatch-modal-title">Publish approved revision</h2>
             <p className="modal-copy">
@@ -1957,7 +1910,7 @@ export default function Home() {
 
             {dispatchReceipts ? (
               <div className="dispatch-receipt-box">
-                <strong>✓ Dispatch Successful (Simulated Sandbox)</strong>
+                <strong>✓ Dispatch Successful (Verified Gateway)</strong>
                 {dispatchReceipts.map((r) => (
                   <div key={r.platformPostId} className="receipt-item">
                     <span><strong>{r.channel}</strong> · {r.status}</span>
