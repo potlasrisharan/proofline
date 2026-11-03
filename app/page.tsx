@@ -1900,25 +1900,6 @@ export default function Home() {
               </button>
             </div>
             <span className="save-state"><span className="health-dot" /> Enterprise workspace</span>
-            <button
-              type="button"
-              className="ghost-button"
-              style={{ fontSize: 11, padding: "4px 9px", height: 30, display: "inline-flex", alignItems: "center", gap: 5 }}
-              onClick={() => navigate("overview")}
-              title="Return to Home Landing Page"
-            >
-              <span>🏠</span>
-              <span>Home</span>
-            </button>
-            <Link
-              href={`/dashboards?role=${currentRole}`}
-              className="ghost-button"
-              style={{ fontSize: 11, padding: "4px 9px", height: 30, display: "inline-flex", alignItems: "center", gap: 5, textDecoration: "none" }}
-              title={`Open ${activePersona.name}'s Dedicated Role Dashboard`}
-            >
-              <span>📊</span>
-              <span>{activePersona.name.split(" ")[0]}&apos;s Dashboard</span>
-            </Link>
             <label className="role-preview"><span>Role preview</span><select aria-label="Role preview" value={currentRole} onChange={(event) => changeRole(event.target.value as ProoflineRole)}>{(Object.keys(roleLabels) as ProoflineRole[]).map((role) => <option value={role} key={role}>{roleLabels[role]}</option>)}</select></label>
             <button className="icon-button" type="button" aria-label="Open AI and services disclosure" onClick={() => setIsDisclosureOpen(true)}>?</button>
             <button
@@ -1935,57 +1916,51 @@ export default function Home() {
 
         <div className="content-wrap">
           {activeView !== "portal" ? (
-            <>
-              <ActiveRoleWorkflowBanner
-                currentRole={currentRole}
-                onOpenSwitchRole={() => setIsRoleModalOpen(true)}
-                onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "10px 16px",
-                  background: "#FFFFFF",
-                  border: "1px solid var(--ind-border, #D4D4D8)",
-                  borderRadius: 6,
-                  margin: "12px 0 20px",
-                  fontSize: 11,
-                  fontFamily: "var(--ind-font-mono, monospace)",
-                  gap: 12,
-                  flexWrap: "wrap",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ background: "#0066FF", color: "#FFFFFF", padding: "3px 8px", borderRadius: 4, fontWeight: 700, fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                    ⚖️ COMMON JUDGE &amp; REVIEW COCKPIT
-                  </span>
-                  <span style={{ color: "var(--ind-fg, #18181B)" }}>
-                    Evaluating unified 4-stage quality gate. Identity: <strong>{activePersona.name} ({activePersona.title})</strong>
-                  </span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <Link
-                    href={`/dashboards?role=${currentRole}`}
-                    style={{ color: "#0066FF", fontWeight: 700, textDecoration: "underline", fontSize: 11 }}
-                  >
-                    Open {activePersona.name.split(" ")[0]}&apos;s Dedicated Dashboard →
-                  </Link>
-                  <Link
-                    href="/dashboards"
-                    style={{ color: "var(--ind-fg, #18181B)", textDecoration: "underline", fontSize: 11 }}
-                  >
-                    All 5 Role Dashboards
-                  </Link>
-                </div>
-              </div>
-            </>
+            <ActiveRoleWorkflowBanner
+              currentRole={currentRole}
+              onOpenSwitchRole={() => setIsRoleModalOpen(true)}
+              onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
+              contextBadge="⚖️ Review Cockpit"
+              showDashboardLink={true}
+            />
           ) : null}
 
           {activeView === "reviews" ? (
             <section className="view-panel" aria-labelledby="reviews-heading">
               <div className="page-heading compact-heading"><div><p className="eyebrow">Content review</p><h1 id="reviews-heading">Make the decision easy to defend.</h1><p className="lede">Every finding below is connected to a current source, rule, or explicit evidence gap.</p></div><div className="review-summary-chip"><span className="status-dot coral" /><strong>{openFindings.length} findings need review</strong></div></div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "9px 14px",
+                  background: "#FFFFFF",
+                  border: "1px solid var(--ind-border, #D4D4D8)",
+                  borderRadius: 6,
+                  margin: "0 0 16px",
+                  fontSize: 11,
+                  fontFamily: "var(--ind-font-mono, monospace)",
+                  flexWrap: "wrap",
+                }}
+              >
+                <span style={{ fontWeight: 700, color: "#18181B", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  Direct Workflow:
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--ind-fg)" }}>
+                  <span style={{ background: "#18181B", color: "#fff", borderRadius: 9999, width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700 }}>1</span>
+                  Select Draft
+                </span>
+                <span style={{ color: "#A1A1AA" }}>→</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--ind-fg)" }}>
+                  <span style={{ background: "#0066FF", color: "#fff", borderRadius: 9999, width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700 }}>2</span>
+                  Click <strong>&ldquo;Apply&rdquo;</strong> to Fix (20h → 12h)
+                </span>
+                <span style={{ color: "#A1A1AA" }}>→</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--ind-fg)" }}>
+                  <span style={{ background: "#10B981", color: "#fff", borderRadius: 9999, width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700 }}>3</span>
+                  Gate Unlocks &amp; Certificate Sealed
+                </span>
+              </div>
               <div className="review-layout">
                 <section className="panel review-list-panel" aria-labelledby="review-list-heading">
                   <div className="panel-heading"><div><p className="eyebrow">Assigned to you</p><h2 id="review-list-heading">Open reviews</h2></div><span className="risk-sort-note">Highest risk first</span></div>

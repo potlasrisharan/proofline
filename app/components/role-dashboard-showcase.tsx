@@ -354,11 +354,15 @@ export function ActiveRoleWorkflowBanner({
   onOpenSwitchRole,
   onOpenCreatorStudio,
   onNavigateView,
+  contextBadge,
+  showDashboardLink = true,
 }: {
   currentRole: ProoflineRole;
   onOpenSwitchRole: () => void;
   onOpenCreatorStudio?: () => void;
   onNavigateView?: (view: "reviews" | "registry" | "audit-log") => void;
+  contextBadge?: string;
+  showDashboardLink?: boolean;
 }) {
   const persona = demoPersonas[currentRole] ?? demoPersonas.legal_reviewer;
 
@@ -368,6 +372,27 @@ export function ActiveRoleWorkflowBanner({
         <div className={`role-banner-avatar ${persona.badgeTone}`}>{persona.initials}</div>
         <div className="role-banner-text">
           <div className="role-banner-title-row">
+            {contextBadge ? (
+              <span
+                style={{
+                  background: "#0066FF",
+                  color: "#FFFFFF",
+                  padding: "2px 7px",
+                  borderRadius: 4,
+                  fontWeight: 700,
+                  fontSize: 10,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  fontFamily: "var(--ind-font-mono)",
+                  marginRight: 6,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                }}
+              >
+                {contextBadge}
+              </span>
+            ) : null}
             <strong>Logged in as {persona.name}</strong>
             <span className="role-banner-pill">{persona.title}</span>
             <span className="save-state" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "var(--ind-font-mono)", letterSpacing: "0.15em", textTransform: "uppercase", color: "#18181B" }}>
@@ -451,29 +476,6 @@ export function ActiveRoleWorkflowBanner({
             >
               Audit log
             </button>
-            <Link
-              href={`/dashboards?role=${currentRole}`}
-              className="role-quick-nav-btn"
-              title={`Open ${persona.name}'s dedicated dashboard`}
-              style={{
-                background: "#18181B",
-                color: "#FFFFFF",
-                border: "1px solid #18181B",
-                borderRadius: 4,
-                padding: "4px 8px",
-                fontSize: 10,
-                fontFamily: "var(--ind-font-mono)",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <span>📊</span>
-              <span>{persona.name.split(" ")[0]}&apos;s Dashboard</span>
-            </Link>
           </div>
         ) : null}
         <button
@@ -481,9 +483,36 @@ export function ActiveRoleWorkflowBanner({
           className="role-switch-trigger-btn"
           onClick={onOpenSwitchRole}
           title="Switch account / enterprise role"
+          style={{ marginRight: showDashboardLink ? 8 : 0 }}
         >
           ⇄ Switch Account / Role
         </button>
+        {showDashboardLink ? (
+          <Link
+            href={`/dashboards?role=${currentRole}`}
+            className="role-quick-nav-btn"
+            title={`Open ${persona.name}'s dedicated dashboard`}
+            style={{
+              background: "#18181B",
+              color: "#FFFFFF",
+              border: "1px solid #18181B",
+              borderRadius: 4,
+              padding: "5px 12px",
+              fontSize: 10,
+              fontFamily: "var(--ind-font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              fontWeight: 600,
+            }}
+          >
+            <span>📊</span>
+            <span>{persona.name.split(" ")[0]}&apos;s Dashboard →</span>
+          </Link>
+        ) : null}
       </div>
     </div>
   );

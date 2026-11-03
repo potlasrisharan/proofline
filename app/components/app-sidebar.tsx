@@ -108,9 +108,8 @@ export function AppSidebar({
     badge?: number | null;
     title: string;
   }> = [
-    { key: "overview", icon: "◈", label: "Overview", href: "/", isHomeView: "overview", title: "Overview · Workspace summary and quality gate status" },
-    { key: "portal", icon: "⊞", label: "Role Dashboards", href: "/dashboards", isHomeView: "portal", title: "Role Dashboards · Dedicated portals for Creator, Manager, Legal, Brand Owner, and Agency" },
-    { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Inspect and approve pending drafts" },
+    { key: "portal", icon: "⊞", label: "Role Dashboards", href: "/dashboards", isHomeView: "portal", title: "Role Dashboards · 5 dedicated single-stakeholder portals" },
+    { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Unified judge cockpit & draft approval" },
     { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: findingsBadge, title: "Findings · Flagged claims with 1-click suggested fixes" },
     { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry", title: "Truth registry · Official specs and approved brand facts" },
     { key: "multimodal", icon: "👁", label: "Multimodal vision", href: "/multimodal", title: "Multimodal vision · Video reel and carousel compliance with disclaimer font audit" },
