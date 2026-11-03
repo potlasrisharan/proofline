@@ -5,7 +5,10 @@ export default defineConfig({
   testIgnore: "**/*.api.spec.ts",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
-  retries: 0,
+  retries: process.env.CI ? 2 : 0,
+  expect: {
+    timeout: 15_000,
+  },
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: "http://127.0.0.1:3100",

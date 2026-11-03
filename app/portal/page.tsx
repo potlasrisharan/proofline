@@ -55,6 +55,7 @@ export default function PortalPage({
       window.sessionStorage.setItem("proofline:portal-active-role", role);
       window.sessionStorage.setItem("proofline:active-role", role);
       window.localStorage.setItem("proofline:active-role", role);
+      window.dispatchEvent(new CustomEvent("proofline:role-change", { detail: role }));
       const url = new URL(window.location.href);
       url.searchParams.set("role", role);
       window.history.pushState({}, "", url.toString());
@@ -76,6 +77,7 @@ export default function PortalPage({
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem("proofline:active-role", roleToUse);
       window.localStorage.setItem("proofline:active-role", roleToUse);
+      window.dispatchEvent(new CustomEvent("proofline:role-change", { detail: roleToUse }));
     }
     router.push("/");
   };

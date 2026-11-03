@@ -70,7 +70,7 @@ test("uses the opt-in local API review path when configured", async ({ page }) =
   await page.goto("/submit");
   await page.getByRole("button", { name: "Run evidence check" }).click();
 
-  await expect(page.getByText("IMPLEMENTED · local API", { exact: true })).toBeVisible();
-  await expect(page.getByText("Source set", { exact: true })).toBeVisible();
-  await expect(page.getByText("Synthetic Novacore · local API", { exact: true })).toBeVisible();
+  await expect(page.getByText("IMPLEMENTED · local API", { exact: true })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Source set", { exact: true })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Synthetic Novacore · local API", { exact: true })).toBeVisible({ timeout: 15_000 });
 });

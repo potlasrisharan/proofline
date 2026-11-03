@@ -15,6 +15,8 @@ export default function LoginPage() {
     setCurrentRole(role);
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem("proofline:active-role", role);
+      window.localStorage.setItem("proofline:active-role", role);
+      window.dispatchEvent(new CustomEvent("proofline:role-change", { detail: role }));
     }
     router.push("/");
   };

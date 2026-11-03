@@ -476,28 +476,65 @@ export default function Home() {
         setActiveView("overview");
       }
 
+      const roleParam = params.get("role");
+      if (
+        roleParam &&
+        (roleParam === "creator" ||
+          roleParam === "manager" ||
+          roleParam === "legal_reviewer" ||
+          roleParam === "brand_owner" ||
+          roleParam === "agency")
+      ) {
+        setCurrentRole(roleParam as ProoflineRole);
+        window.sessionStorage.setItem("proofline:active-role", roleParam);
+        window.localStorage.setItem("proofline:active-role", roleParam);
+      }
+
       if (params.get("openSwitchRole") === "true" || params.get("switchRole") === "1") {
         setIsRoleModalOpen(true);
       }
     };
 
     handleUrlState();
-    window.addEventListener("popstate", handleUrlState);
 
-    // Sync persisted role safely on client after hydration to avoid React error #418
-    const storedRole =
-      window.sessionStorage.getItem("proofline:active-role") ||
-      window.localStorage.getItem("proofline:active-role");
-    if (
-      storedRole &&
-      (storedRole === "creator" ||
-        storedRole === "manager" ||
-        storedRole === "legal_reviewer" ||
-        storedRole === "brand_owner" ||
-        storedRole === "agency")
-    ) {
-      setCurrentRole(storedRole as ProoflineRole);
-    }
+    const syncRoleFromStorage = () => {
+      const stored =
+        window.sessionStorage.getItem("proofline:active-role") ||
+        window.localStorage.getItem("proofline:active-role");
+      if (
+        stored &&
+        (stored === "creator" ||
+          stored === "manager" ||
+          stored === "legal_reviewer" ||
+          stored === "brand_owner" ||
+          stored === "agency")
+      ) {
+        setCurrentRole((prev) => (prev !== stored ? (stored as ProoflineRole) : prev));
+      }
+    };
+
+    const handleRoleEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<ProoflineRole>;
+      if (
+        customEvent.detail &&
+        (customEvent.detail === "creator" ||
+          customEvent.detail === "manager" ||
+          customEvent.detail === "legal_reviewer" ||
+          customEvent.detail === "brand_owner" ||
+          customEvent.detail === "agency")
+      ) {
+        setCurrentRole(customEvent.detail);
+      } else {
+        syncRoleFromStorage();
+      }
+    };
+
+    syncRoleFromStorage();
+
+    window.addEventListener("popstate", handleUrlState);
+    window.addEventListener("proofline:role-change", handleRoleEvent);
+    window.addEventListener("storage", syncRoleFromStorage);
+    window.addEventListener("focus", syncRoleFromStorage);
 
     // Sync persisted engine mode safely on client after hydration
     const savedEngine = window.localStorage.getItem("proofline.execution_mode");
@@ -505,7 +542,12 @@ export default function Home() {
       setEngineMode(savedEngine);
     }
 
-    return () => window.removeEventListener("popstate", handleUrlState);
+    return () => {
+      window.removeEventListener("popstate", handleUrlState);
+      window.removeEventListener("proofline:role-change", handleRoleEvent);
+      window.removeEventListener("storage", syncRoleFromStorage);
+      window.removeEventListener("focus", syncRoleFromStorage);
+    };
   }, []);
 
   const [detailTab, setDetailTab] = useState<DetailTab>("findings");
@@ -814,6 +856,7 @@ export default function Home() {
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem("proofline:active-role", role);
       window.localStorage.setItem("proofline:active-role", role);
+      window.dispatchEvent(new CustomEvent("proofline:role-change", { detail: role }));
     }
     const persona = demoPersonas[role] ?? demoPersonas.legal_reviewer;
     if (activeView === "audit-log" && !rolePermissions[role].canViewAuditLog) setActiveView("overview");
@@ -1827,7 +1870,7 @@ export default function Home() {
           onClose={() => setIsRoleModalOpen(false)}
           currentRole={currentRole}
           onSelectRole={(role) => {
-            launchRoleDashboard(role);
+            changeRole(role);
             setIsRoleModalOpen(false);
           }}
         />
@@ -2306,7 +2349,7 @@ export default function Home() {
         onClose={() => setIsRoleModalOpen(false)}
         currentRole={currentRole}
         onSelectRole={(role) => {
-          launchRoleDashboard(role);
+          changeRole(role);
           setIsRoleModalOpen(false);
         }}
       />

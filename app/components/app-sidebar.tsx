@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ProoflineRole } from "../lib/proofline-api";
 import { demoPersonas } from "./role-dashboard-showcase";
 
@@ -68,8 +68,25 @@ export function AppSidebar({
   onSwitchRole,
 }: AppSidebarProps) {
   const router = useRouter();
-  const [storedRole] = useState<ProoflineRole>(() => getStoredRole(roleKey ?? "legal_reviewer"));
+  const [storedRole, setStoredRole] = useState<ProoflineRole>(() => getStoredRole(roleKey ?? "legal_reviewer"));
   const [findingsBadge] = useState<number | null>(getStoredFindingsBadge);
+
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const customEvent = e as CustomEvent<ProoflineRole>;
+      if (customEvent.detail && demoPersonas[customEvent.detail]) {
+        setStoredRole(customEvent.detail);
+      } else {
+        setStoredRole(getStoredRole("legal_reviewer"));
+      }
+    };
+    window.addEventListener("proofline:role-change", handleSync);
+    window.addEventListener("storage", handleSync);
+    return () => {
+      window.removeEventListener("proofline:role-change", handleSync);
+      window.removeEventListener("storage", handleSync);
+    };
+  }, []);
 
   const effectiveRoleKey = roleKey ?? storedRole;
   const persona = demoPersonas[effectiveRoleKey] ?? demoPersonas.legal_reviewer;
