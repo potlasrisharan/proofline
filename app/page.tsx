@@ -918,16 +918,10 @@ export default function Home() {
               <Link href="/portal" className="industrial-nav-link">Role Portal</Link>
             </nav>
 
-            {/* Absolute Centered Logo Brand Mark */}
+            {/* Absolute Centered Logo: Serif Italic + Bold Sans */}
             <Link href="/" className="industrial-logo-center" aria-label="Proofline Home">
-              <Image
-                src="/logo.png"
-                alt="Proofline"
-                width={40}
-                height={40}
-                priority
-                style={{ objectFit: "contain", borderRadius: 8 }}
-              />
+              <span className="industrial-logo-serif">PROOF</span>
+              <span className="industrial-logo-sans">LINE</span>
             </Link>
 
             {/* Right Actions: Enterprise Login CTA & Persona profile */}
