@@ -16,30 +16,20 @@ import {
   applyFindingDecision, categoryLabels, channelLabels, createContentReview,
   contentReviewFromApi, defaultContentScope, languageLabels, latestAudit, latestRevision,
   methodLabels, recheckContent, regionLabels, riskBreakdown, sampleNovacoreText, updateRevisionText, verdictLabels,
+  getStoredReviewRaw, saveStoredContentReview, subscribeContentReview,
   type ContentReview, type ContentScope,
 } from "../lib/content-review";
 
-const storageKey = "proofline.voltedge.content-review.v1";
-const listeners = new Set<() => void>();
-let volatileSnapshot: string | null = null;
-
 function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => { listeners.delete(listener); };
+  return subscribeContentReview(listener);
 }
 
 function getSnapshot() {
-  try { return window.sessionStorage.getItem(storageKey) ?? volatileSnapshot; }
-  catch { return volatileSnapshot; }
+  return getStoredReviewRaw();
 }
 
 function saveReview(review: ContentReview | null) {
-  volatileSnapshot = review ? JSON.stringify(review) : null;
-  try {
-    if (volatileSnapshot) window.sessionStorage.setItem(storageKey, volatileSnapshot);
-    else window.sessionStorage.removeItem(storageKey);
-  } catch { /* Browsers with storage disabled keep only this page's in-memory state. */ }
-  listeners.forEach((listener) => listener());
+  saveStoredContentReview(review);
 }
 
 function parseReview(value: string | null): ContentReview | null {
@@ -252,57 +242,84 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
         if (isPdf) {
           try {
             const buffer = await file.arrayBuffer();
-            const bytes = new Uint8Array(buffer);
-            const rawStr = new TextDecoder("latin1").decode(bytes.slice(0, 500000));
-            const matches = rawStr.match(/\(([^)]{2,})\)\s*Tj/g);
-            if (matches && matches.length > 3) {
-              const cleaned = matches
-                .map((m) => m.replace(/^\(/, "").replace(/\)\s*Tj$/, "").trim())
-                .filter((s) => s.length > 2 && !/^[\d\s.,-]+$/.test(s))
-                .join(" ");
-              if (cleaned.length > 40) {
-                extractedPreview = cleaned;
-              }
+            const { extractText } = await import("unpdf");
+            const { text: extracted } = await extractText(new Uint8Array(buffer));
+            const fullText = Array.isArray(extracted) ? extracted.join("\n\n").trim() : String(extracted || "").trim();
+            if (fullText.length > 0) {
+              extractedPreview = fullText;
             }
-          } catch {
-            /* fallback to standard spec draft */
+          } catch (pdfErr) {
+            console.warn("PDF extraction fallback triggered:", pdfErr);
+            try {
+              const buffer = await file.arrayBuffer();
+              const bytes = new Uint8Array(buffer);
+              const rawStr = new TextDecoder("latin1").decode(bytes.slice(0, 500000));
+              const matches = rawStr.match(/\(([^)]{2,})\)\s*Tj/g);
+              if (matches && matches.length > 3) {
+                const cleaned = matches
+                  .map((m) => m.replace(/^\(/, "").replace(/\)\s*Tj$/, "").trim())
+                  .filter((s) => s.length > 2 && !/^[\d\s.,-]+$/.test(s))
+                  .join(" ");
+                if (cleaned.length > 40) {
+                  extractedPreview = cleaned;
+                }
+              }
+            } catch {
+              /* ignore */
+            }
           }
 
-          if (!extractedPreview) {
-            extractedPreview = `Meet the Novacore NovaBook S1.\n\nDesigned for deep work and long days, it delivers up to 20 hours of battery life and is twice as fast as all competitor ultrabooks.\n\nOur most reliable laptop yet. Built with unibody titanium and whisper-quiet cooling.\n\nPre-orders are live today at novacore.io/novabook.`;
+          if (extractedPreview) {
+            setText(extractedPreview);
+            setUploadStatus(`✓ PDF "${file.name}" loaded (${(file.size / 1024).toFixed(0)} KB). ${extractedPreview.length} characters extracted and ready to check.`);
+          } else {
+            setError(`No extractable text found in "${file.name}". This PDF may be a scanned image or contain encrypted text. Paste text or run a scan in Multimodal Visual Inspection.`);
+            setUploadStatus(`⚠️ "${file.name}" loaded, but contains no extractable text (likely a scanned image).`);
           }
-          setUploadStatus(`✓ PDF "${file.name}" loaded (${(file.size / 1024).toFixed(0)} KB). Text extracted and ready to check.`);
         } else if (isDocx) {
           try {
             const buffer = await file.arrayBuffer();
-            const bytes = new Uint8Array(buffer);
-            const rawStr = new TextDecoder("latin1").decode(bytes.slice(0, 500000));
-            const xmlTextMatches = rawStr.match(/<w:t[^>]*>([^<]+)<\/w:t>/g);
-            if (xmlTextMatches && xmlTextMatches.length > 2) {
-              const cleaned = xmlTextMatches
-                .map((m) => m.replace(/<[^>]+>/g, "").trim())
-                .filter(Boolean)
-                .join(" ");
-              if (cleaned.length > 30) {
-                extractedPreview = cleaned;
-              }
+            const mammoth = await import("mammoth");
+            const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+            if (result.value && result.value.trim().length > 0) {
+              extractedPreview = result.value.trim();
             }
-          } catch {
-            /* fallback */
+          } catch (docxErr) {
+            console.warn("DOCX extraction fallback triggered:", docxErr);
+            try {
+              const buffer = await file.arrayBuffer();
+              const bytes = new Uint8Array(buffer);
+              const rawStr = new TextDecoder("latin1").decode(bytes.slice(0, 500000));
+              const xmlTextMatches = rawStr.match(/<w:t[^>]*>([^<]+)<\/w:t>/g);
+              if (xmlTextMatches && xmlTextMatches.length > 2) {
+                const cleaned = xmlTextMatches
+                  .map((m) => m.replace(/<[^>]+>/g, "").trim())
+                  .filter(Boolean)
+                  .join(" ");
+                if (cleaned.length > 30) {
+                  extractedPreview = cleaned;
+                }
+              }
+            } catch {
+              /* ignore */
+            }
           }
 
-          if (!extractedPreview) {
-            extractedPreview = `Novacore NovaBook S1 Specification Document.\n\nBattery Life: Up to 20 hours endurance.\nPerformance: Twice as fast as all competitor ultrabooks.\nChassis: Unibody titanium with whisper cooling.\nPre-orders: Live today at novacore.io/novabook.`;
+          if (extractedPreview) {
+            setText(extractedPreview);
+            setUploadStatus(`✓ DOCX "${file.name}" loaded (${(file.size / 1024).toFixed(0)} KB). ${extractedPreview.length} characters extracted and ready to check.`);
+          } else {
+            setError(`No extractable text found in "${file.name}". Please paste clean text directly.`);
+            setUploadStatus(`⚠️ "${file.name}" loaded, but contains no extractable text.`);
           }
-          setUploadStatus(`✓ DOCX "${file.name}" loaded (${(file.size / 1024).toFixed(0)} KB). Text extracted and ready to check.`);
         } else if (isImage) {
-          extractedPreview = `[Visual Asset: ${file.name}]\nHeadline: Novacore NovaBook S1\nVisual Claim: Twice as fast as all competitors.\nBattery: 20 hours of battery life.\nDisclaimer: *Terms and conditions apply.`;
           updateScope("has_image", true);
-          updateScope("alt_text", `Visual marketing asset: ${file.name}`);
-          setUploadStatus(`✓ Image "${file.name}" loaded (${(file.size / 1024).toFixed(0)} KB). Visual claims extracted.`);
+          updateScope("alt_text", `Visual asset: ${file.name}`);
+          if (!text.trim()) {
+            setText(`[Visual Marketing Asset: ${file.name}]\nImage attached for brand compliance and alt-text verification.`);
+          }
+          setUploadStatus(`✓ Image "${file.name}" loaded (${(file.size / 1024).toFixed(0)} KB). Visual metadata ready to check.`);
         }
-
-        setText(extractedPreview);
       }
 
       updateScope("original_filename", file.name);
@@ -321,8 +338,8 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    const effectiveText = text.trim() || (apiFile ? `[Uploaded Document: ${apiFile.filename}] NovaBook S1 specifications and comparative claims.` : "");
-    if (!effectiveText && !apiFile) { setError("Paste content or upload a readable supported file before running the check."); return; }
+    const effectiveText = text.trim() || (apiFile ? `[Uploaded Document: ${apiFile.filename}]` : "");
+    if (!effectiveText) { setError("Paste content or upload a readable supported file before running the check."); return; }
     if (!scope.title.trim()) { setError("Give this content a review name."); return; }
     const nextScope = { ...scope, title: scope.title.trim() };
     if (!localApi) {
@@ -335,7 +352,8 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
       const response = await localApi.client.createContent({
         title: nextScope.title,
         content_type: apiFile?.content_type ?? "text",
-        ...(apiFile ? { file_base64: apiFile.data, filename: apiFile.filename, mime_type: apiFile.mime_type } : { text: effectiveText }),
+        text: effectiveText,
+        ...(apiFile ? { file_base64: apiFile.data, filename: apiFile.filename, mime_type: apiFile.mime_type } : {}),
         confidential: nextScope.confidential,
         exposure: exposureForChannel(nextScope.channel),
         product: "Novacore NovaBook S1",

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { ProoflineRole } from "../lib/proofline-api";
 import { demoPersonas } from "./role-dashboard-showcase";
+import { getStoredContentReview, latestAudit } from "../lib/content-review";
 
 export type NavKey =
   | "overview"
@@ -88,12 +89,10 @@ type AppSidebarProps = {
 function getStoredFindingsBadge(): number | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = sessionStorage.getItem("proofline:review:v1");
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    const audits = parsed?.audits;
-    const latest = audits?.[audits.length - 1];
-    const open = latest?.findings?.filter((f: { status: string }) => f.status === "open")?.length;
+    const review = getStoredContentReview();
+    if (!review) return null;
+    const audit = latestAudit(review);
+    const open = audit?.findings?.filter((f) => f.status === "open")?.length;
     return typeof open === "number" && open > 0 ? open : null;
   } catch {
     return null;
@@ -117,10 +116,12 @@ function subscribeStorage(callback: () => void) {
   if (typeof window === "undefined") return () => {};
   window.addEventListener("proofline:role-change", callback);
   window.addEventListener("proofline:workspace-change", callback);
+  window.addEventListener("proofline:review-updated", callback);
   window.addEventListener("storage", callback);
   return () => {
     window.removeEventListener("proofline:role-change", callback);
     window.removeEventListener("proofline:workspace-change", callback);
+    window.removeEventListener("proofline:review-updated", callback);
     window.removeEventListener("storage", callback);
   };
 }

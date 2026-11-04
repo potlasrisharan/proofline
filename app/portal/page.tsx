@@ -8,6 +8,16 @@ import styles from "./portal.module.css";
 import { demoPersonas, type DemoPersona } from "../components/role-dashboard-showcase";
 import { WorkflowStepper } from "../components/workflow-stepper";
 import type { ProoflineRole } from "../lib/proofline-api";
+import {
+  getStoredContentReview,
+  saveStoredContentReview,
+  subscribeContentReview,
+  latestAudit,
+  latestRevision,
+  riskBreakdown,
+  channelLabels,
+  type ContentReview,
+} from "../lib/content-review";
 
 function getInitialPortalRole(): ProoflineRole | null {
   if (typeof window === "undefined") return null;
@@ -94,7 +104,7 @@ export default function PortalPage({
       window.localStorage.setItem("proofline:active-role", roleToUse);
       window.dispatchEvent(new CustomEvent("proofline:role-change", { detail: roleToUse }));
     }
-    router.push("/");
+    router.push("/?view=reviews");
   };
 
   return (
@@ -389,6 +399,13 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
   const [selectedLang, setSelectedLang] = useState<"en" | "te" | "hi">("en");
   const [submittedToTriage, setSubmittedToTriage] = useState(false);
   const [activeDraftKey, setActiveDraftKey] = useState<"novabook" | "teaser" | "charger">("novabook");
+  const storedReview = useSyncExternalStore(subscribeContentReview, getStoredContentReview, () => null);
+
+  const customReviewScore = useMemo(() => {
+    if (!storedReview) return null;
+    const audit = latestAudit(storedReview);
+    return riskBreakdown(audit.findings, storedReview.scope.channel).score;
+  }, [storedReview]);
 
   const handleApplyFix = () => {
     setBatteryFixed(true);
@@ -416,7 +433,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Drafts in Progress</div>
-          <div className={styles.metricValue}>4 <span className={styles.metricChange}>Active</span></div>
+          <div className={styles.metricValue}>{storedReview ? "5" : "4"} <span className={styles.metricChange}>Active</span></div>
           <div className={styles.metricSubtext}>{submittedToTriage ? "3 submitted for editorial review" : "2 submitted for editorial review"}</div>
         </div>
         <div className={styles.metricCard}>
@@ -580,6 +597,30 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
             <div style={{ fontSize: 11, fontWeight: 800, color: "#18181B", marginBottom: 8, fontFamily: "var(--ind-font-sans, sans-serif)" }}>
               Recent Creator Submissions (Click to Inspect)
             </div>
+            {storedReview && (
+              <button
+                type="button"
+                className={styles.interactiveRow}
+                onClick={onOpenWorkspace}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  border: "1px solid #0066FF",
+                  background: "rgba(0, 102, 255, 0.08)",
+                  marginBottom: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#0066FF" }}>
+                  ⚡ {storedReview.scope.title || "Custom Submitted Draft"} (Latest)
+                </span>
+                <span style={{ color: "#F59E0B", fontWeight: 700, fontSize: 10, fontFamily: "var(--ind-font-mono, monospace)" }}>
+                  Risk {customReviewScore} · Open in Workspace →
+                </span>
+              </button>
+            )}
             <button
               type="button"
               className={styles.interactiveRow}
@@ -625,6 +666,7 @@ function CreatorDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
 // -------------------------------------------------------------
 function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const storedReview = useSyncExternalStore(subscribeContentReview, getStoredContentReview, () => null);
   const [selectedQueueId, setSelectedQueueId] = useState<string>("novabook-launch");
   const [queueRows, setQueueRows] = useState([
     {
@@ -633,7 +675,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
       author: "Aisha Rahman",
       channel: "Email",
       riskScore: 78,
-      riskLevel: "high",
+      riskLevel: "high" as const,
       status: "In Review",
       notes: "Battery claim contradicts hardware spec v2.1 (20h vs 12h lab benchmark).",
     },
@@ -643,7 +685,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
       author: "Carlos Mendez",
       channel: "Web",
       riskScore: 52,
-      riskLevel: "medium",
+      riskLevel: "medium" as const,
       status: "In Review",
       notes: "Claims like 'most reliable' need test proof before partner release.",
     },
@@ -653,17 +695,68 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
       author: "Aisha Rahman",
       channel: "PR / Web",
       riskScore: 24,
-      riskLevel: "low",
+      riskLevel: "low" as const,
       status: "Approved",
       notes: "Clean compliance check; carbon offset claims verified with official certs.",
     },
   ]);
 
+  const customManagerRow = useMemo(() => {
+    if (!storedReview) return null;
+    const audit = latestAudit(storedReview);
+    const breakdown = riskBreakdown(audit.findings, storedReview.scope.channel);
+    const score = breakdown.score;
+    const isApproved = audit.status === "checked";
+    return {
+      id: storedReview.id,
+      title: storedReview.scope.title || "Custom Submitted Draft",
+      author: "Aisha Rahman (You)",
+      channel: channelLabels[storedReview.scope.channel] || storedReview.scope.channel,
+      riskScore: score,
+      riskLevel: (score >= 75 ? "high" : score >= 40 ? "medium" : "low") as "high" | "medium" | "low",
+      status: isApproved ? "Approved" : "In Review",
+      notes: audit.findings.length > 0
+        ? `${audit.findings.length} findings flagged by audit engine (${audit.findings[0]?.reason || "Needs review"}).`
+        : "Automated checks passed · Zero specification contradictions.",
+    };
+  }, [storedReview]);
+
+  const allQueueRows = useMemo(() => {
+    if (customManagerRow) {
+      return [customManagerRow, ...queueRows.filter((r) => r.id !== customManagerRow.id)];
+    }
+    return queueRows;
+  }, [customManagerRow, queueRows]);
+
+  const selectedItem = allQueueRows.find((r) => r.id === selectedQueueId) ?? allQueueRows[0];
+
   const handleRouteToLegal = () => {
+    if (storedReview && selectedItem.id === storedReview.id) {
+      const nextReview: ContentReview = {
+        ...storedReview,
+        events: [
+          ...storedReview.events,
+          {
+            id: `evt-${Date.now()}`,
+            content_version_id: latestRevision(storedReview).id,
+            actor: "Marcus Vance (Editorial Manager)",
+            action: "submitted",
+            timestamp: new Date().toISOString(),
+            before: null,
+            after: null,
+            finding_id: null,
+            reason: "Editorial review passed. Routed to Maya Chen (Legal Reviewer) for final clearance.",
+          },
+        ],
+      };
+      saveStoredContentReview(nextReview);
+      setActionMessage(`✓ ${selectedItem.title} routed to Maya Chen (Legal Reviewer) for final approval.`);
+      return;
+    }
     setQueueRows((prev) =>
       prev.map((r) =>
         r.id === "novabook-launch"
-          ? { ...r, status: "Routed to Legal (Maya Chen)", riskScore: 38, riskLevel: "medium" }
+          ? { ...r, status: "Routed to Legal (Maya Chen)", riskScore: 38, riskLevel: "medium" as const }
           : r
       )
     );
@@ -671,6 +764,10 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
   };
 
   const handleRequestChanges = () => {
+    if (storedReview && selectedItem.id === storedReview.id) {
+      setActionMessage(`✓ Change request sent to Aisha Rahman for ${selectedItem.title}: 'Ensure highlighted specifications match approved truth registry.'`);
+      return;
+    }
     setQueueRows((prev) =>
       prev.map((r) =>
         r.id === "novabook-launch"
@@ -681,14 +778,12 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
     setActionMessage("✓ Change request sent to Aisha Rahman: 'Ensure 12h lab benchmark is applied before re-submission.'");
   };
 
-  const selectedItem = queueRows.find((r) => r.id === selectedQueueId) ?? queueRows[0];
-
   return (
     <>
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
           <div className={styles.metricLabel}>Pending Review Queue</div>
-          <div className={styles.metricValue}>5 <span className={styles.metricChange}>Items</span></div>
+          <div className={styles.metricValue}>{allQueueRows.length} <span className={styles.metricChange}>Items</span></div>
           <div className={styles.metricSubtext}>Highest risk items sorted first</div>
         </div>
         <div className={styles.metricCard}>
@@ -731,7 +826,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
               </tr>
             </thead>
             <tbody>
-              {queueRows.map((row) => (
+              {allQueueRows.map((row) => (
                 <tr
                   key={row.id}
                   tabIndex={0}
@@ -790,7 +885,7 @@ function ManagerDashboard({ onOpenWorkspace }: { onOpenWorkspace: () => void }) 
               className={styles.ssoSubmitBtn}
               onClick={handleRouteToLegal}
             >
-              Route NovaBook to Legal Sign-off →
+              Route {selectedItem.title} to Legal Sign-off →
             </button>
             <button
               type="button"

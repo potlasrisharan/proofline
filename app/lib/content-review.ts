@@ -422,12 +422,21 @@ export function contentReviewFromApi(
     based_on: version.parent_version_id,
   }));
   const currentVersion = response.content_version_id;
+  const latestRev = revisions[revisions.length - 1];
+  const localDeterministicAudit = latestRev ? auditRevision(latestRev, scope) : null;
+  const backendFindings = response.findings.map(mapBackendFinding);
+  const existingSpans = new Set(backendFindings.map((f) => `${f.span.start}:${f.span.end}:${f.category}`));
+  const supplementalFindings = localDeterministicAudit
+    ? localDeterministicAudit.findings.filter((f) => !existingSpans.has(`${f.span.start}:${f.span.end}:${f.category}`))
+    : [];
+  const combinedFindings = [...backendFindings, ...supplementalFindings];
+
   const currentAudit: ContentAudit = {
     id: response.audit_id ?? `api-audit-${currentVersion}`,
     content_version_id: currentVersion,
     created_at: backendTimestamp(response),
-    findings: response.findings.map(mapBackendFinding),
-    status: response.status === "completed" ? "checked" : "review_required",
+    findings: combinedFindings,
+    status: response.status === "completed" && combinedFindings.length === 0 ? "checked" : "review_required",
   };
   const previousAudits = previous?.audits.filter((audit) => audit.content_version_id !== currentVersion) ?? [];
   const summaryAudits = (response.audits ?? [])
@@ -503,4 +512,93 @@ export function riskBreakdown(findings: Finding[], channel: ContentScope["channe
   const severity = Math.max(0, ...open.map((finding) => points[finding.severity]));
   const score = Math.round(100 * severity * exposure / 22.5);
   return { exposure, severity, policy_multiplier: 1, score, label: open.some((finding) => finding.verdict === "contradicted" || finding.severity === "critical") ? "High" : score >= 65 ? "High" : score >= 30 ? "Medium" : "Low", counts: { critical: open.filter((finding) => finding.severity === "critical").length, high: open.filter((finding) => finding.severity === "high").length, medium: open.filter((finding) => finding.severity === "medium").length, low: open.filter((finding) => finding.severity === "low").length }, missing: open.filter((finding) => finding.verdict === "unsupported").length, human: open.filter((finding) => finding.verdict === "needs_human").length };
+}
+
+export const REVIEW_STORAGE_KEY = "proofline.voltedge.content-review.v1";
+export const LEGACY_REVIEW_STORAGE_KEY = "proofline:review:v1";
+
+export function parseReview(value: string | null): ContentReview | null {
+  if (!value) return null;
+  try {
+    const candidate = JSON.parse(value) as ContentReview;
+    if (candidate.schema_version !== 1 || !candidate.id || !candidate.scope || !Array.isArray(candidate.revisions) || !candidate.revisions.length || !Array.isArray(candidate.audits) || !candidate.audits.length || !Array.isArray(candidate.events)) return null;
+    if (!candidate.revisions.every((revision) => typeof revision.text === "string" && typeof revision.alt_text === "string" && typeof revision.id === "string")) return null;
+    if (!candidate.audits.every((audit) => Array.isArray(audit.findings) && audit.findings.every((finding) => typeof finding.id === "string" && finding.span && typeof finding.span.text === "string" && typeof finding.reason === "string" && finding.verdict in verdictLabels && finding.method in methodLabels))) return null;
+    if (!(candidate.scope.channel in channelLabels) || !(candidate.scope.region in regionLabels) || !(candidate.scope.language in languageLabels)) return null;
+    return { ...candidate, scope: { ...candidate.scope, confidential: candidate.scope.confidential === true } };
+  } catch { return null; }
+}
+
+let memoryReviewSnapshot: ContentReview | null = null;
+let lastRawString: string | null = null;
+let cachedParsedReview: ContentReview | null = null;
+const reviewListeners = new Set<() => void>();
+
+export function getStoredReviewRaw(): string | null {
+  if (typeof window === "undefined") return memoryReviewSnapshot ? JSON.stringify(memoryReviewSnapshot) : null;
+  try {
+    return (
+      window.sessionStorage.getItem(REVIEW_STORAGE_KEY) ||
+      window.localStorage.getItem(REVIEW_STORAGE_KEY) ||
+      window.sessionStorage.getItem(LEGACY_REVIEW_STORAGE_KEY) ||
+      window.localStorage.getItem(LEGACY_REVIEW_STORAGE_KEY) ||
+      (memoryReviewSnapshot ? JSON.stringify(memoryReviewSnapshot) : null)
+    );
+  } catch {
+    return memoryReviewSnapshot ? JSON.stringify(memoryReviewSnapshot) : null;
+  }
+}
+
+export function getStoredContentReview(): ContentReview | null {
+  const raw = getStoredReviewRaw();
+  if (!raw) return memoryReviewSnapshot;
+  if (raw === lastRawString && cachedParsedReview) {
+    return cachedParsedReview;
+  }
+  const parsed = parseReview(raw);
+  if (parsed) {
+    lastRawString = raw;
+    cachedParsedReview = parsed;
+    return parsed;
+  }
+  return memoryReviewSnapshot;
+}
+
+export function saveStoredContentReview(review: ContentReview | null) {
+  memoryReviewSnapshot = review;
+  if (typeof window !== "undefined") {
+    try {
+      if (review) {
+        const serialized = JSON.stringify(review);
+        window.sessionStorage.setItem(REVIEW_STORAGE_KEY, serialized);
+        window.localStorage.setItem(REVIEW_STORAGE_KEY, serialized);
+        window.sessionStorage.setItem(LEGACY_REVIEW_STORAGE_KEY, serialized);
+        window.localStorage.setItem(LEGACY_REVIEW_STORAGE_KEY, serialized);
+      } else {
+        window.sessionStorage.removeItem(REVIEW_STORAGE_KEY);
+        window.localStorage.removeItem(REVIEW_STORAGE_KEY);
+        window.sessionStorage.removeItem(LEGACY_REVIEW_STORAGE_KEY);
+        window.localStorage.removeItem(LEGACY_REVIEW_STORAGE_KEY);
+      }
+    } catch {
+      /* ignore storage errors */
+    }
+    window.dispatchEvent(new CustomEvent("proofline:review-updated", { detail: review }));
+  }
+  reviewListeners.forEach((fn) => fn());
+}
+
+export function subscribeContentReview(callback: () => void): () => void {
+  reviewListeners.add(callback);
+  if (typeof window !== "undefined") {
+    window.addEventListener("proofline:review-updated", callback);
+    window.addEventListener("storage", callback);
+  }
+  return () => {
+    reviewListeners.delete(callback);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("proofline:review-updated", callback);
+      window.removeEventListener("storage", callback);
+    }
+  };
 }

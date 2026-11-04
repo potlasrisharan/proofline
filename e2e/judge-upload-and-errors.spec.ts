@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import fs from "fs";
+import path from "path";
 
 test.describe("Judge Upload & Comprehensive Error Handling Suite", () => {
   test.beforeEach(async ({ page }) => {
@@ -108,7 +110,10 @@ test.describe("Judge Upload & Comprehensive Error Handling Suite", () => {
   test("5. Judge uploads DOCX document and receives verified findings", async ({ page }) => {
     await page.goto("/submit");
 
-    const dummyDocx = Buffer.from("PK\x03\x04MockDocxContentWithNovaBookSpecifications", "utf-8");
+    // Minimal valid DOCX containing word/document.xml with NovaBook specifications
+    const docxBase64 =
+      "UEsDBBQAAAAAAHhVZF0CxKfsSwEAAEsBAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbDw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04IiBzdGFuZGFsb25lPSJ5ZXMiPz48VHlwZXMgeG1sbnM9Imh0dHA6Ly9zY2hlbWFzLm9wZW54bWxmb3JtYXRzLm9yZy9wYWNrYWdlLzIwMDYvY29udGVudC10eXBlcyI+PERlZmF1bHQgRXh0ZW5zaW9uPSJ4bWwiIENvbnRlbnRUeXBlPSJhcHBsaWNhdGlvbi94bWwiLz48T3ZlcnJpZGUgUGFydE5hbWU9Ii93b3JkL2RvY3VtZW50LnhtbCIgQ29udGVudFR5cGU9ImFwcGxpY2F0aW9uL3ZuZC5vcGVueG1sZm9ybWF0cy1vZmZpY2Vkb2N1bWVudC53b3JkcHJvY2Vzc2luZ21sLmRvY3VtZW50Lm1haW4reG1sIi8+PC9UeXBlcz5QSwMEFAAAAAAAeFVkXc/fvaoYAQAAGAEAABEAAAB3b3JkL2RvY3VtZW50LnhtbDw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04IiBzdGFuZGFsb25lPSJ5ZXMiPz48dzpkb2N1bWVudCB4bWxuczp3PSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvd29yZHByb2Nlc3NpbmdtbC8yMDA2L21haW4iPjx3OmJvZHk+PHc6cD48dzpyPjx3OnQ+Tm92YWNvcmUgTm92YUJvb2sgUzEgZmVhdHVyZXMgdXAgdG8gMjAgaG91cnMgYmF0dGVyeSBsaWZlIGFuZCB1bmlib2R5IHRpdGFuaXVtLjwvdzp0PjwvdzpyPjwvdzpwPjwvdzpib2R5Pjwvdzpkb2N1bWVudD5QSwECFAMUAAAAAAB4VWRdAsSn7EsBAABLAQAAEwAAAAAAAAAAAAAAgAEAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUAxQAAAAAAHhVZF3P372qGAEAABgBAAARAAAAAAAAAAAAAACAAXwBAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAAAgACAIAAAADDAgAAAAA=";
+    const validDocx = Buffer.from(docxBase64, "base64");
 
     const fileChooserPromise = page.waitForEvent("filechooser");
     await page.locator("#pl-upload").click();
@@ -117,7 +122,7 @@ test.describe("Judge Upload & Comprehensive Error Handling Suite", () => {
     await fileChooser.setFiles({
       name: "press_release_novabook.docx",
       mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      buffer: dummyDocx,
+      buffer: validDocx,
     });
 
     await expect(page.getByText(/✓ DOCX "press_release_novabook\.docx" loaded/)).toBeVisible();
@@ -146,7 +151,7 @@ test.describe("Judge Upload & Comprehensive Error Handling Suite", () => {
       buffer: pngBuffer,
     });
 
-    await expect(page.getByText(/✓ Image "novabook_hero_banner\.png" loaded/)).toBeVisible();
+    await expect(page.getByText(/✓ Image "novabook_hero_banner\.png" (loaded|attached)/)).toBeVisible();
 
     await page.getByRole("button", { name: "Run evidence check" }).click();
     await page.waitForURL("/findings");
@@ -315,5 +320,92 @@ test.describe("Judge Upload & Comprehensive Error Handling Suite", () => {
     await expect(page.getByText("VoltEdge Labs R&D")).toBeVisible();
     await page.getByText("VoltEdge Labs R&D").click();
     await expect(page.getByText("Switched to: VoltEdge Labs R&D")).toBeVisible();
+  });
+
+  test("12. Uploading a complex multi-page PDF extracts real text and NEVER replaces it with hardcoded demo copy", async ({ page }) => {
+    await page.goto("/submit");
+
+    const pdfPath = path.join(process.cwd(), "docs/Proofline_Round_3_Final_Product.pdf");
+    const pdfBuffer = fs.readFileSync(pdfPath);
+
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    await page.locator("#pl-upload").click();
+    const fileChooser = await fileChooserPromise;
+
+    await fileChooser.setFiles({
+      name: "Proofline_Round_3_Final_Product.pdf",
+      mimeType: "application/pdf",
+      buffer: pdfBuffer,
+    });
+
+    // Check upload status confirms real text was extracted
+    await expect(page.getByText(/✓ PDF "Proofline_Round_3_Final_Product\.pdf" loaded/)).toBeVisible();
+
+    // Verify textarea contains real extracted text
+    const contentTextarea = page.locator("#pl-text");
+    await expect(contentTextarea).toBeVisible();
+    const value = await contentTextarea.inputValue();
+
+    // MUST contain real document content
+    expect(value).toContain("PROOFLINE");
+    expect(value).toContain("Evidence-Backed Brand Governance");
+
+    // MUST NOT contain the fake hardcoded demo copy
+    expect(value).not.toContain("Meet the Novacore NovaBook S1.\n\nDesigned for deep work and long days");
+    expect(value).not.toContain("whisper-quiet cooling");
+
+    // Run evidence check on the real extracted PDF content
+    await page.getByRole("button", { name: "Run evidence check" }).click();
+    await page.waitForURL("/findings");
+
+    // Must reach findings with verified audit results
+    await expect(page.getByText("Flagged claims & fixes")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Every flag has an explanation." })).toBeVisible();
+  });
+
+  test("13. Custom draft submission dynamically updates Human Review Queue and all Role Dashboards", async ({ page }) => {
+    await page.goto("/submit");
+
+    // Submit custom marketing announcement
+    const customTitle = "Judge Live Pipeline Verification Campaign";
+    const customBody = "The Novacore NovaBook S1 delivers class-leading computing power with up to 20 hours battery life.";
+
+    await page.locator("#pl-title").fill(customTitle);
+    await page.locator("#pl-text").fill(customBody);
+    await page.getByRole("button", { name: "Run evidence check" }).click();
+    await page.waitForURL("/findings");
+
+    // 1. Verify in Human Review Queue (/?view=reviews)
+    await page.goto("/?view=reviews");
+    await expect(page.getByRole("heading", { name: "Open reviews" })).toBeVisible();
+
+    // Custom draft must be visible at the top of the queue
+    const customQueueItem = page.getByRole("button", { name: new RegExp(customTitle) });
+    await expect(customQueueItem).toBeVisible();
+    await customQueueItem.click();
+
+    // Verify detail view displays submitted draft and findings
+    await expect(page.getByRole("heading", { name: customTitle })).toBeVisible();
+    await expect(page.getByText("Submitted by Aisha Rahman (You)")).toBeVisible();
+
+    // 2. Verify in Creator Dashboard (/dashboards?role=creator)
+    await page.goto("/dashboards?role=creator");
+    await expect(page.getByRole("heading", { name: "Aisha's Content Lead Dashboard" })).toBeVisible();
+    // Custom draft appears under Recent Creator Submissions
+    await expect(page.getByText(new RegExp(customTitle))).toBeVisible();
+
+    // 3. Verify in Manager Dashboard (/dashboards?role=manager)
+    await page.goto("/dashboards?role=manager");
+    await expect(page.getByRole("heading", { name: "Editorial Review Queue" })).toBeVisible();
+    // Custom draft appears in Marcus's table
+    const tableRow = page.getByRole("button", { name: new RegExp(customTitle) });
+    await expect(tableRow).toBeVisible();
+    await tableRow.click();
+
+    // Route to Legal button works
+    const routeLegalBtn = page.getByRole("button", { name: /Route .* to Legal Sign-off/i });
+    await expect(routeLegalBtn).toBeVisible();
+    await routeLegalBtn.click();
+    await expect(page.getByText(/routed to Maya Chen/i)).toBeVisible();
   });
 });

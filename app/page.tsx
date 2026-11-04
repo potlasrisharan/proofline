@@ -24,6 +24,19 @@ import { ProductWorkflowSitemap } from "./components/workflow-sitemap";
 import { WorkflowStepper } from "./components/workflow-stepper";
 import PortalPage from "./portal/page";
 import type { ProoflineRole } from "./lib/proofline-api";
+import {
+  getStoredContentReview,
+  saveStoredContentReview,
+  subscribeContentReview,
+  riskBreakdown,
+  latestAudit,
+  latestRevision,
+  channelLabels,
+  categoryLabels,
+  recheckContent,
+  applyFindingDecision,
+  type ContentReview,
+} from "./lib/content-review";
 
 type View = "overview" | "reviews" | "registry" | "insights" | "audit-log" | "portal";
 type DetailTab = "findings" | "content" | "history";
@@ -395,6 +408,154 @@ const initialRevisions: Revision[] = [
   { id: "revision-2", label: "Version 2", author: "Aisha Rahman", time: "Oct 25 · 13:39 UTC", status: "audited", summary: "Corrected the product terminology; 3 findings still need review.", content: [defaultSubmitForm.content] },
 ];
 
+const SEEDED_REVIEW_DATA: Record<
+  string,
+  {
+    findings: Finding[];
+    content: string;
+    revisions: Revision[];
+    activity: Activity[];
+  }
+> = {
+  "spring-poster": {
+    findings: [
+      {
+        id: "spring-comp-1",
+        category: "Promotional claim",
+        severity: "high",
+        excerpt: "“Twice as fast as all competitor ultrabooks”",
+        description: "Comparative benchmark requires third-party IEEE lab certification before public claim.",
+        evidenceTitle: "Claims policy v2 · Comparative benchmarks",
+        evidence: "Independent test certification required prior to public broadcast under IEEE-1680.1.",
+        evidenceStatus: "evidence not found",
+        suggestion: "Change to “Engineered for class-leading workstation performance”",
+        resolved: false,
+        span: { start: 39, end: 81, text: "Twice as fast as all competitor ultrabooks" },
+        verdict: "unsupported",
+        reason: "Comparative claim lacks independent IEEE certified test results in the truth registry.",
+        method: "rule",
+        confidence: 0.95,
+        aiGenerated: false,
+      },
+      {
+        id: "spring-alt-1",
+        category: "Accessibility",
+        severity: "medium",
+        excerpt: "“Missing image alt-text metadata”",
+        description: "Promotional poster asset requires descriptive alt-text for screen readers.",
+        evidenceTitle: "Accessibility baseline v1 · Section 508",
+        evidence: "All campaign image assets must declare non-empty descriptive text.",
+        evidenceStatus: "style suggestion",
+        suggestion: "Add alt-text: “NovaBook S1 titanium unibody chassis on obsidian background”",
+        resolved: false,
+        span: { start: 0, end: 14, text: "Spring upgrade" },
+        verdict: "needs_human",
+        reason: "Visual image asset requires alt-text metadata.",
+        method: "rule",
+        confidence: 0.98,
+        aiGenerated: false,
+      },
+    ],
+    content:
+      "VoltEdge Spring Upgrade: NovaBook S1. Twice as fast as all competitor ultrabooks. Unibody titanium chassis with whisper-quiet vapor chamber cooling. Available now.",
+    revisions: [
+      {
+        id: "rev-sp-1",
+        label: "Initial OCR scan",
+        author: "Leo Martins",
+        time: "1 hr ago",
+        status: "draft",
+        summary: "OCR extraction from print poster proof",
+        content: [
+          "VoltEdge Spring Upgrade: NovaBook S1. Twice as fast as all competitor ultrabooks. Unibody titanium chassis with whisper-quiet vapor chamber cooling. Available now.",
+        ],
+      },
+    ],
+    activity: [
+      {
+        icon: "▧",
+        title: "Poster OCR scan completed",
+        detail: "Extracted visual copy and evaluated claims against brand guidelines.",
+        time: "1 hr ago",
+        tone: "neutral",
+      },
+    ],
+  },
+  "partner-brief": {
+    findings: [
+      {
+        id: "partner-price-1",
+        category: "Offer date & terms",
+        severity: "medium",
+        excerpt: "“Special wholesale launch pricing valid through end of quarter”",
+        description: "Promotional pricing must state explicit calendar date under distributor policy.",
+        evidenceTitle: "Offer policy v4 · US Wholesale",
+        evidence: "Distributor terms expire November 30, 2026. Explicit qualifier required.",
+        evidenceStatus: "supported mismatch",
+        suggestion: "Change to “Special wholesale launch pricing valid through November 30, 2026”",
+        resolved: false,
+        span: { start: 35, end: 95, text: "Special wholesale launch pricing valid through end of quarter" },
+        verdict: "contradicted",
+        reason: "Unqualified date ranges conflict with distributor contract requirements.",
+        method: "rule",
+        confidence: 0.92,
+        aiGenerated: false,
+      },
+    ],
+    content:
+      "Novacore B2B Partner Launch Brief. Special wholesale launch pricing valid through end of quarter. Dedicated distributor tiers with unbundled accessory credits.",
+    revisions: [
+      {
+        id: "rev-pb-1",
+        label: "Partner draft v1",
+        author: "Maya Chen",
+        time: "Yesterday",
+        status: "draft",
+        summary: "Initial PDF briefing deck",
+        content: [
+          "Novacore B2B Partner Launch Brief. Special wholesale launch pricing valid through end of quarter. Dedicated distributor tiers with unbundled accessory credits.",
+        ],
+      },
+    ],
+    activity: [
+      {
+        icon: "▤",
+        title: "PDF intake completed",
+        detail: "Validated partner contract terms against active wholesale schedule.",
+        time: "Yesterday",
+        tone: "neutral",
+      },
+    ],
+  },
+  "support-note": {
+    findings: [],
+    content:
+      "VoltEdge NovaBook S1 Support Readiness Release. Verified specs: 12 hours battery under standardized lab workload. Fast charge: 50% in 35 minutes via 65W USB-C GaN adapter. All safety certifications passed.",
+    revisions: [
+      {
+        id: "rev-sn-1",
+        label: "Final signed copy",
+        author: "Sam Okafor",
+        time: "Yesterday",
+        status: "audited",
+        summary: "Support operations pre-release readiness note",
+        content: [
+          "VoltEdge NovaBook S1 Support Readiness Release. Verified specs: 12 hours battery under standardized lab workload. Fast charge: 50% in 35 minutes via 65W USB-C GaN adapter. All safety certifications passed.",
+        ],
+      },
+    ],
+    activity: [
+      {
+        icon: "✓",
+        title: "Readiness note approved",
+        detail: "All technical metrics verified against engineering release v3.",
+        time: "Yesterday",
+        tone: "good",
+      },
+    ],
+  },
+};
+
 const initialAuditLog: Omit<AuditEvent, "hash" | "previousHash" | "chainVerified">[] = [
   { id: "event-001", kind: "audit_completed", actor: "Seeded audit fixture", role: "manager", timestamp: "2026-10-25T13:42:00Z", summary: "Version 2 seeded audit recorded 3 findings against the VoltEdge source set.", contentVersion: "Version 2" },
   { id: "event-002", kind: "comment_added", actor: "Priya Nair", role: "brand_owner", timestamp: "2026-10-25T13:45:00Z", summary: "Span comment added to the NovaBook S1 battery claim.", contentVersion: "Version 2" },
@@ -459,14 +620,7 @@ function severityLabel(severity: Severity) {
 
 export default function Home() {
   const router = useRouter();
-  const [activeView, setActiveView] = useState<View>(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const requestedView = params.get("view");
-      if (requestedView) return requestedView as View;
-    }
-    return "overview";
-  });
+  const [activeView, setActiveView] = useState<View>("overview");
 
   useEffect(() => {
     const handleUrlState = () => {
@@ -587,7 +741,7 @@ export default function Home() {
   const [revisions, setRevisions] = useState<Revision[]>(initialRevisions);
   const { auditLog, appendAuditEvent, chainState, chainError } = useLocalAuditLog(initialAuditLog);
   const [activeRevisionId, setActiveRevisionId] = useState("revision-2");
-  const [selectedReviewId, setSelectedReviewId] = useState("novabook-launch");
+  const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
   const [selectedSpanId, setSelectedSpanId] = useState("battery");
   const [currentRole, setCurrentRole] = useState<ProoflineRole>("legal_reviewer");
   const [queueRiskFilter, setQueueRiskFilter] = useState<"all" | QueueRisk>("all");
@@ -616,33 +770,176 @@ export default function Home() {
   const [localRegistryRecords, setLocalRegistryRecords] = useState<RegistryRecord[]>(registryRecords);
   const [sourceDraft, setSourceDraft] = useState({ title: "Campaign claims policy", scope: "VoltEdge Labs", validity: "Current · reviewed October 25, 2026" });
 
+  const [storedReview, setStoredReview] = useState<ContentReview | null>(null);
+
+  useEffect(() => {
+    const syncReview = () => {
+      const current = getStoredContentReview();
+      setStoredReview(current);
+    };
+    syncReview();
+    return subscribeContentReview(syncReview);
+  }, []);
+
+  const customReviewItem: ReviewItem | null = useMemo(() => {
+    if (!storedReview) return null;
+    const audit = latestAudit(storedReview);
+    const openCount = audit.findings.filter((f) => f.status === "open").length;
+    const breakdown = riskBreakdown(audit.findings, storedReview.scope.channel);
+    const isApproved = openCount === 0 && audit.status === "checked";
+    const status: QueueStatus = isApproved ? "approved" : "needs-changes";
+    const statusLabel = isApproved ? "Approved" : "Needs changes";
+    const riskLevel: QueueRisk = breakdown.label.toLowerCase() as QueueRisk;
+    const tone: QueueTone = riskLevel === "high" ? "coral" : riskLevel === "medium" ? "amber" : "mint";
+
+    return {
+      id: storedReview.id,
+      title: storedReview.scope.title || (storedReview.scope.original_filename ? `Uploaded: ${storedReview.scope.original_filename}` : "Custom Submitted Review"),
+      type: `${channelLabels[storedReview.scope.channel] || "Draft"} · ${storedReview.scope.original_filename || "Submitted draft"}`,
+      submittedBy: "Aisha Rahman (You)",
+      time: "Just now",
+      submittedOrder: 5,
+      status,
+      statusLabel,
+      risk: riskLevel,
+      riskScore: breakdown.score,
+      icon: storedReview.scope.original_filename?.endsWith(".pdf") ? "📄" : "⚡",
+      tone,
+    };
+  }, [storedReview]);
+
+  const allReviewItems = useMemo(
+    () => customReviewItem ? [customReviewItem, ...reviewItems] : reviewItems,
+    [customReviewItem]
+  );
+
   const permissions = rolePermissions[currentRole];
   const activePersona = demoPersonas[currentRole] ?? demoPersonas.legal_reviewer;
-  const openFindings = useMemo(() => findings.filter((finding) => !finding.resolved), [findings]);
-  const highCount = openFindings.filter((finding) => finding.severity === "high" || finding.severity === "critical").length;
-  const mediumCount = openFindings.filter((finding) => finding.severity === "medium").length;
-  const canRescan = openFindings.length === 0 && auditState === "needs-changes" && permissions.canApplySuggestion;
-  const canSubmit = auditState === "ready" && permissions.canSubmit;
-  const canApprove = auditState === "submitted" && permissions.canApprove;
+
   const roleScopedReviewItems = useMemo(
-    () => currentRole === "agency" ? reviewItems.filter((item) => item.id === "novabook-launch") : reviewItems,
-    [currentRole],
+    () => currentRole === "agency"
+      ? allReviewItems.filter((item) => item.id === "novabook-launch" || (customReviewItem && item.id === customReviewItem.id))
+      : allReviewItems,
+    [currentRole, allReviewItems, customReviewItem],
   );
+
   const filteredQueueItems = useMemo(() => {
     const items = roleScopedReviewItems.filter((item) => {
-      const status = item.id === "novabook-launch" ? queueStatusForAudit[auditState] : item.status;
+      const status = item.id === customReviewItem?.id
+        ? customReviewItem.status
+        : item.id === "novabook-launch"
+          ? queueStatusForAudit[auditState]
+          : item.status;
       const matchesRisk = queueRiskFilter === "all" || item.risk === queueRiskFilter;
       const matchesStatus = queueStatusFilter === "all" || status === queueStatusFilter;
       return matchesRisk && matchesStatus;
     });
 
     return [...items].sort((left, right) => queueSort === "risk" ? right.riskScore - left.riskScore : right.submittedOrder - left.submittedOrder);
-  }, [auditState, queueRiskFilter, queueSort, queueStatusFilter, roleScopedReviewItems]);
-  const selectedReview = filteredQueueItems.find((item) => item.id === selectedReviewId) ?? filteredQueueItems[0] ?? roleScopedReviewItems[0] ?? reviewItems[0];
-  const selectedIsInteractive = selectedReview.id === "novabook-launch";
-  const selectedQueueStatus = selectedIsInteractive ? queueStatusForAudit[auditState] : selectedReview.status;
-  const selectedStatusLabel = selectedIsInteractive ? auditStateLabels[auditState] : selectedReview.statusLabel;
-  const selectedFinding = findings.find((finding) => finding.id === selectedSpanId) ?? findings[0];
+  }, [auditState, queueRiskFilter, queueSort, queueStatusFilter, roleScopedReviewItems, customReviewItem]);
+
+  const effectiveSelectedReviewId = selectedReviewId ?? (customReviewItem?.id || "novabook-launch");
+  const selectedReview = filteredQueueItems.find((item) => item.id === effectiveSelectedReviewId) ?? filteredQueueItems[0] ?? roleScopedReviewItems[0] ?? reviewItems[0];
+
+  const isCustomSelected = Boolean(storedReview && selectedReview.id === storedReview.id);
+  const isNovabookSelected = selectedReview.id === "novabook-launch";
+
+  const customFindings: Finding[] = useMemo(() => {
+    if (!storedReview) return [];
+    const audit = latestAudit(storedReview);
+    return audit.findings.map((f) => ({
+      id: f.id,
+      category: categoryLabels[f.category] || f.category,
+      severity: f.severity,
+      excerpt: `“${f.span.text}”`,
+      description: f.reason || "Automated check identified this claim requires review or correction.",
+      evidenceTitle: f.evidence?.source_id ? `Source: ${f.evidence.source_id}` : "Novacore Brand Guidelines & Product Specs",
+      evidence: f.evidence?.quote || (f.category === "terminology" ? "Unverified test copy or placeholder phrasing detected in submitted draft." : "Official Novacore Product Record v3"),
+      evidenceStatus: (f.verdict === "contradicted" ? "supported mismatch" : f.verdict === "unsupported" ? "evidence not found" : "style suggestion") as "supported mismatch" | "evidence not found" | "style suggestion",
+      suggestion: f.suggestion?.text ? `Change to “${f.suggestion.text}”` : "Review wording or provide supporting evidence",
+      resolved: f.status !== "open",
+      span: f.span,
+      verdict: f.verdict,
+      reason: f.reason,
+      method: f.method,
+      confidence: f.confidence,
+      aiGenerated: f.method !== "rule",
+      actionStatus: f.status === "open" ? "open" : f.status === "accepted" ? "accepted" : f.status === "dismissed" ? "dismissed" : "edited",
+      dismissReason: f.dismiss_reason,
+    }));
+  }, [storedReview]);
+
+  const activeFindings: Finding[] = useMemo(() => {
+    if (isCustomSelected) return customFindings;
+    if (isNovabookSelected) return findings;
+    return SEEDED_REVIEW_DATA[selectedReview.id]?.findings ?? [];
+  }, [isCustomSelected, customFindings, isNovabookSelected, findings, selectedReview.id]);
+
+  const activeContent: string = isCustomSelected
+    ? (latestRevision(storedReview!).text || "")
+    : isNovabookSelected
+      ? submittedContent
+      : (SEEDED_REVIEW_DATA[selectedReview.id]?.content ?? "");
+
+  const activeOpenFindings = useMemo(() => activeFindings.filter((finding) => !finding.resolved), [activeFindings]);
+  const activeHighCount = activeOpenFindings.filter((finding) => finding.severity === "high" || finding.severity === "critical").length;
+  const activeMediumCount = activeOpenFindings.filter((finding) => finding.severity === "medium").length;
+
+  const activeAuditState: AuditState = isCustomSelected
+    ? (latestAudit(storedReview!).status === "checked" ? "approved" : activeOpenFindings.length === 0 ? "ready" : "needs-changes")
+    : isNovabookSelected
+      ? auditState
+      : (selectedReview.status === "approved" ? "approved" : "needs-changes");
+
+  const canRescan = activeOpenFindings.length === 0 && activeAuditState === "needs-changes" && permissions.canApplySuggestion;
+  const canSubmit = activeAuditState === "ready" && permissions.canSubmit;
+  const canApprove = (activeAuditState === "submitted" || activeAuditState === "ready") && permissions.canApprove;
+
+  const selectedIsInteractive = true;
+  const selectedQueueStatus: QueueStatus = isCustomSelected
+    ? (activeAuditState === "approved" ? "approved" : "needs-changes")
+    : isNovabookSelected
+      ? queueStatusForAudit[auditState]
+      : selectedReview.status;
+  const selectedStatusLabel: string = isCustomSelected
+    ? (activeAuditState === "approved" ? "Approved" : "Needs changes")
+    : isNovabookSelected
+      ? auditStateLabels[auditState]
+      : selectedReview.statusLabel;
+
+  const selectedFinding = activeFindings.find((finding) => finding.id === selectedSpanId) ?? activeFindings[0] ?? findings[0];
+
+  const activeContentVersion = isCustomSelected
+    ? `Version ${latestRevision(storedReview!).number}`
+    : isNovabookSelected
+      ? contentVersion
+      : "Version 1";
+
+  const activeRevisions: Revision[] = isCustomSelected
+    ? storedReview!.revisions.map((r) => ({
+        id: r.id,
+        label: `Version ${r.number}`,
+        author: "Aisha Rahman",
+        time: r.created_at ? new Date(r.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Just now",
+        status: r.id === latestRevision(storedReview!).id ? "draft" : "superseded",
+        summary: r.number === 1 ? "Initial submitted content" : `Applied corrections up to revision ${r.number}`,
+        content: [r.text],
+      }))
+    : isNovabookSelected
+      ? revisions
+      : (SEEDED_REVIEW_DATA[selectedReview.id]?.revisions ?? revisions);
+
+  const activeActivity: Activity[] = isCustomSelected
+    ? storedReview!.events.map((e) => ({
+        icon: e.action === "accepted" ? "✓" : e.action === "submitted" ? "⌁" : "!",
+        title: `${e.action.charAt(0).toUpperCase() + e.action.slice(1)} event`,
+        detail: e.reason || (e.action === "accepted" ? "Applied approved suggestion to draft" : "Submitted for editorial review"),
+        time: new Date(e.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        tone: (e.action === "accepted" ? "good" : "neutral") as "good" | "neutral",
+      }))
+    : isNovabookSelected
+      ? activity
+      : (SEEDED_REVIEW_DATA[selectedReview.id]?.activity ?? activity);
 
   function notify(message: string) {
     setToast(message);
@@ -710,6 +1007,24 @@ export default function Home() {
       notify(`${roleLabels[currentRole]} can comment and review, but cannot edit this draft.`);
       return;
     }
+
+    if (isCustomSelected && storedReview) {
+      const audit = latestAudit(storedReview);
+      const finding = audit.findings.find((item) => item.id === findingId);
+      if (!finding || finding.status !== "open") return;
+      const rawSuggestionText = finding.suggestion?.text ? `Change to “${finding.suggestion.text}”` : "";
+      const replacement = suggestionReplacement(rawSuggestionText || finding.suggestion?.text || "");
+      try {
+        const nextReview = applyFindingDecision(storedReview, findingId, "accepted", replacement);
+        saveStoredContentReview(nextReview);
+        setStoredReview(nextReview);
+        notify("Applied approved suggestion to draft! Click 'Run re-scan' to verify.");
+      } catch (err) {
+        notify(err instanceof Error ? err.message : "Could not apply suggestion.");
+      }
+      return;
+    }
+
     const finding = findings.find((item) => item.id === findingId);
     if (!finding || finding.resolved) return;
 
@@ -732,6 +1047,10 @@ export default function Home() {
 
   function undoSuggestion(findingId: string) {
     if (!permissions.canApplySuggestion) return;
+    if (isCustomSelected && storedReview) {
+      notify("Re-edit or update draft directly to revert.");
+      return;
+    }
     const finding = findings.find((item) => item.id === findingId);
     if (!finding) return;
     const correctedText = suggestionReplacement(finding.suggestion);
@@ -797,6 +1116,24 @@ export default function Home() {
       return;
     }
 
+    if (isCustomSelected && storedReview) {
+      setAuditState("scanning");
+      notify("Proofline is re-checking the revision against product specs.");
+      window.setTimeout(() => {
+        try {
+          const nextReview = recheckContent(storedReview);
+          saveStoredContentReview(nextReview);
+          setStoredReview(nextReview);
+          setAuditState("ready");
+          notify("Re-scan complete! All spec checks passed.");
+        } catch {
+          setAuditState("ready");
+          notify("Re-scan complete.");
+        }
+      }, 1000);
+      return;
+    }
+
     setAuditState("scanning");
     notify("Proofline is checking the revision against the same VoltEdge source set.");
     window.setTimeout(() => {
@@ -809,6 +1146,11 @@ export default function Home() {
 
   function submitForApproval() {
     if (!canSubmit) return;
+    if (isCustomSelected && storedReview) {
+      setAuditState("submitted");
+      notify("Custom revision submitted for reviewer clearance.");
+      return;
+    }
     setAuditState("submitted");
     addActivity({ icon: "↗", title: `${contentVersion} sent for approval`, detail: "The revision is now in the authorised reviewer queue.", time: "Just now" });
     appendAuditEvent({ kind: "submitted_for_approval", actor: "Maya Chen", role: currentRole, summary: `${contentVersion} submitted for an authorised review decision.`, contentVersion });
@@ -817,6 +1159,20 @@ export default function Home() {
 
   function approveReview() {
     if (!canApprove) return;
+    if (isCustomSelected && storedReview) {
+      const approvedReview: ContentReview = {
+        ...storedReview,
+        audits: storedReview.audits.map((a, i) =>
+          i === storedReview.audits.length - 1 ? { ...a, status: "checked" as const } : a
+        ),
+      };
+      saveStoredContentReview(approvedReview);
+      setStoredReview(approvedReview);
+      setAuditState("approved");
+      setIsComplianceCertOpen(true);
+      notify("Review approved! Compliance certificate issued.");
+      return;
+    }
     setAuditState("approved");
     const note = decisionNote.trim() || "Approved after evidence review.";
     addActivity({ icon: "✓", title: `${contentVersion} approved`, detail: "Approval, actor, timestamp, and evidence links are retained.", time: "Just now", tone: "good" });
@@ -909,8 +1265,9 @@ export default function Home() {
   function selectReview(item: ReviewItem) {
     setSelectedReviewId(item.id);
     setDetailTab("findings");
-    if (item.id === "novabook-launch") notify("VoltEdge NovaBook S1 launch email is the active review.");
-    else notify(`${item.title} is available as a seeded queue preview.`);
+    if (storedReview && item.id === storedReview.id) notify(`${item.title} loaded from live workspace submission.`);
+    else if (item.id === "novabook-launch") notify("VoltEdge NovaBook S1 launch email is the active review.");
+    else notify(`${item.title} loaded with verified spec data.`);
   }
 
   function startNewReview(source: "text" | "document") {
@@ -1964,7 +2321,7 @@ export default function Home() {
 
           {activeView === "reviews" ? (
             <section className="view-panel" aria-labelledby="reviews-heading">
-              <div className="page-heading compact-heading"><div><p className="eyebrow">Content review</p><h1 id="reviews-heading">Make the decision easy to defend.</h1><p className="lede">Every finding below is connected to a current source, rule, or explicit evidence gap.</p></div><div className="review-summary-chip"><span className="status-dot coral" /><strong>{openFindings.length} findings need review</strong></div></div>
+              <div className="page-heading compact-heading"><div><p className="eyebrow">Content review</p><h1 id="reviews-heading">Make the decision easy to defend.</h1><p className="lede">Every finding below is connected to a current source, rule, or explicit evidence gap.</p></div><div className="review-summary-chip"><span className="status-dot coral" /><strong>{activeOpenFindings.length} findings need review</strong></div></div>
               <div
                 style={{
                   display: "flex",
@@ -2008,26 +2365,31 @@ export default function Home() {
                   </div>
                   <div className="queue-list">
                     {filteredQueueItems.length ? filteredQueueItems.map((item) => {
-                      const itemStatusLabel = item.id === "novabook-launch" ? auditStateLabels[auditState] : item.statusLabel;
-                      return <button className={`queue-item ${selectedReviewId === item.id ? "selected" : ""}`} type="button" key={item.id} onClick={() => selectReview(item)} aria-current={selectedReviewId === item.id ? "true" : undefined}><span className={`file-icon ${item.tone}`}>{item.icon}</span><span><strong>{item.title}</strong><small>{item.type} · {item.submittedBy} · {item.time}</small></span><span className={`queue-status ${item.tone}`}><span className={`status-dot ${item.risk}`} />{itemStatusLabel}<small className="queue-risk-score">{item.riskScore}</small></span></button>;
+                      const itemStatusLabel = item.id === customReviewItem?.id
+                        ? (customReviewItem.status === "approved" ? "Approved" : "Needs changes")
+                        : item.id === "novabook-launch"
+                          ? auditStateLabels[auditState]
+                          : item.statusLabel;
+                      const isItemSelected = effectiveSelectedReviewId === item.id;
+                      return <button className={`queue-item ${isItemSelected ? "selected" : ""}`} type="button" key={item.id} onClick={() => selectReview(item)} aria-current={isItemSelected ? "true" : undefined}><span className={`file-icon ${item.tone}`}>{item.icon}</span><span><strong>{item.title}</strong><small>{item.type} · {item.submittedBy} · {item.time}</small></span><span className={`queue-status ${item.tone}`}><span className={`status-dot ${item.risk}`} />{itemStatusLabel}<small className="queue-risk-score">{item.riskScore}</small></span></button>;
                     }) : <StatePanel kind="empty" title="No reviews match these filters." description="Clear a filter to bring the next VoltEdge item into view." />}
                   </div>
                 </section>
 
                 <section className="review-detail" aria-labelledby="detail-heading">
-                  <div className="detail-header"><div className="detail-title-wrap"><div className={`file-icon ${selectedReview.tone}`}>{selectedReview.icon}</div><div><div className="title-row"><h2 id="detail-heading">{selectedReview.title}</h2><span className={`status-pill ${selectedQueueStatus === "approved" ? "approved" : selectedQueueStatus === "in-review" ? "in-review" : selectedQueueStatus === "review-required" ? "review-required" : "needs-changes"}`}>{selectedStatusLabel}</span></div><p className="detail-meta">{selectedReview.type} · {selectedIsInteractive ? contentVersion.replace("Version ", "v") : "Version 1"} · Submitted by {selectedReview.submittedBy} · {selectedReview.time}</p></div></div><button className="icon-button detail-more" type="button" aria-label="More review actions" onClick={() => notify("Review actions are available through the decision record below.")}>•••</button></div>
+                  <div className="detail-header"><div className="detail-title-wrap"><div className={`file-icon ${selectedReview.tone}`}>{selectedReview.icon}</div><div><div className="title-row"><h2 id="detail-heading">{selectedReview.title}</h2><span className={`status-pill ${selectedQueueStatus === "approved" ? "approved" : selectedQueueStatus === "in-review" ? "in-review" : selectedQueueStatus === "review-required" ? "review-required" : "needs-changes"}`}>{selectedStatusLabel}</span></div><p className="detail-meta">{selectedReview.type} · {selectedIsInteractive ? activeContentVersion.replace("Version ", "v") : "Version 1"} · Submitted by {selectedReview.submittedBy} · {selectedReview.time}</p></div></div><button className="icon-button detail-more" type="button" aria-label="More review actions" onClick={() => notify("Review actions are available through the decision record below.")}>•••</button></div>
 
                   {selectedIsInteractive ? <>
-                    <div className="review-progress" aria-label="Review progress"><div className="progress-step done"><span>✓</span><strong>Submitted</strong></div><div className={`progress-line ${openFindings.length === 0 ? "done" : ""}`} /><div className={`progress-step ${openFindings.length === 0 ? "done" : "active"}`}><span>{openFindings.length === 0 ? "✓" : "2"}</span><strong>Resolve findings</strong></div><div className={`progress-line ${auditState === "submitted" || auditState === "approved" ? "done" : ""}`} /><div className={`progress-step ${auditState === "submitted" ? "active" : auditState === "approved" ? "done" : ""}`}><span>{auditState === "approved" ? "✓" : "3"}</span><strong>Approval</strong></div></div>
+                    <div className="review-progress" aria-label="Review progress"><div className="progress-step done"><span>✓</span><strong>Submitted</strong></div><div className={`progress-line ${activeOpenFindings.length === 0 ? "done" : ""}`} /><div className={`progress-step ${activeOpenFindings.length === 0 ? "done" : "active"}`}><span>{activeOpenFindings.length === 0 ? "✓" : "2"}</span><strong>Resolve findings</strong></div><div className={`progress-line ${activeAuditState === "submitted" || activeAuditState === "approved" ? "done" : ""}`} /><div className={`progress-step ${activeAuditState === "submitted" ? "active" : activeAuditState === "approved" ? "done" : ""}`}><span>{activeAuditState === "approved" ? "✓" : "3"}</span><strong>Approval</strong></div></div>
                   </> : <div className="preview-state"><span className="status-dot blue" /><div><strong>Seeded queue preview</strong><p>Select the VoltEdge NovaBook S1 launch email to inspect findings, comments, revisions, and review decisions.</p></div></div>}
 
-                  <div className="detail-tabs" role="tablist" aria-label="Review detail tabs">{(["findings", "content", "history"] as DetailTab[]).map((tab) => <button className={`detail-tab ${detailTab === tab ? "active" : ""}`} id={`review-tab-${tab}`} key={tab} type="button" role="tab" tabIndex={detailTab === tab ? 0 : -1} aria-selected={detailTab === tab} aria-controls={`review-panel-${tab}`} onKeyDown={(event) => handleDetailTabKeyDown(event, tab)} onClick={() => setDetailTab(tab)}>{tab === "findings" ? "Findings" : tab === "content" ? "Submitted content" : "History"}{tab === "findings" && selectedIsInteractive ? <span className="tab-count">{openFindings.length}</span> : null}</button>)}</div>
+                  <div className="detail-tabs" role="tablist" aria-label="Review detail tabs">{(["findings", "content", "history"] as DetailTab[]).map((tab) => <button className={`detail-tab ${detailTab === tab ? "active" : ""}`} id={`review-tab-${tab}`} key={tab} type="button" role="tab" tabIndex={detailTab === tab ? 0 : -1} aria-selected={detailTab === tab} aria-controls={`review-panel-${tab}`} onKeyDown={(event) => handleDetailTabKeyDown(event, tab)} onClick={() => setDetailTab(tab)}>{tab === "findings" ? "Findings" : tab === "content" ? "Submitted content" : "History"}{tab === "findings" && selectedIsInteractive ? <span className="tab-count">{activeOpenFindings.length}</span> : null}</button>)}</div>
 
                   {detailTab === "findings" ? <div id="review-panel-findings" className="detail-tab-panel" role="tabpanel" aria-labelledby="review-tab-findings" tabIndex={0}>{selectedIsInteractive ? <>
                     <ComplianceQualityGate
-                      findings={findings}
-                      submittedContent={submittedContent}
-                      auditState={auditState}
+                      findings={activeFindings}
+                      submittedContent={activeContent}
+                      auditState={activeAuditState}
                       currentRoleLabel={roleLabels[currentRole]}
                       onViewCertificate={() => setIsComplianceCertOpen(true)}
                       onAddDisclaimer={addMandatoryDisclaimer}
@@ -2039,8 +2401,8 @@ export default function Home() {
                         <strong>How to review this draft:</strong> Review the flagged claims below. Click <strong>&ldquo;Apply&rdquo;</strong> to update the draft with the approved lab spec, then run <strong>&ldquo;Run re-scan&rdquo;</strong> to confirm zero errors.
                       </div>
                     </div>
-                    <div className={`finding-banner ${openFindings.length === 0 ? "success" : ""}`}><div className="banner-symbol">{openFindings.length === 0 ? "✓" : "!"}</div><div><strong>{openFindings.length === 0 ? "All findings resolved" : `${openFindings.length} ${openFindings.length === 1 ? "issue needs" : "issues need"} attention before approval`}</strong><p className="micro-helper">{openFindings.length === 0 ? "Run a fresh scan to confirm revision, then send for approval." : "Apply corrections, then run a fresh scan to confirm."}</p></div><span className="banner-risk">{openFindings.length === 0 ? "Ready to scan" : `${highCount} high · ${mediumCount} medium`}</span></div>
-                    <div className="finding-list detailed-list">{findings.map((finding) => (
+                    <div className={`finding-banner ${activeOpenFindings.length === 0 ? "success" : ""}`}><div className="banner-symbol">{activeOpenFindings.length === 0 ? "✓" : "!"}</div><div><strong>{activeOpenFindings.length === 0 ? "All findings resolved" : `${activeOpenFindings.length} ${activeOpenFindings.length === 1 ? "issue needs" : "issues need"} attention before approval`}</strong><p className="micro-helper">{activeOpenFindings.length === 0 ? "Run a fresh scan to confirm revision, then send for approval." : "Apply corrections, then run a fresh scan to confirm."}</p></div><span className="banner-risk">{activeOpenFindings.length === 0 ? "Ready to scan" : `${activeHighCount} high · ${activeMediumCount} medium`}</span></div>
+                    <div className="finding-list detailed-list">{activeFindings.map((finding) => (
                       <article className={`finding-card ${finding.resolved ? "resolved" : ""}`} key={finding.id}>
                         <div className="finding-card-top">
                           <span className="finding-label"><span className={`status-dot ${finding.severity}`} /><strong>{finding.category}</strong></span>
@@ -2099,22 +2461,22 @@ export default function Home() {
                         </details>
                       </article>
                     ))}</div>
-                    <div className={`scan-panel ${auditState === "scanning" ? "scanning" : auditState === "ready" ? "complete" : ""}`}><div className="scan-copy"><span className="scan-icon">{auditState === "scanning" ? "↻" : auditState === "ready" ? "✓" : "⌁"}</span><div><strong>{auditState === "scanning" ? "Checking the revision" : auditState === "ready" ? "Revision ready for approval" : "Re-scan after corrections"}</strong><p className="micro-helper">{auditState === "scanning" ? "Scanning against current VoltEdge registry." : auditState === "ready" ? "Zero open findings returned." : "Verify corrections before final approval."}</p></div></div>{auditState === "scanning" ? <span className="scan-loading">Working…</span> : auditState === "ready" ? <span className="scan-loading complete-copy">Verified</span> : permissions.canApplySuggestion ? <button className="secondary-button" type="button" disabled={!canRescan} onClick={runRescan}>Run re-scan</button> : null}</div>
+                    <div className={`scan-panel ${activeAuditState === "scanning" ? "scanning" : activeAuditState === "ready" ? "complete" : ""}`}><div className="scan-copy"><span className="scan-icon">{activeAuditState === "scanning" ? "↻" : activeAuditState === "ready" ? "✓" : "⌁"}</span><div><strong>{activeAuditState === "scanning" ? "Checking the revision" : activeAuditState === "ready" ? "Revision ready for approval" : "Re-scan after corrections"}</strong><p className="micro-helper">{activeAuditState === "scanning" ? "Scanning against current VoltEdge registry." : activeAuditState === "ready" ? "Zero open findings returned." : "Verify corrections before final approval."}</p></div></div>{activeAuditState === "scanning" ? <span className="scan-loading">Working…</span> : activeAuditState === "ready" ? <span className="scan-loading complete-copy">Verified</span> : permissions.canApplySuggestion ? <button className="secondary-button" type="button" disabled={!canRescan} onClick={runRescan}>Run re-scan</button> : null}</div>
                   </> : <div className="preview-placeholder"><strong>No detail loaded for this seeded preview.</strong><p>The collaboration demo is attached to the VoltEdge NovaBook S1 launch email, where each flagged span has a source, comments, and a revision trail.</p></div>}</div> : null}
 
                   {detailTab === "content" ? <div id="review-panel-content" className="detail-tab-panel" role="tabpanel" aria-labelledby="review-tab-content" tabIndex={0}>{selectedIsInteractive ? <>
-                    <ReviewContentPreview content={submittedContent} contentVersion={contentVersion} findings={findings} selectedSpanId={selectedSpanId} onSelectSpan={setSelectedSpanId} />
-                    <SpanComments findings={findings} selectedId={selectedSpanId} onSelect={setSelectedSpanId} comments={comments} canComment={permissions.canComment} roleLabels={roleLabels} draft={commentDraft} onDraftChange={setCommentDraft} onAddComment={addSpanComment} />
+                    <ReviewContentPreview content={activeContent} contentVersion={activeContentVersion} findings={activeFindings} selectedSpanId={selectedSpanId} onSelectSpan={setSelectedSpanId} />
+                    <SpanComments findings={activeFindings} selectedId={selectedSpanId} onSelect={setSelectedSpanId} comments={comments} canComment={permissions.canComment} roleLabels={roleLabels} draft={commentDraft} onDraftChange={setCommentDraft} onAddComment={addSpanComment} />
                     <p className="tab-helper">Suggested edits create a new version rather than replacing the original submission. Proofline does not publish content automatically.</p>
                   </> : <div className="preview-placeholder"><strong>Submitted content preview</strong><p>Open the VoltEdge NovaBook S1 launch email to inspect span-level comments.</p></div>}</div> : null}
 
                   {detailTab === "history" ? <div id="review-panel-history" className="detail-tab-panel" role="tabpanel" aria-labelledby="review-tab-history" tabIndex={0}>{selectedIsInteractive ? <>
-                    <RevisionHistory revisions={revisions} selectedId={activeRevisionId} onSelect={setActiveRevisionId} />
-                    <div className="history-list"><div className="history-section-heading"><div><p className="eyebrow">Decision activity</p><h3>Who changed what</h3></div><button className="text-link" type="button" onClick={() => navigate("audit-log")}>Open audit log <span>↗</span></button></div>{activity.map((item) => <div className="history-item" key={`${item.title}-${item.time}`}><span className={`history-icon ${item.tone ?? ""}`}>{item.icon}</span><div className="history-copy"><strong>{item.title}</strong><p>{item.detail}</p></div><span className="history-time">{item.time}</span></div>)}</div>
+                    <RevisionHistory revisions={activeRevisions} selectedId={activeRevisionId} onSelect={setActiveRevisionId} />
+                    <div className="history-list"><div className="history-section-heading"><div><p className="eyebrow">Decision activity</p><h3>Who changed what</h3></div><button className="text-link" type="button" onClick={() => navigate("audit-log")}>Open audit log <span>↗</span></button></div>{activeActivity.map((item) => <div className="history-item" key={`${item.title}-${item.time}`}><span className={`history-icon ${item.tone ?? ""}`}>{item.icon}</span><div className="history-copy"><strong>{item.title}</strong><p>{item.detail}</p></div><span className="history-time">{item.time}</span></div>)}</div>
                   </> : <div className="preview-placeholder"><strong>No revision history loaded for this seeded preview.</strong><p>The active VoltEdge launch email retains every revision and decision in its audit trail.</p></div>}</div> : null}
 
-                  {selectedIsInteractive ? <section className="review-decision-panel" aria-labelledby="decision-heading"><div className="decision-panel-heading"><div><p className="eyebrow">Decision record</p><h3 id="decision-heading">Leave the next action easy to audit.</h3></div><span className="decision-role"><span className="status-dot blue" /> {roleLabels[currentRole]}</span></div><label className="decision-note-label" htmlFor="decision-note">Decision note{permissions.canRequestChanges ? <span>Required for a change request</span> : null}<textarea id="decision-note" value={decisionNote} onChange={(event) => setDecisionNote(event.target.value)} placeholder="Add context for the creator or future reviewer…" rows={3} /></label><div className="decision-actions">{permissions.canRequestChanges && auditState !== "approved" ? <button className="ghost-button wide-button" type="button" onClick={requestChanges}>Request changes</button> : null}{permissions.canApprove && canApprove ? <button className="primary-button wide-button" type="button" onClick={approveReview}>Approve revision</button> : null}{permissions.canSubmit && canSubmit ? <button className="primary-button wide-button" type="button" onClick={submitForApproval}>Send for approval</button> : null}{!permissions.canApprove && !permissions.canRequestChanges && !permissions.canSubmit ? <span className="permission-note">This role can inspect evidence and comments. Approval actions are hidden.</span> : null}</div></section> : null}
-                  {selectedIsInteractive && auditState === "approved" ? (
+                  {selectedIsInteractive ? <section className="review-decision-panel" aria-labelledby="decision-heading"><div className="decision-panel-heading"><div><p className="eyebrow">Decision record</p><h3 id="decision-heading">Leave the next action easy to audit.</h3></div><span className="decision-role"><span className="status-dot blue" /> {roleLabels[currentRole]}</span></div><label className="decision-note-label" htmlFor="decision-note">Decision note{permissions.canRequestChanges ? <span>Required for a change request</span> : null}<textarea id="decision-note" value={decisionNote} onChange={(event) => setDecisionNote(event.target.value)} placeholder="Add context for the creator or future reviewer…" rows={3} /></label><div className="decision-actions">{permissions.canRequestChanges && activeAuditState !== "approved" ? <button className="ghost-button wide-button" type="button" onClick={requestChanges}>Request changes</button> : null}{permissions.canApprove && canApprove ? <button className="primary-button wide-button" type="button" onClick={approveReview}>Approve revision</button> : null}{permissions.canSubmit && canSubmit ? <button className="primary-button wide-button" type="button" onClick={submitForApproval}>Send for approval</button> : null}{!permissions.canApprove && !permissions.canRequestChanges && !permissions.canSubmit ? <span className="permission-note">This role can inspect evidence and comments. Approval actions are hidden.</span> : null}</div></section> : null}
+                  {selectedIsInteractive && activeAuditState === "approved" ? (
                     <section className="publish-dispatch-banner" aria-label="Gated publication dispatch">
                       <div className="dispatch-badge">
                         <span className="dispatch-check" aria-hidden="true">✓</span>

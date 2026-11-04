@@ -208,17 +208,25 @@ export function createProoflineApiClient(baseUrl: string, options: RequestOption
     if (options.token) headers.set("Authorization", `Bearer ${options.token}`);
     for (const [key, value] of Object.entries(options.headers ?? {})) headers.set(key, value);
 
-    const response = await fetcher(`${baseUrl.replace(/\/$/, "")}${path}`, {
-      ...init,
-      headers,
-      credentials: options.credentials ?? init?.credentials,
-    });
-    const body = (await response.json().catch(() => null)) as { detail?: string | { message?: string } } | null;
-    if (!response.ok) {
-      const detail = typeof body?.detail === "string" ? body.detail : body?.detail?.message;
-      throw new ProoflineApiError(response.status, detail ?? "Proofline API request failed");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    try {
+      const response = await fetcher(`${baseUrl.replace(/\/$/, "")}${path}`, {
+        ...init,
+        headers,
+        credentials: options.credentials ?? init?.credentials,
+        signal: init?.signal ?? controller.signal,
+      });
+      const body = (await response.json().catch(() => null)) as { detail?: string | { message?: string } } | null;
+      if (!response.ok) {
+        const detail = typeof body?.detail === "string" ? body.detail : body?.detail?.message;
+        throw new ProoflineApiError(response.status, detail ?? "Proofline API request failed");
+      }
+      return body as T;
+    } finally {
+      clearTimeout(timeoutId);
     }
-    return body as T;
   }
 
   return {
