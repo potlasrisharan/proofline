@@ -116,11 +116,33 @@ function getStoredRole(fallback: ProoflineRole): ProoflineRole {
 function subscribeStorage(callback: () => void) {
   if (typeof window === "undefined") return () => {};
   window.addEventListener("proofline:role-change", callback);
+  window.addEventListener("proofline:workspace-change", callback);
   window.addEventListener("storage", callback);
   return () => {
     window.removeEventListener("proofline:role-change", callback);
+    window.removeEventListener("proofline:workspace-change", callback);
     window.removeEventListener("storage", callback);
   };
+}
+
+const emptySubscribe = () => () => {};
+function useMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+}
+
+function getStoredWorkspace(): string {
+  if (typeof window === "undefined") return "novacore";
+  try {
+    const saved = window.localStorage.getItem("proofline:active-workspace-id");
+    if (saved && WORKSPACES.some((w) => w.id === saved)) return saved;
+  } catch {
+    /* storage disabled */
+  }
+  return "novacore";
 }
 
 export function AppSidebar({
@@ -132,26 +154,25 @@ export function AppSidebar({
   onSwitchRole,
 }: AppSidebarProps) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const switcherRef = useRef<HTMLDivElement>(null);
-  const [activeWorkspaceId, setActiveWorkspaceId] = useState("novacore");
+  const activeWorkspaceId = useSyncExternalStore(
+    subscribeStorage,
+    getStoredWorkspace,
+    () => "novacore"
+  );
   const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
   const [workspaceNotice, setWorkspaceNotice] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handle = requestAnimationFrame(() => {
-      setMounted(true);
-      try {
-        const saved = window.localStorage.getItem("proofline:active-workspace-id");
-        if (saved && WORKSPACES.some((w) => w.id === saved)) {
-          setActiveWorkspaceId(saved);
-        }
-      } catch {
-        /* storage disabled */
-      }
-    });
-    return () => cancelAnimationFrame(handle);
-  }, []);
+  const storedRole = useSyncExternalStore(
+    subscribeStorage,
+    () => getStoredRole(roleKey ?? "legal_reviewer"),
+    () => roleKey ?? "legal_reviewer"
+  );
+  const findingsBadge = useSyncExternalStore(
+    subscribeStorage,
+    getStoredFindingsBadge,
+    () => null
+  );
 
   useEffect(() => {
     if (!isWorkspaceOpen) return;
@@ -165,10 +186,13 @@ export function AppSidebar({
         setIsWorkspaceOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
+    const timer = setTimeout(() => {
+      document.addEventListener("click", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }, 0);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      clearTimeout(timer);
+      document.removeEventListener("click", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isWorkspaceOpen]);
@@ -176,7 +200,6 @@ export function AppSidebar({
   const activeWorkspace = WORKSPACES.find((w) => w.id === activeWorkspaceId) ?? WORKSPACES[0];
 
   const handleSelectWorkspace = (w: WorkspaceOption) => {
-    setActiveWorkspaceId(w.id);
     setIsWorkspaceOpen(false);
     try {
       window.localStorage.setItem("proofline:active-workspace-id", w.id);
@@ -185,6 +208,8 @@ export function AppSidebar({
     } catch {
       /* storage disabled */
     }
+    setWorkspaceNotice(`Switched to: ${w.name}`);
+    setTimeout(() => setWorkspaceNotice(null), 3000);
   };
 
   const handleAddWorkspace = () => {
@@ -193,18 +218,7 @@ export function AppSidebar({
     setTimeout(() => setWorkspaceNotice(null), 4000);
   };
 
-  const storedRole = useSyncExternalStore(
-    subscribeStorage,
-    () => getStoredRole(roleKey ?? "legal_reviewer"),
-    () => roleKey ?? "legal_reviewer"
-  );
-  const findingsBadge = useSyncExternalStore(
-    subscribeStorage,
-    getStoredFindingsBadge,
-    () => null
-  );
-
-  const effectiveRoleKey = roleKey ?? (mounted ? storedRole : "legal_reviewer");
+  const effectiveRoleKey: ProoflineRole = roleKey ?? (mounted ? storedRole : "legal_reviewer");
   const persona = demoPersonas[effectiveRoleKey] ?? demoPersonas.legal_reviewer;
 
   const handleRoleSwitch = () => {
@@ -226,14 +240,14 @@ export function AppSidebar({
   }> = [
     { key: "portal", icon: "⊞", label: "Role Dashboards", href: "/dashboards", isHomeView: "portal", title: "Role Dashboards · 5 dedicated team workspaces" },
     { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Review drafts and approve revisions" },
-    { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: findingsBadge, title: "Findings · Flagged claims with 1-click fixes" },
-    { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry", title: "Truth registry · Official product specs and brand rules" },
-    { key: "multimodal", icon: "👁", label: "Video & Visual scan", href: "/multimodal", title: "Video & Visual scanner · Check video reels, images, and readable disclaimers" },
-    { key: "drift", icon: "📡", label: "Publish & Monitor", href: "/drift", title: "Publish & Live Monitor · Publish posts and track live changes" },
-    { key: "sync", icon: "🔄", label: "Live Doc Sync", href: "/sync", title: "Live Doc Sync · Auto-import specs from Notion, Google Docs & Shopify" },
-    { key: "impact", icon: "!", label: "Spec Change Radar", href: "/impact", title: "Spec Change Radar · See which drafts need updates when specs change" },
-    { key: "insights", icon: "⌁", label: "Team Insights", href: "/insights", isHomeView: "insights", title: "Team Insights · Common issues and suggested rule updates" },
-    { key: "audit-log", icon: "≋", label: "Audit log", href: "/?view=audit-log", isHomeView: "audit-log", title: "Audit log · Complete record of edits and approvals" },
+    { key: "findings", icon: "◌", label: "Flagged issues", href: "/findings", badge: mounted ? findingsBadge : null, title: "Flagged issues · Claims that need review or 1-click fixes" },
+    { key: "registry", icon: "▦", label: "Approved specs", href: "/?view=registry", isHomeView: "registry", title: "Approved specs · Official product specs and brand rules" },
+    { key: "multimodal", icon: "👁", label: "Visual & video scan", href: "/multimodal", title: "Visual & video scanner · Check video reels, images, and disclaimers" },
+    { key: "drift", icon: "📡", label: "Publish & monitor", href: "/drift", title: "Publish & monitor · Safe publishing and live post tracking" },
+    { key: "sync", icon: "🔄", label: "Live doc sync", href: "/sync", title: "Live doc sync · Auto-import specs from Notion, Google Docs & Shopify" },
+    { key: "impact", icon: "!", label: "Spec change radar", href: "/impact", title: "Spec change radar · Alerts you when a spec update affects your drafts" },
+    { key: "insights", icon: "⌁", label: "Team insights", href: "/insights", isHomeView: "insights", title: "Team insights · Common issues and suggested rule updates" },
+    { key: "audit-log", icon: "≋", label: "Audit trail", href: "/?view=audit-log", isHomeView: "audit-log", title: "Audit trail · Complete record of edits, approvals, and decisions" },
   ];
 
   return (
@@ -257,8 +271,12 @@ export function AppSidebar({
         <button
           type="button"
           className={`workspace-switcher ${isWorkspaceOpen ? "open" : ""}`}
-          onClick={() => setIsWorkspaceOpen((prev) => !prev)}
-          title={`Active enterprise workspace: ${activeWorkspace.name}. Click to switch brand workspace.`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsWorkspaceOpen((prev) => !prev);
+          }}
+          title={`Active brand workspace: ${activeWorkspace.name}. Click to switch workspace.`}
           aria-haspopup="listbox"
           aria-expanded={isWorkspaceOpen}
           aria-label="Switch brand workspace"

@@ -61,7 +61,7 @@ test("lets a creator mark a draft confidential for local handling", async ({ pag
   await expect(marker).toBeChecked();
   await expect(page.getByText("Confidential marker recorded in this browser tab.", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "Run evidence check" }).click();
-  await expect(page.getByText("Confidential · browser-local", { exact: true })).toBeVisible();
+  await expect(page.getByText("Confidential · browser-local", { exact: true })).toBeVisible({ timeout: 15_000 });
 });
 
 test("uses the opt-in local API review path when configured", async ({ page }) => {

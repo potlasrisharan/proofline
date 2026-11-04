@@ -459,7 +459,14 @@ function severityLabel(severity: Severity) {
 
 export default function Home() {
   const router = useRouter();
-  const [activeView, setActiveView] = useState<View>("overview");
+  const [activeView, setActiveView] = useState<View>(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const requestedView = params.get("view");
+      if (requestedView) return requestedView as View;
+    }
+    return "overview";
+  });
 
   useEffect(() => {
     const handleUrlState = () => {
@@ -475,6 +482,8 @@ export default function Home() {
         setActiveView(requestedView);
       } else if (!requestedView && window.location.pathname === "/") {
         setActiveView("overview");
+      } else if (requestedView) {
+        setActiveView(requestedView as View);
       }
 
       const roleParam = params.get("role");
@@ -946,11 +955,11 @@ export default function Home() {
 
   const pageTitles: Record<View, string> = {
     overview: "Overview",
-    reviews: "Review queue",
-    registry: "Truth registry",
-    insights: "Insights",
-    "audit-log": "Audit log",
-    portal: "Enterprise Role Portal",
+    reviews: "Review Queue",
+    registry: "Approved Specs",
+    insights: "Team Insights",
+    "audit-log": "Audit Trail",
+    portal: "Role Dashboards",
   };
 
   const openReviewCount = reviewItems.filter((item) => (item.id === "novabook-launch" ? queueStatusForAudit[auditState] : item.status) !== "approved").length;
@@ -2183,6 +2192,32 @@ export default function Home() {
               onRoleChange={(newRole) => changeRole(newRole)}
               isEmbedded={true}
             />
+          ) : null}
+
+          {!(["reviews", "registry", "insights", "audit-log", "portal"] as string[]).includes(activeView) ? (
+            <section className="view-panel" aria-labelledby="view-fallback-heading">
+              <div className="page-heading">
+                <div>
+                  <p className="eyebrow">Navigation</p>
+                  <h1 id="view-fallback-heading">View Not Located</h1>
+                  <p className="lede">The requested view parameter &ldquo;{activeView}&rdquo; is not active in this workspace.</p>
+                </div>
+              </div>
+              <div className="empty-panel" style={{ textAlign: "center", padding: "48px 24px", background: "#FFFFFF", border: "1px solid var(--ind-border, #E4E4E7)", borderRadius: 6 }}>
+                <span style={{ fontSize: 32, display: "block", marginBottom: 12 }}>🧭</span>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#18181B", marginBottom: 8 }}>Return to Review Cockpit</h3>
+                <p style={{ fontSize: 13, color: "#71717A", maxWidth: 460, margin: "0 auto 20px" }}>
+                  Select an authorized review queue or return to the main dashboard.
+                </p>
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => navigate("reviews")}
+                >
+                  Return to Content Reviews →
+                </button>
+              </div>
+            </section>
           ) : null}
         </div>
       </section>

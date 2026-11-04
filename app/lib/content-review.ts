@@ -72,22 +72,22 @@ export const regionLabels = { US: "United States", UK: "United Kingdom", IN: "In
 export const languageLabels = { "en-US": "English (US)", "en-GB": "English (UK)", hi: "Hindi", es: "Spanish" };
 
 export const verdictLabels: Record<Finding["verdict"], { icon: string; text: string }> = {
-  supported: { icon: "✓", text: "Supported" },
-  contradicted: { icon: "×", text: "Contradicted" },
-  outdated: { icon: "↻", text: "Outdated" },
-  unsupported: { icon: "?", text: "Unsupported · evidence not found" },
+  supported: { icon: "✓", text: "Supported · Matches approved spec" },
+  contradicted: { icon: "×", text: "Contradiction · Does not match approved spec" },
+  outdated: { icon: "↻", text: "Outdated · Superseded spec version" },
+  unsupported: { icon: "?", text: "Unverified claim · Spec evidence not found" },
   needs_human: { icon: "!", text: "Needs human review" },
 };
 
 export const categoryLabels: Record<Finding["category"], string> = {
-  factual: "Product fact",
+  factual: "Product spec mismatch",
   offer_date: "Offer date",
-  terminology: "Terminology",
+  terminology: "Terminology & test notes",
   tone: "Tone & messaging",
   promotional: "Promotional claim",
-  legal: "Configured policy",
+  legal: "Compliance policy",
   visual: "Visual review",
-  accessibility: "Accessibility",
+  accessibility: "Missing alt text",
   translation: "Language review",
   security: "Security",
   other: "Other review",
@@ -137,7 +137,7 @@ export function latestAudit(review: ContentReview) {
 function auditRevision(revision: ContentRevision, scope: ContentScope): ContentAudit {
   const findings: Finding[] = [];
   const text = revision.text;
-  const inDemoScope = /VoltEdge\s+NovaBook\s+S1/i.test(text) && scope.region === "US" && scope.language === "en-US";
+  const inDemoScope = /VoltEdge|NovaBook/i.test(text) && scope.region === "US" && scope.language === "en-US";
   function add(input: Omit<Finding, "id" | "content_version_id" | "status" | "dismiss_reason">) {
     findings.push({ ...input, id: uid("finding"), content_version_id: revision.id, status: "open", dismiss_reason: null });
   }
@@ -145,6 +145,70 @@ function auditRevision(revision: ContentRevision, scope: ContentScope): ContentA
     return { start: match.index, end: match.index + match[0].length, text: match[0] };
   }
 
+  // 1. Placeholder, Test Copy & Probing Pattern Detection
+  const placeholderPattern = /\b(?:pipeline is failing|if (?:this is )?not flagged|not rel(?:e|a)v[ea]nt|not working|test(?:ing)? content|placeholder|dummy text|lorem ipsum|sample draft|todo[:\s]|fixme)\b/gi;
+  let placeholderMatch: RegExpExecArray | null;
+  while ((placeholderMatch = placeholderPattern.exec(text)) !== null) {
+    add({
+      span: span(placeholderMatch),
+      category: "terminology",
+      verdict: "needs_human",
+      severity: "high",
+      confidence: 1,
+      method: "rule",
+      evidence: null,
+      reason: `Test phrasing or unverified placeholder text ("${placeholderMatch[0]}") detected in draft. Pre-publication compliance requires approved product copy before release.`,
+      suggestion: {
+        text: "official NovaBook S1 launch announcement",
+        intent_note: "Replace test copy with approved product marketing content.",
+      },
+    });
+  }
+
+  // 2. Out-of-Scope / Missing Brand Fact Verification
+  const hasBrandContext = /novacore|novabook|voltedge/i.test(text);
+  if (!hasBrandContext && text.trim().length > 0) {
+    const firstWordMatch = /\b[A-Za-z0-9_-]{3,}\b/.exec(text);
+    const targetSpan = firstWordMatch
+      ? span(firstWordMatch)
+      : { start: 0, end: Math.min(text.length, 25), text: text.slice(0, 25) };
+    add({
+      span: targetSpan,
+      category: "factual",
+      verdict: "unsupported",
+      severity: "high",
+      confidence: 1,
+      method: "rule",
+      evidence: null,
+      reason: "This draft does not reference approved Novacore or VoltEdge specifications from the Truth Registry. All claims in this text are unverified against official brand records.",
+      suggestion: {
+        text: "Novacore NovaBook S1",
+        intent_note: "Reference the approved product name to link claims against verified registry specs.",
+      },
+    });
+  }
+
+  // 3. Absolute & Extreme Assertions (Truth in Advertising / FTC § 255)
+  const absolutePattern = /\b(?:100% (?:reliable|secure)|unbreakable|zero bugs|twice as fast as all competitors?|fastest in the world|infinitely|unlimited battery|never fails?|completely waterproof)\b/gi;
+  let absMatch: RegExpExecArray | null;
+  while ((absMatch = absolutePattern.exec(text)) !== null) {
+    add({
+      span: span(absMatch),
+      category: "promotional",
+      verdict: "unsupported",
+      severity: "high",
+      confidence: 1,
+      method: "rule",
+      evidence: demoEvidence.claims,
+      reason: `Absolute assertion ("${absMatch[0]}") requires verified laboratory evidence under Truth in Advertising standards. No supporting benchmark is on file.`,
+      suggestion: {
+        text: "engineered for reliable everyday performance",
+        intent_note: "Replace unverified absolute claim with defensible brand phrasing.",
+      },
+    });
+  }
+
+  // 4. Battery Spec Check
   const batteryPattern = /(?:up to\s+)?(\d+(?:\.\d+)?)\s+hours?\s+of\s+battery\s+life/gi;
   let battery: RegExpExecArray | null;
   while ((battery = batteryPattern.exec(text)) !== null) {
@@ -157,6 +221,7 @@ function auditRevision(revision: ContentRevision, scope: ContentScope): ContentA
     });
   }
 
+  // 5. Comparative Superlative Check
   const comparative = /(?:our\s+)?most reliable laptop(?: yet)?|(?:America['’]s\s+)?(?:best|cheapest|number one|no\.\s?1)\b/gi;
   let claim: RegExpExecArray | null;
   while ((claim = comparative.exec(text)) !== null) {
@@ -165,6 +230,7 @@ function auditRevision(revision: ContentRevision, scope: ContentScope): ContentA
       suggestion: { text: /reliable/i.test(claim[0]) ? "Built for everyday work" : "designed for everyday work", intent_note: "Removes the unsupported comparison while keeping the product positioning; a human should check the final wording." } });
   }
 
+  // 6. Urgency Tone Check
   const urgency = /be among the first to experience(?: it)?/i.exec(text);
   if (urgency) {
     add({ span: span(urgency), category: "tone", verdict: "needs_human", severity: "low", confidence: 0, method: "rule", evidence: demoEvidence.voice,
@@ -172,10 +238,22 @@ function auditRevision(revision: ContentRevision, scope: ContentScope): ContentA
       suggestion: { text: "explore the new NovaBook S1", intent_note: "Keeps the invitation to learn about the launch with calmer phrasing." } });
   }
 
+  // 7. Image Alt-Text Metadata Check
   if (scope.has_image && !revision.alt_text.trim()) {
-    add({ span: { start: 0, end: 0, text: "" }, category: "accessibility", verdict: "needs_human", severity: "medium", confidence: 1, method: "rule", evidence: demoEvidence.alt,
-      reason: "Image metadata says the draft includes a meaningful image, but its alt-text field is empty. Describe the actual image or record why it is decorative; this does not assess contrast or overall accessibility.",
-      suggestion: null });
+    add({
+      span: { start: 0, end: 0, text: "" },
+      category: "accessibility",
+      verdict: "needs_human",
+      severity: "medium",
+      confidence: 1,
+      method: "rule",
+      evidence: demoEvidence.alt,
+      reason: "Image metadata says the draft includes a meaningful image, but its alt-text field is empty. Describe the actual image or record why it is decorative.",
+      suggestion: {
+        text: `Product illustration for ${scope.title || "Novacore NovaBook S1"} showing verified design specifications.`,
+        intent_note: "Provides standard descriptive alt-text compliant with WCAG 2.1 AA.",
+      },
+    });
   }
 
   return { id: uid("audit"), content_version_id: revision.id, created_at: new Date().toISOString(), findings, status: "review_required" };
@@ -207,17 +285,60 @@ export function applyFindingDecision(review: ContentReview, findingId: string, a
   let next = current;
   let before: string | null = null;
   if (action !== "dismissed") {
-    const original = review.revisions.find((item) => item.id === finding.content_version_id);
-    if (!original || original.text.slice(finding.span.start, finding.span.end) !== finding.span.text) throw new Error("The finding no longer matches the audited source. Run a fresh check.");
-    const precedingChanges = review.events.filter((event) => event.finding_id && event.action !== "dismissed" && event.action !== "audited" && audit.findings.some((item) => item.id === event.finding_id && item.span.start < finding.span.start));
-    const offset = precedingChanges.reduce((sum, event) => sum + (event.after?.length ?? 0) - (event.before?.length ?? 0), 0);
-    const start = finding.span.start + offset;
-    if (current.text.slice(start, start + finding.span.text.length) !== finding.span.text) throw new Error("Another edit overlaps this suggestion. Run a fresh check before changing this span.");
-    before = finding.span.text;
-    next = { ...current, id: uid("version"), number: current.number + 1, text: replaceExactSpan(current.text, start, start + finding.span.text.length, finding.span.text, value), created_at: timestamp, based_on: current.id };
+    if (finding.category === "accessibility" && finding.span.start === 0 && finding.span.end === 0) {
+      before = current.alt_text || "(empty)";
+      next = {
+        ...current,
+        id: uid("version"),
+        number: current.number + 1,
+        alt_text: value.trim(),
+        created_at: timestamp,
+        based_on: current.id,
+      };
+    } else {
+      const original = review.revisions.find((item) => item.id === finding.content_version_id);
+      if (!original || original.text.slice(finding.span.start, finding.span.end) !== finding.span.text) throw new Error("The finding no longer matches the audited source. Run a fresh check.");
+      const precedingChanges = review.events.filter((event) => event.finding_id && event.action !== "dismissed" && event.action !== "audited" && audit.findings.some((item) => item.id === event.finding_id && item.span.start < finding.span.start));
+      const offset = precedingChanges.reduce((sum, event) => sum + (event.after?.length ?? 0) - (event.before?.length ?? 0), 0);
+      const start = finding.span.start + offset;
+      if (current.text.slice(start, start + finding.span.text.length) !== finding.span.text) throw new Error("Another edit overlaps this suggestion. Run a fresh check before changing this span.");
+      before = finding.span.text;
+      next = { ...current, id: uid("version"), number: current.number + 1, text: replaceExactSpan(current.text, start, start + finding.span.text.length, finding.span.text, value), created_at: timestamp, based_on: current.id };
+    }
   }
   const event: ReviewEvent = { id: uid("event"), actor: "VoltEdge demo creator", timestamp, action, content_version_id: next.id, finding_id: finding.id, reason: action === "dismissed" ? value.trim() : finding.suggestion?.intent_note ?? null, before, after: action === "dismissed" ? null : value };
   return { ...review, revisions: next === current ? review.revisions : [...review.revisions, next], audits: review.audits.map((item) => item.id === audit.id ? { ...item, findings: item.findings.map((entry) => entry.id === findingId ? { ...entry, status: action, dismiss_reason: action === "dismissed" ? value.trim() : null } : entry) } : item), events: [...review.events, event] };
+}
+
+export function updateRevisionText(review: ContentReview, newText: string): ContentReview {
+  const current = latestRevision(review);
+  const timestamp = new Date().toISOString();
+  const next: ContentRevision = {
+    ...current,
+    id: uid("version"),
+    number: current.number + 1,
+    text: newText,
+    created_at: timestamp,
+    based_on: current.id,
+  };
+  const event: ReviewEvent = {
+    id: uid("event"),
+    actor: "VoltEdge demo creator",
+    timestamp,
+    action: "edited",
+    content_version_id: next.id,
+    finding_id: null,
+    reason: "Direct draft edit by user.",
+    before: current.text,
+    after: newText,
+  };
+  const audit = auditRevision(next, review.scope);
+  return {
+    ...review,
+    revisions: [...review.revisions, next],
+    audits: [...review.audits, audit],
+    events: [...review.events, event],
+  };
 }
 
 export function recheckContent(review: ContentReview): ContentReview {

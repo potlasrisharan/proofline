@@ -15,7 +15,7 @@ import {
 import {
   applyFindingDecision, categoryLabels, channelLabels, createContentReview,
   contentReviewFromApi, defaultContentScope, languageLabels, latestAudit, latestRevision,
-  methodLabels, recheckContent, regionLabels, riskBreakdown, sampleNovacoreText, verdictLabels,
+  methodLabels, recheckContent, regionLabels, riskBreakdown, sampleNovacoreText, updateRevisionText, verdictLabels,
   type ContentReview, type ContentScope,
 } from "../lib/content-review";
 
@@ -154,6 +154,8 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
   const [actionMode, setActionMode] = useState<"edit" | "dismiss" | null>(null);
   const [actionText, setActionText] = useState("");
   const [contentTab, setContentTab] = useState<"audited" | "current" | "original">("audited");
+  const [isEditingCurrent, setIsEditingCurrent] = useState(false);
+  const [editText, setEditText] = useState("");
   const [message, setMessage] = useState("");
   const [apiBusy, setApiBusy] = useState(false);
   const [isCertOpen, setIsCertOpen] = useState(false);
@@ -368,21 +370,28 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
           replacement_text: action === "edited" ? value : undefined,
         });
         let nextResponse: ContentAuditResponse = response;
-        if (action === "edited") {
+        if (action === "edited" || action === "accepted") {
           const audited = review.revisions.find((item) => item.id === finding.content_version_id);
-          if (!audited || audited.text.slice(finding.span.start, finding.span.end) !== finding.span.text) {
-            throw new Error("The finding no longer matches the audited source. Run a fresh check.");
+          const isAltText = finding.category === "accessibility" && finding.span.start === 0 && finding.span.end === 0;
+          let revisedText = audited?.text ?? "";
+          const nextScope = { ...review.scope };
+          if (isAltText) {
+            nextScope.alt_text = value;
+          } else if (audited) {
+            if (audited.text.slice(finding.span.start, finding.span.end) !== finding.span.text) {
+              throw new Error("The finding no longer matches the audited source. Run a fresh check.");
+            }
+            revisedText = `${audited.text.slice(0, finding.span.start)}${value}${audited.text.slice(finding.span.end)}`;
           }
-          const revisedText = `${audited.text.slice(0, finding.span.start)}${value}${audited.text.slice(finding.span.end)}`;
           nextResponse = await localApi.client.recheckContent(review.api_content_id, {
             text: revisedText,
-            confidential: review.scope.confidential,
-            exposure: exposureForChannel(review.scope.channel),
+            confidential: nextScope.confidential,
+            exposure: exposureForChannel(nextScope.channel),
             product: "Novacore NovaBook S1",
-            market: review.scope.region,
-            channel: review.scope.channel,
-            language: review.scope.language,
-            metadata: apiMetadata(review.scope),
+            market: nextScope.region,
+            channel: nextScope.channel,
+            language: nextScope.language,
+            metadata: apiMetadata(nextScope),
           });
         }
         saveReview(contentReviewFromApi(review.scope, nextResponse, review));
@@ -493,7 +502,7 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
               </button>
             </div>
             <span className="pl-demo-label" suppressHydrationWarning>
-              {review?.api_content_id ? "Active API" : executionMode === "browser" ? "IMPLEMENTED · local engine" : "IMPLEMENTED · local API opt-in"}
+              {review?.api_content_id ? "IMPLEMENTED · local API" : executionMode === "browser" ? "IMPLEMENTED · local engine" : "IMPLEMENTED · local API opt-in"}
             </span>
           </div>
         </header>
@@ -579,16 +588,123 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                <section className="pl-review-header"><div><h2>{review.scope.title}</h2><p>{channelLabels[review.scope.channel]} · {regionLabels[review.scope.region]} · {languageLabels[review.scope.language]} · {review.scope.scheduled_date || "No scheduled date"}</p></div><div className="pl-review-badges"><span className="pl-review-required">! Human review required</span>{review.scope.confidential ? <span className="pl-confidential-badge">Confidential · browser-local</span> : null}</div></section>
               <div className="pl-review-layout">
                 <section className="pl-content-column" aria-label="Content and risk">
-                  <section className="content-preview-card enhanced-content-preview"><div className="content-preview-header"><h2>Content spans</h2><span className="content-version">Audited v{auditedRevision.number}</span></div><div className="pl-preview-tabs" aria-label="Content versions">{(["audited", "current", "original"] as const).map((tab) => <button className={contentTab === tab ? "active" : ""} type="button" key={tab} aria-pressed={contentTab === tab} onClick={() => setContentTab(tab)}>{tab === "audited" ? "Audited text" : tab === "current" ? `Current v${revision.number}` : "Original"}</button>)}</div>{contentTab === "audited" ? <Preview text={auditedRevision.text} findings={audit.findings} selected={selectedFindingId} onSelect={selectFinding} /> : <div className="pl-content-copy">{contentTab === "current" ? revision.text : originalRevision?.text}</div>}<p className="pl-helper">Select a numbered span to inspect its finding. Highlight numbers, verdict text, and severity labels also identify issues without relying on colour.</p>{review.scope.has_image ? <div className="alt-text-review"><span aria-hidden="true" className={`verdict-icon verdict-${revision.alt_text.trim() ? "supported" : "needs_human"}`}>{revision.alt_text.trim() ? "✓" : "!"}</span><div><strong>{revision.alt_text.trim() ? "Alt text provided · quality not assessed" : "Missing alt text · needs human review"}</strong><p>{revision.alt_text.trim() || "Add alt text in a revised submission or record why the image is decorative."}</p></div></div> : null}<div className="content-footer"><span>{review.scope.original_filename || "Pasted text"}</span><span>{review.revisions.length} retained version(s)</span></div></section>
+                  <section className="content-preview-card enhanced-content-preview">
+                    <div className="content-preview-header">
+                      <h2>Content spans</h2>
+                      <span className="content-version">Audited v{auditedRevision.number}</span>
+                    </div>
+                    <div className="pl-preview-tabs" aria-label="Content versions">
+                      {(["audited", "current", "original"] as const).map((tab) => (
+                        <button
+                          className={contentTab === tab ? "active" : ""}
+                          type="button"
+                          key={tab}
+                          aria-pressed={contentTab === tab}
+                          onClick={() => setContentTab(tab)}
+                        >
+                          {tab === "audited" ? "Audited text" : tab === "current" ? `Current v${revision.number}` : "Original"}
+                        </button>
+                      ))}
+                    </div>
+                    {contentTab === "audited" && (
+                      <div className="tab-pane-view">
+                        <div className="tab-context-banner audited-banner" style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 4, marginBottom: 12, fontSize: 11, color: "#1E40AF" }}>
+                          <span>🔍</span>
+                          <div>
+                            <strong>Audited Text View (v{auditedRevision.number})</strong>
+                            <span style={{ display: "block", fontSize: 10, color: "#3B82F6" }}>Numbered highlights show flagged claims. Click any span to focus its finding.</span>
+                          </div>
+                        </div>
+                        <Preview text={auditedRevision.text} findings={audit.findings} selected={selectedFindingId} onSelect={selectFinding} />
+                      </div>
+                    )}
+                    {contentTab === "current" && (
+                      <div className="tab-pane-view">
+                        <div className="tab-context-banner current-banner" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 4, marginBottom: 12, fontSize: 11, color: "#166534", flexWrap: "wrap" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span>📄</span>
+                            <div>
+                              <strong>Current Working Draft (v{revision.number})</strong>
+                              <span style={{ display: "block", fontSize: 10, color: "#15803D" }}>{revision.number === 1 ? "Initial submitted version. Edits or applied fixes update here." : `Includes all applied corrections up to revision ${revision.number}.`}</span>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            className="small-button"
+                            onClick={() => {
+                              setIsEditingCurrent((prev) => !prev);
+                              setEditText(revision.text);
+                            }}
+                            style={{ background: "#FFFFFF", border: "1px solid #BBF7D0", color: "#166534", fontWeight: 700 }}
+                          >
+                            {isEditingCurrent ? "✕ Close Editor" : "✏️ Edit Draft Directly"}
+                          </button>
+                        </div>
+                        {isEditingCurrent ? (
+                          <div className="inline-editor-card" style={{ padding: 12, background: "#F4F4F5", borderRadius: 4, border: "1px solid var(--line)", marginBottom: 14 }}>
+                            <label htmlFor="direct-draft-edit" style={{ display: "block", marginBottom: 6, fontSize: 10, fontWeight: 800, fontFamily: "var(--ind-font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "#18181B" }}>Edit Content Copy (Creates v{revision.number + 1})</label>
+                            <textarea
+                              id="direct-draft-edit"
+                              rows={8}
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              style={{ width: "100%", padding: 12, border: "1px solid var(--line)", borderRadius: 4, fontFamily: "inherit", fontSize: 14, lineHeight: 1.6, background: "#FFFFFF", color: "var(--ink)" }}
+                            />
+                            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 10 }}>
+                              <button type="button" className="small-button" onClick={() => setIsEditingCurrent(false)}>Cancel</button>
+                              <button
+                                type="button"
+                                className="small-button apply-button"
+                                disabled={!editText.trim() || editText === revision.text}
+                                onClick={() => {
+                                  saveReview(updateRevisionText(review, editText));
+                                  setIsEditingCurrent(false);
+                                  setMessage(`Draft updated to v${revision.number + 1} and re-scanned.`);
+                                }}
+                              >
+                                ⚡ Save &amp; Run Fresh Check
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="pl-content-copy">{revision.text}</div>
+                        )}
+                      </div>
+                    )}
+                    {contentTab === "original" && (
+                      <div className="tab-pane-view">
+                        <div className="tab-context-banner original-banner" style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#F4F4F5", border: "1px solid var(--line)", borderRadius: 4, marginBottom: 12, fontSize: 11, color: "#52525B" }}>
+                          <span>📜</span>
+                          <div>
+                            <strong>Original Submission (v1)</strong>
+                            <span style={{ display: "block", fontSize: 10, color: "#71717A" }}>Original source text as submitted. Kept immutable in audit history for compliance verification.</span>
+                          </div>
+                        </div>
+                        <div className="pl-content-copy">{originalRevision?.text || revision.text}</div>
+                        {revision.number > 1 ? (
+                          <div className="original-diff-summary" style={{ marginTop: 14, padding: "10px 12px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 4, fontSize: 11, color: "#166534" }}>
+                            <strong>✓ {revision.number - 1} Revision(s) Recorded:</strong> Current copy is at v{revision.number}. Click <em>Current v{revision.number}</em> to inspect the latest draft.
+                          </div>
+                        ) : (
+                          <div className="original-diff-summary" style={{ marginTop: 14, padding: "10px 12px", background: "#F4F4F5", border: "1px solid var(--line)", borderRadius: 4, fontSize: 11, color: "#71717A" }}>
+                            <em>Initial submission: Current draft is at v1. Applied suggestions and edits will compare against this baseline.</em>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <p className="pl-helper">Select a numbered span to inspect its finding. Highlight numbers, verdict text, and severity labels also identify issues without relying on colour.</p>
+                    {review.scope.has_image ? <div className="alt-text-review"><span aria-hidden="true" className={`verdict-icon verdict-${revision.alt_text.trim() ? "supported" : "needs_human"}`}>{revision.alt_text.trim() ? "✓" : "!"}</span><div><strong>{revision.alt_text.trim() ? "Alt text provided · quality not assessed" : "Missing alt text · needs human review"}</strong><p>{revision.alt_text.trim() || "Add alt text in a revised submission or record why the image is decorative."}</p></div></div> : null}
+                    <div className="content-footer"><span>{review.scope.original_filename || "Pasted text"}</span><span>{review.revisions.length} retained version(s)</span></div>
+                  </section>
                   <section className="risk-summary" aria-labelledby="pl-risk-heading"><div className="risk-summary-header"><div><h3 id="pl-risk-heading">Risk breakdown</h3><span className="badge-pill pill-violation" style={{ marginTop: 4 }}>{risk.label} Priority</span></div><strong className="risk-score">{risk.score}<small>/100</small></strong></div><div className="risk-breakdown">{Object.entries(risk.counts).map(([label, count]) => <div key={label} className={`risk-stat-chip ${label}`}><span className={`risk-marker ${label}`} /><strong>{count}</strong><span>{label}</span></div>)}</div><details className="formula-accordion"><summary className="formula-summary">How Risk Score is Calculated ▾</summary><p className="risk-summary-copy">Formula: round(100 × severity {risk.severity} × exposure {risk.exposure} × policy {risk.policy_multiplier} ÷ 22.5). Spec contradiction forces High priority.</p></details><div className="pl-evidence-counts"><span>{risk.missing} unverified claim(s)</span><span>{risk.human} human-review finding(s)</span><span>{audit.findings.filter((finding) => finding.status === "dismissed").length} dismissed</span></div></section>
-                   <section className="panel audit-context"><h2>Review Details</h2><dl><div><dt>Check ID</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Specs source</dt><dd>Novacore Official · {review.api_content_id ? "Cloudflare API" : "Local engine"}</dd></div><div><dt>AI Model</dt><dd>Gemini 2.5 + Deterministic Gate</dd></div></dl><p className="audit-context-note">Proofline verifies factual claims and ad regulations. Team reviewer confirms final approval.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "⚡ Check Corrected Version" : "⚡ Run Fresh Accuracy Check"}</button>
+                   <section className="panel audit-context"><h2>Review Details</h2><dl><div><dt>Check ID</dt><dd>{audit.id}</dd></div><div><dt>Version</dt><dd>{audit.content_version_id}</dd></div><div><dt>Source set</dt><dd>Synthetic Novacore · {review.api_content_id ? "local API" : "browser v1"}</dd></div><div><dt>Specs source</dt><dd>Novacore Official · {review.api_content_id ? "Cloudflare API" : "Local engine"}</dd></div><div><dt>AI Model</dt><dd>Gemini 2.5 + Deterministic Gate</dd></div></dl><p className="audit-context-note">Proofline verifies factual claims and ad regulations. Team reviewer confirms final approval.</p><button className="secondary-button pl-full-width" type="button" onClick={recheck} disabled={apiBusy}>{apiBusy ? "Running check…" : stale ? "⚡ Check Corrected Version" : "⚡ Run Fresh Accuracy Check"}</button>
 <button className="ghost-button pl-full-width" type="button" style={{ marginTop: 8 }} onClick={() => setIsCertOpen(true)}>📜 View Compliance Certificate</button></section>
                 </section>
                 <section className="pl-findings-column" aria-labelledby="pl-findings-heading"><div className="pl-findings-heading"><h2 id="pl-findings-heading">{audit.findings.length} Flagged Issue(s)</h2><span>{openCount} to fix · {audit.findings.length - openCount} resolved</span></div><p className="micro-helper">Fixes create a new version; dismissing keeps original wording.</p>
                 <div className="helper-hint-callout" style={{ margin: "8px 0 14px" }}>
                   <span>💡</span>
                   <div>
-                    <strong>How to fix:</strong> Review each flagged claim below. Click <strong>&ldquo;⚡ Apply Suggestion&rdquo;</strong> to replace errors with approved lab specs, then click <strong>&ldquo;⚡ Check Corrected Version&rdquo;</strong> to confirm zero errors.
+                    <strong>How to fix:</strong> Review each flagged claim below. Click <strong>&ldquo;⚡ Apply Suggestion&rdquo;</strong> to replace errors with approved lab specs, or <strong>&ldquo;✏️ Provide replacement&rdquo;</strong> / <strong>&ldquo;Dismiss with reason&rdquo;</strong>, then click <strong>&ldquo;⚡ Check Corrected Version&rdquo;</strong> to confirm zero errors.
                   </div>
                 </div>{stale ? <div className="pl-stale-note" role="status">The current draft is v{revision.number}. These findings still refer to v{auditedRevision.number}; check the corrected version to refresh the verdicts.</div> : null}{!audit.findings.length ? <section className="panel pl-empty"><h3>No rule findings</h3><p>Only the listed demo rules ran. Contextual and full factual review remain unassessed. Send the content for an authorised human review.</p></section> : audit.findings.map((finding, index) => {
                     const verdict = verdictLabels[finding.verdict];
@@ -623,7 +739,9 @@ export function ContentWorkspace({ stage }: { stage: "submit" | "findings" }) {
                                 <button className="small-button apply-button" type="button" onClick={() => decide(finding, "accepted", finding.suggestion!.text)}>⚡ Apply suggestion</button>
                                 <button className="small-button" type="button" onClick={() => { setActionFindingId(finding.id); setActionMode("edit"); setActionText(finding.suggestion!.text); }}>Customize edit</button>
                               </>
-                            ) : null}
+                            ) : (
+                              <button className="small-button apply-button" type="button" onClick={() => { setActionFindingId(finding.id); setActionMode("edit"); setActionText(""); }}>✏️ Provide replacement</button>
+                            )}
                             <button className="small-button danger-button" type="button" onClick={() => { setActionFindingId(finding.id); setActionMode("dismiss"); setActionText(""); }}>Dismiss with reason</button>
                           </div>
                           {active && actionMode ? (

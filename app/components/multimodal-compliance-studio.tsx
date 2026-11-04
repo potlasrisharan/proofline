@@ -408,7 +408,36 @@ export function MultimodalComplianceStudio() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const extMatch = file.name.match(/\.([a-zA-Z0-9]+)$/);
+    const ext = extMatch ? extMatch[1].toLowerCase() : "";
+    const isImage = ["png", "jpg", "jpeg", "webp", "svg"].includes(ext) || file.type.startsWith("image/");
+
+    if (!isImage) {
+      setAuditLog((log) => [
+        `[${new Date().toLocaleTimeString()}] ❌ Unsupported format "${file.name}". Please upload a PNG, JPG, WebP, or SVG image frame.`,
+        ...log,
+      ]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setAuditLog((log) => [
+        `[${new Date().toLocaleTimeString()}] ❌ File "${file.name}" exceeds the 20 MB upload limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`,
+        ...log,
+      ]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
     const reader = new FileReader();
+    reader.onerror = () => {
+      setAuditLog((log) => [
+        `[${new Date().toLocaleTimeString()}] ❌ Failed to read file "${file.name}" from disk.`,
+        ...log,
+      ]);
+    };
     reader.onload = (event) => {
       const dataUrl = event.target?.result as string;
       if (!dataUrl) return;
