@@ -104,7 +104,7 @@ export default function PortalPage({
       window.localStorage.setItem("proofline:active-role", roleToUse);
       window.dispatchEvent(new CustomEvent("proofline:role-change", { detail: roleToUse }));
     }
-    router.push("/?view=reviews");
+    router.push("/");
   };
 
   return (
