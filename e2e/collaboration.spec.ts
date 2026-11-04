@@ -8,6 +8,7 @@ async function openReviews(page: Page, role: "creator" | "manager" | "legal_revi
 }
 
 test.describe("seeded collaboration preview (not authenticated persistence)", () => {
+  test.describe.configure({ mode: "serial" });
   test("creator fixes the 20-hour claim, manager sees the submission, and reviewer approves the revision", async ({ page }) => {
     await openReviews(page, "creator");
 

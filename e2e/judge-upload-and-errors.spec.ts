@@ -250,4 +250,70 @@ test.describe("Judge Upload & Comprehensive Error Handling Suite", () => {
     await expect(page.getByText("Review & Edit History")).toBeVisible();
     await expect(page.getByRole("button", { name: "📜 View Compliance Certificate" }).first()).toBeVisible();
   });
+
+  test("11. Arbitrary test copy and unknown PDF flags test/unverified scope and enables interactive tabs and editing", async ({ page }) => {
+    await page.goto("/submit");
+
+    // Upload an unknown document
+    const dummyPdf = Buffer.from(
+      "%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>\nendobj\n4 0 obj\n<< /Length 40 >>\nstream\nBT /F1 12 Tf 100 700 Td (Presented By Binary Brains) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000216 00000 n\ntrailer << /Size 5 /Root 1 0 R >>\nstartxref\n300\n%%EOF",
+      "utf-8"
+    );
+
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    await page.locator("#pl-upload").click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({
+      name: "Presented By Binary Brains.pdf",
+      mimeType: "application/pdf",
+      buffer: dummyPdf,
+    });
+
+    // Enter test probing copy
+    const testCopy = "hii this content is to check and if this is not flagged this pipeline is failing";
+    await page.locator("#pl-text").fill(testCopy);
+
+    // Run check
+    await page.getByRole("button", { name: "Run evidence check" }).click();
+    await page.waitForURL("/findings");
+
+    // 1. Verify finding exists and is flagged as high/critical
+    await expect(page.getByText("Flagged claims & fixes")).toBeVisible();
+    await expect(page.getByText("Risk breakdown")).toBeVisible();
+    // Test copy probe or unverified claim must be caught
+    await expect(page.getByText(/Test phrasing|unverified placeholder|unverified/i).first()).toBeVisible();
+
+    // 2. Verify interactive tabs
+    const auditedTab = page.getByRole("button", { name: "Audited text" });
+    const currentTab = page.getByRole("button", { name: /Current v1/i });
+    const originalTab = page.getByRole("button", { name: "Original" });
+    await expect(auditedTab).toBeVisible();
+    await expect(currentTab).toBeVisible();
+    await expect(originalTab).toBeVisible();
+
+    // Switch to Current v1 tab
+    await currentTab.click();
+    await expect(page.getByText("Current Working Draft (v1)")).toBeVisible();
+    const editDraftBtn = page.getByRole("button", { name: "✏️ Edit Draft Directly" });
+    await expect(editDraftBtn).toBeVisible();
+
+    // Open direct editor and update draft
+    await editDraftBtn.click();
+    const directTextarea = page.locator("#direct-draft-edit");
+    await expect(directTextarea).toBeVisible();
+    await directTextarea.fill("Meet the Novacore NovaBook S1. Up to 12 hours of battery life.");
+    await page.getByRole("button", { name: "⚡ Save & Run Fresh Check" }).click();
+
+    // Verify v2 draft is audited and active
+    await expect(page.getByText("Current v2")).toBeVisible();
+
+    // 3. Verify sidebar workspace switcher works
+    const switcherBtn = page.getByRole("button", { name: "Switch brand workspace" });
+    await expect(switcherBtn).toBeVisible();
+    await switcherBtn.click();
+    await expect(page.getByRole("listbox", { name: "Available Brand Workspaces" })).toBeVisible();
+    await expect(page.getByText("VoltEdge Labs R&D")).toBeVisible();
+    await page.getByText("VoltEdge Labs R&D").click();
+    await expect(page.getByText("Switched to: VoltEdge Labs R&D")).toBeVisible();
+  });
 });

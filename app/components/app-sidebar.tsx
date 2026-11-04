@@ -240,14 +240,14 @@ export function AppSidebar({
   }> = [
     { key: "portal", icon: "⊞", label: "Role Dashboards", href: "/dashboards", isHomeView: "portal", title: "Role Dashboards · 5 dedicated team workspaces" },
     { key: "reviews", icon: "◇", label: "Review queue", href: "/?view=reviews", isHomeView: "reviews", badge: openReviewCount, title: "Review queue · Review drafts and approve revisions" },
-    { key: "findings", icon: "◌", label: "Flagged issues", href: "/findings", badge: mounted ? findingsBadge : null, title: "Flagged issues · Claims that need review or 1-click fixes" },
-    { key: "registry", icon: "▦", label: "Approved specs", href: "/?view=registry", isHomeView: "registry", title: "Approved specs · Official product specs and brand rules" },
-    { key: "multimodal", icon: "👁", label: "Visual & video scan", href: "/multimodal", title: "Visual & video scanner · Check video reels, images, and disclaimers" },
-    { key: "drift", icon: "📡", label: "Publish & monitor", href: "/drift", title: "Publish & monitor · Safe publishing and live post tracking" },
-    { key: "sync", icon: "🔄", label: "Live doc sync", href: "/sync", title: "Live doc sync · Auto-import specs from Notion, Google Docs & Shopify" },
-    { key: "impact", icon: "!", label: "Spec change radar", href: "/impact", title: "Spec change radar · Alerts you when a spec update affects your drafts" },
-    { key: "insights", icon: "⌁", label: "Team insights", href: "/insights", isHomeView: "insights", title: "Team insights · Common issues and suggested rule updates" },
-    { key: "audit-log", icon: "≋", label: "Audit trail", href: "/?view=audit-log", isHomeView: "audit-log", title: "Audit trail · Complete record of edits, approvals, and decisions" },
+    { key: "findings", icon: "◌", label: "Findings", href: "/findings", badge: mounted ? findingsBadge : null, title: "Findings & Flagged Issues · Claims that need review or 1-click fixes" },
+    { key: "registry", icon: "▦", label: "Truth registry", href: "/?view=registry", isHomeView: "registry", title: "Truth Registry (Approved Specs) · Official product specs and brand rules" },
+    { key: "multimodal", icon: "👁", label: "Visual & video scan", href: "/multimodal", title: "Visual & Video Scanner · Check video reels, images, and readable disclaimers" },
+    { key: "drift", icon: "📡", label: "Publish & monitor", href: "/drift", title: "Publish & Live Monitor · Safe publishing and post tracking" },
+    { key: "sync", icon: "🔄", label: "Live doc sync", href: "/sync", title: "Live Doc Sync · Auto-import specs from Notion, Google Docs & Shopify" },
+    { key: "impact", icon: "!", label: "Spec change radar", href: "/impact", title: "Spec Change Radar · Alerts you when a spec update affects your drafts" },
+    { key: "insights", icon: "⌁", label: "Team insights", href: "/insights", isHomeView: "insights", title: "Team Insights · Common issues and suggested rule updates" },
+    { key: "audit-log", icon: "≋", label: "Audit log", href: "/?view=audit-log", isHomeView: "audit-log", title: "Audit Log (Audit Trail) · Complete record of edits and approvals" },
   ];
 
   return (

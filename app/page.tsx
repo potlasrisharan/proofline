@@ -956,9 +956,9 @@ export default function Home() {
   const pageTitles: Record<View, string> = {
     overview: "Overview",
     reviews: "Review Queue",
-    registry: "Approved Specs",
+    registry: "Truth registry",
     insights: "Team Insights",
-    "audit-log": "Audit Trail",
+    "audit-log": "Audit log",
     portal: "Role Dashboards",
   };
 
