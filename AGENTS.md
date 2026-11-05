@@ -37,11 +37,15 @@ Additional credential rules for this project: keep secret values in local `.env`
 only, provide `.env.example` with redacted variable names, use project-dedicated
 accounts, and never reuse credentials from another project.
 
-### 🛑 ZERO SECRET LEAKAGE RULE (CRITICAL SYSTEM INVARIANT)
-- **NEVER push, commit, or stage ANY API key, token, secret, password, or private credential to GitHub or version control.**
-- All API keys (Gemini, Groq, Sarvam, Zernio, Notion, Cloudflare, etc.) must reside exclusively in gitignored `.env.local` or server environment variables.
-- Prior to EVERY `git commit` and `git push`, run an automated regex scan (`git diff --staged | grep -E "(sk_|gsk_|ntn_|AIza|AQ\.)"`) to ensure no secret tokens are staged.
-- Groq (`GROQ_API_KEY`) and Sarvam (`SARVAM_API_KEY`) operate strictly as fail-soft fallbacks behind Gemini; if an external provider is unreachable or unconfigured, fallback immediately to the offline deterministic engine rather than requiring hardcoded keys.
+### 🛑 ZERO SECRET LEAKAGE & NO-ENV-FILE RULE (CRITICAL SYSTEM INVARIANT)
+- **STRICT PROHIBITION ON ENVIRONMENT FILES:** NEVER push, commit, or stage ANY environment file (`.env`, `.env.local`, `.env.*`, `*.env`, `*.env.*`) to git or GitHub under any circumstance. Only `.env.example` with non-sensitive placeholder variables is permitted in version control.
+- **STRICT PROHIBITION ON RAW SECRETS:** NEVER push, commit, or stage ANY API key, token, private key, secret, password, or private credential in code, configs, fixtures, comments, or documentation.
+- **LOCAL SECRET RESIDENCE:** All API keys (Gemini, Groq, Sarvam, Zernio, Notion, Cloudflare, etc.) must reside exclusively in gitignored `.env.local` or host environment variables.
+- **AUTOMATED DEFENSE LAYERS (MANDATORY & ENFORCED):**
+  1. **Git Pre-Commit Hook:** `.githooks/pre-commit` automatically executes `scripts/check-secrets.sh --staged` before every commit, rejecting any staged `.env` files or secret patterns.
+  2. **Git Pre-Push Hook:** `.githooks/pre-push` automatically executes `scripts/check-secrets.sh --all` before any code leaves the developer workstation.
+  3. **CI Pipeline Guard:** The GitHub Actions `secret-guard` job in `.github/workflows/ci.yml` strictly scans every push and PR, immediately failing the build if any forbidden file or secret signature is introduced.
+  4. **Fail-Soft Runtime Guarantee:** All LLM and API integrations must fail-soft to local deterministic rule engines when environment variables are missing; never hardcode fallback credentials in application code.
 
 ## 3. Evidence-first review behavior
 

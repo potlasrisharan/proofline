@@ -3,8 +3,20 @@ node_modules/
 out/
 .DS_Store
 *.log
+# Environment & Secret files - STRICT NEVER COMMIT
+.env
 .env*
+*.env
+*.env.*
 !.env.example
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
 *.tsbuildinfo
 __pycache__/
 .agent-lock

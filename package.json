@@ -14,7 +14,9 @@
     "test:frontend": "playwright test",
     "test:e2e:api": "playwright test --config=playwright.api.config.ts",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check:secrets": "bash scripts/check-secrets.sh --all",
+    "prepare": "git config core.hooksPath .githooks 2>/dev/null || true"
   },
   "dependencies": {
     "@zernio/node": "^0.2.1448",

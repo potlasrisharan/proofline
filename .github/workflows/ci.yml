@@ -12,6 +12,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  secret-guard:
+    name: Zero Secret Leakage & Environment Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Secret & Env File Scanner
+        run: bash scripts/check-secrets.sh --all
+
   frontend-quality:
     name: Frontend lint and typecheck
     runs-on: ubuntu-latest

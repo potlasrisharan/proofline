@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Strict Zero-Leakage Git Pre-Push Hook
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+"${ROOT_DIR}/scripts/check-secrets.sh" --all
